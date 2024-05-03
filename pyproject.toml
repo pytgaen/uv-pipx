@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "uvpipx"
+description = "A small tool like pipx using uv behind the scene. Fast, Small ..."
+version = "0.1.0-rc.1"  # to bump
+authors = ["Pytgaen <32298455+pytgaen@users.noreply.github.com>"]
+readme = "README.md"
+license = "GPL"
+
+homepage = "https://gitlab.com/pytgaen-group/uvpipx"
+repository = "https://gitlab.com/pytgaen-group/uvpipx"
+# documentation = "https://gitlab.com/pytgaen-group/uvpipx" # gitlab page 
+
+include = ["uvpipx"]
+
+[tool.poetry.dependencies]
+python = "^3.8" # not 3.7 because we use pytest
+uv = "^0.1.44"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+# infer-types = "^1.0.0"
+
+[tool.poetry.scripts]
+uvpipx = 'uvpipx.__main__:main'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

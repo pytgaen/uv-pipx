@@ -1,0 +1,33 @@
+plugins:
+  [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/gitlab",
+    [
+      "@semantic-release/changelog",
+      { "changelogTitle": "ChangeLog for uvpipx" },
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": './prepare.sh "${lastRelease.version}" "${nextRelease.version}" "${nextRelease.type}"',
+      },
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["**/*.md", "pyproject.toml", "*.py", "**/*.py"],
+        "message": "chore(semantic-release): [ci skip on tag] ${nextRelease.version}\n\n${nextRelease.notes}",
+      },
+    ],
+  ]
+
+branches:
+  - "main"
+  - "master"
+  - name: "develop"
+    channel: "rc"
+    prerelease: "rc"
+
+tagFormat: "${version}"
+initialReleaseVersion: "0.1.0"

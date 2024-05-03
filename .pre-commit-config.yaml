@@ -1,0 +1,23 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.0.1
+      hooks:
+          - id: check-added-large-files
+          - id: check-merge-conflict
+          - id: trailing-whitespace
+            args: [--markdown-linebreak-ext=md]
+          - id: end-of-file-fixer
+          - id: check-yaml
+            exclude: mkdocs.yml
+          - id: check-toml
+          - id: check-json
+            exclude: .vscode/launch.json
+          - id: debug-statements
+          - id: check-ast
+          - id: check-executables-have-shebangs
+          - id: mixed-line-ending
+            args: ['--fix=lf']
+          - id: no-commit-to-branch
+            args: ['--branch', 'master', '--branch', 'main', '--branch', 'develop']

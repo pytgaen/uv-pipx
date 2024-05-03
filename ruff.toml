@@ -1,0 +1,12 @@
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+# Assume Python 3.8
+target-version = "py38"
+
+[lint]
+select = ["E", "F", "B", "ANN", "SIM", "ERA", "A", "COM", "PTH",  "FA", "TRY", "S", "EM", "ARG", "INP", "RUF", "PLW"]
+# "UP",
+ignore = ["S101", "E501", "ERA001", "ANN101"]
+

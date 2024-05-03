@@ -1,0 +1,86 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Install Ruff",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "install",
+                "ruff",
+                "--expose",
+                "_"
+            ]
+        },
+        {
+            "name": "Install jc",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "install",
+                "jc",
+                "--expose",
+                "_",
+                "-v"
+            ]
+        },
+        {
+            "name": "Uninstall jc",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "uninstall",
+                "jc"
+            ]
+        },
+        {
+            "name": "Ensurepath",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "ensurepath"
+            ]
+        },
+        {
+            "name": "List",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "list"
+            ]
+        },
+        {
+            "name": "Info",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "info", "jc"
+            ]
+        },  
+        {
+            "name": "Venv JC",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "venv", "jc", "--", "jc", "-h"
+            ]
+        },        
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+        }
+    ]
+}

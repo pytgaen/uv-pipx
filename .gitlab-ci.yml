@@ -1,0 +1,115 @@
+# included templates
+include:
+  # Python template
+  # https://gitlab.com/to-be-continuous/python
+  - project: "to-be-continuous/python"
+    ref: "6.11.1"
+    file: "templates/gitlab-ci-python.yml"
+  # Gitleaks template
+  - project: "to-be-continuous/gitleaks"
+    ref: "2.5.1"
+    file: "templates/gitlab-ci-gitleaks.yml"
+  # MkDocs template
+  # - project: "to-be-continuous/mkdocs"
+  #   ref: "2.5.0"
+  #   file: "templates/gitlab-ci-mkdocs.yml"
+  # # MkDocs template (GitLab Pages variant)
+  # - project: "to-be-continuous/mkdocs"
+  #   ref: "2.5.0"
+  #   file: "templates/gitlab-ci-mkdocs-pages.yml"
+  # semantic-release template
+  - project: "to-be-continuous/semantic-release"
+    ref: "3.9.0"
+    file: "templates/gitlab-ci-semrel.yml"
+
+# your pipeline stages
+stages:
+  - build
+  - test
+  - package-build
+  - package-test
+  - infra
+  - deploy
+  - acceptance
+  - publish
+  - infra-prod
+  - production
+
+variables:
+  # ##
+  TZ: Europe/Paris
+  # PYTHON_EXTRA_DEPS: "all"
+  # ##
+
+  MKD_IMAGE: python:3.11
+  MKD_REQUIREMENTS_FILE: mkdocs_requirements.txt # empty file to manage requirement with script below
+  MKD_PREBUILD_SCRIPT: mkdocs-pre-build.sh
+
+  SEMREL_AUTO_RELEASE_ENABLED: "true"
+  SEMREL_INFO_ON: all
+  SEMVER_PROD_REF: "/^(master|main)$/"
+  SEMVER_SNAPSHOT_REF: "/^(develop)$/"
+  # SEMREL also use the file .releaserc.yml
+
+  PYTHON_IMAGE: python:3.11
+  PYTHON_PACKAGE_ENABLED: "true"
+  PYTHON_RELEASE_ENABLED: "false"
+  PYTHON_SBOM_DISABLED: "false"
+
+  PYTEST_ENABLED: "true"
+  # PYTEST_ARGS: --ignore=install/
+
+  RUFF_ENABLED: "true"
+
+  BANDIT_ENABLED: "true"
+  BANDIT_ARGS: "--recursive -x ./.cache --config bandit.yaml ."
+  
+  # Change default release tag name (pattern) to add python "rc" release
+  RELEASE_REF: '/^v?[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/'
+
+
+.tbc-semantic-release:
+  rules:
+    - if: '$SEMREL_RELEASE_DISABLED == "true"'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    # on production branch(es): auto if SEMREL_AUTO_RELEASE_ENABLED
+    - if: '$SEMREL_AUTO_RELEASE_ENABLED == "true" && $CI_COMMIT_REF_NAME =~ $PROD_REF'
+    # on production branch(es): manual by default
+    - if: "$CI_COMMIT_REF_NAME =~ $PROD_REF"
+      when: manual
+      allow_failure: true
+
+
+semantic-release:
+  rules:
+    # on chore(semantic-release): auto
+    - if: '$SEMREL_AUTO_RELEASE_ENABLED == "true" && $CI_COMMIT_MESSAGE =~ "/chore\(semantic-release\)/"'
+      when: never
+    - !reference [.tbc-semantic-release, rules]
+    # on develop branch(es): manual by default
+    - if: "$CI_COMMIT_REF_NAME =~ $INTEG_REF"
+      when: manual
+      allow_failure: true
+
+
+.tbc-py-publish:
+  rules:
+    # on tag with release pattern: auto
+    - if: "$CI_COMMIT_TAG =~ $RELEASE_REF"
+    # exclude if $PYTHON_RELEASE_ENABLED not set
+    - if: '$PYTHON_RELEASE_ENABLED != "true"'
+      when: never
+
+
+py-publish:
+  rules:
+    # on chore(semantic-release): auto
+    - if: '$SEMREL_AUTO_RELEASE_ENABLED == "true" && $CI_COMMIT_MESSAGE =~ "/chore\(semantic-release\)/"'
+    - !reference [.tbc-py-publish, rules]
+    # # on tag with release pattern: auto
+    # - if: "$CI_COMMIT_TAG =~ $RELEASE_REF"
+    # # exclude if $PYTHON_RELEASE_ENABLED not set
+    # - if: '$PYTHON_RELEASE_ENABLED != "true"'
+    #   when: never

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "groupName": "to-be-continuous dependencies",
+      "groupSlug": "tbc-deps",
+      "matchPackagePatterns": [
+        "to-be-continuous/*"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
+    },
+    {
+      "groupName": "poetry dependencies mkdocs",
+      "groupSlug": "poetry-deps-mkdocs",
+      "matchManagers": [
+        "poetry"
+      ],
+      "matchPackagePatterns": [
+        "^mkdocs"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "prPriority": 10,
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true,
+      "rebaseWhen": "auto"
+    },
+    {
+      "groupName": "poetry dependencies",
+      "groupSlug": "poetry-deps",
+      "matchManagers": [
+        "poetry"
+      ],
+      "excludePackagePatterns": [
+        "^mkdocs"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "prPriority": 7,
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true,
+      "rebaseWhen": "auto"
+    }
+  ],
+  "prHourlyLimit": 2
+}
