@@ -23,10 +23,10 @@
             "module": "uvpipx",
             "args": [
                 "install",
-                "jc",
-                "--expose",
-                "_",
-                "-v"
+                "jc==1.24.0",
+                // "--expose",
+                // "_",
+                // "-v"
             ]
         },
         {

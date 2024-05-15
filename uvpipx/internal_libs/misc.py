@@ -251,7 +251,7 @@ def shell_run_elapse(command: str, message: str) -> None:
     with Elapser() as ela:
         o, e, rc = shell_run(command)
 
-    log_info(f"⏱️ {message} {ela.elapsed_second}")
+    log_info(f"{message}   ⏱️  {ela.elapsed_second}")
 
 
 def command_exists(cmd: str) -> bool:

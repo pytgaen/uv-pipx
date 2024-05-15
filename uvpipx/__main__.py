@@ -1,5 +1,7 @@
 import sys
 
+from uvpipx.internal_libs.colors import Painter
+
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
@@ -14,7 +16,9 @@ from uvpipx.uvpipx_args import arg_parser
 
 
 def show_main_help() -> None:
-    print("uvpipx general help\n")
+    print(
+        Painter.parse_color_tags("<ST_UNDERLINE>uvpipx general help</ST_UNDERLINE>\n")
+    )
 
     print("uvpipx cmd [--help] ... parameters ...\n\ncmd can be:")
     help_ = [[f"{k}", f"{v.help}"] for k, v in arg_parser.items()]
@@ -23,7 +27,7 @@ def show_main_help() -> None:
     wrapped = wrap_text_in_table(help_, [size_col[0], 100 - size_col[0]])
     for row in wrapped:
         for ss in [list(sub_row) for sub_row in zip(*row)]:
-            print(" | ".join(ss))
+            print("  " + (" | ".join(ss)).rstrip())
         # print()
 
     print()
@@ -34,7 +38,11 @@ def main() -> None:
 
     like pipx but with uv ... intent to be miniamist, small and so fast !
     """
-    print(f"uvpipx version {__version__}\n")
+    print(
+        Painter.parse_color_tags(
+            f"<BRIGHT_WHITE>uvpipx</BRIGHT_WHITE> version <CYAN>{__version__}</CYAN>\n"
+        )
+    )
     if len(sys.argv) <= 1 or (len(sys.argv) == 2 and sys.argv[1] in ["-h", "--help"]):
         show_main_help()
         sys.exit(0)

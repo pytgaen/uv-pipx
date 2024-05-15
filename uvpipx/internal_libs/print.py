@@ -11,6 +11,7 @@ __status__ = "Development"
 import textwrap
 from typing import List
 
+
 class NewLinePreservingWrapper(textwrap.TextWrapper):
     def wrap(self, text: str) -> List[str]:
         # Split the original text by new lines, process each part, then combine
