@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "uvpipx"
 description = "A small tool like pipx using uv behind the scene. Fast, Small ..."
-version = "0.1.0-rc.1"  # to bump
+version = "0.2.0"  # to bump
 authors = ["Pytgaen <32298455+pytgaen@users.noreply.github.com>"]
 readme = "README.md"
 license = "GPL"
