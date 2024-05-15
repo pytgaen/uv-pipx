@@ -11,7 +11,7 @@ import sys
 
 from uvpipx import uvpipx, uvpipx_infos
 from uvpipx.internal_libs.args import ArgParser
-from uvpipx.internal_libs.misc import log_debug
+from uvpipx.internal_libs.misc import Elapser, log_debug, log_info
 
 
 def common_args(argp: ArgParser) -> None:
@@ -31,10 +31,13 @@ def install(argp: ArgParser) -> None:
 
     common_args(argp)
 
-    uvpipx.install(
-        argp.args["python_pkg"].value,
-        expose_bin_names=argp.args["--expose"].defaulted_value(),
-    )
+    with Elapser() as ela:
+        uvpipx.install(
+            argp.args["python_pkg"].value,
+            expose_bin_names=argp.args["--expose"].defaulted_value(),
+        )
+
+    log_info(f"\n 🏁 Finish install  ⏱️  {ela.elapsed_second}")
 
 
 def ensurepath(argp: ArgParser) -> None:
@@ -42,7 +45,7 @@ def ensurepath(argp: ArgParser) -> None:
 
     common_args(argp)
 
-    uvpipx.uvpipx_infos.ensurepath()
+    uvpipx_infos.ensurepath()
 
 
 def uvpipx_list(argp: ArgParser) -> None:
@@ -50,7 +53,7 @@ def uvpipx_list(argp: ArgParser) -> None:
 
     common_args(argp)
 
-    uvpipx.uvpipx_list()
+    uvpipx_infos.uvpipx_list()
 
 
 def info(

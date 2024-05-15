@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from uvpipx.internal_libs.colors import Painter
+
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
@@ -186,7 +188,11 @@ class ArgParser:
 
     def print_help(self) -> None:
         if self.help:
-            print(self.help + "\n")
+            print(
+                Painter.parse_color_tags(f"<ST_UNDERLINE>{self.help}</ST_UNDERLINE>\n"),
+            )
+
+        # TODO show command line argument
 
         info_not_option = []
         info_option = []
@@ -209,5 +215,5 @@ class ArgParser:
         wrapped = wrap_text_in_table(infos, [size_col[0], 100 - size_col[0]])
         for row in wrapped:
             for ss in [list(sub_row) for sub_row in zip(*row)]:
-                print(" | ".join(ss))
+                print("  " + (" | ".join(ss)).rstrip())
             print()

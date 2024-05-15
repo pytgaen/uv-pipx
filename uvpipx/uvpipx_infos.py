@@ -89,8 +89,10 @@ apps are exposed at {config.uvpipx_local_bin}
 """
     nb = 0
     if config.uvpipx_venvs.exists():
-        for nb, pck_venv in enumerate(config.uvpipx_venvs.iterdir()):  # noqa: B007
+        for pck_venv in config.uvpipx_venvs.iterdir():
             infos += _info(pck_venv)
+            infos += "\n"
+            nb += 1
 
     if nb == 0:
         infos += "Nothing is installed !"

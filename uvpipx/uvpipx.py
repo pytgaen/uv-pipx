@@ -37,7 +37,7 @@ def install(
     expose_bin_names: Optional[List[str]] = None,
     venv_name: Union[None, str] = None,
 ) -> None:
-    package_name = re.search(r"([^=<>]+)(==|>)*", package_name_ref)[0]
+    package_name = re.search(r"([^=<>]+)(==|>)*", package_name_ref)[1]
     venv_name_ = venv_name or package_name
     expose_bin_names_ = expose_bin_names
     if expose_bin_names_ is None:
@@ -61,16 +61,18 @@ def install(
     if not (pck_venv / ".venv").exists():
         shell_run_elapse(
             f"uv venv {pck_venv / '.venv'}",
-            f"uv venv {pck_venv} created",
+            f" 📦 uv venv {pck_venv} created",
         )
 
     shell_run_elapse(
         f"cd {pck_venv}; uv pip install {package_name_ref}",
-        f"uv pip install {package_name_ref} in uvpipx venv {venv_name_}",
+        f" 📥 uv pip install {package_name_ref} in uvpipx venv {venv_name_}",
     )
-    log_info(f"uvpipx venv {venv_name_} with {package_name} ready")
+    log_info(f" 🟢 uvpipx venv {venv_name_} with {package_name} ready")
     shell_run(f"cd {pck_venv}; uv pip freeze > requirements.txt")
+    print()
 
+    log_info(" 🎯 Exposing program")
     if len(expose_bin_names_) == 1:
         if expose_bin_names_[0] == "*":
             exe = find_executable(pck_venv / ".venv" / "bin")
@@ -95,11 +97,11 @@ def install(
         if (pck_venv / ".venv" / "bin" / venv_bin_name).exists():
             if not link_dest.exists():
                 os.symlink(pck_venv / ".venv" / "bin" / venv_bin_name, link_dest)
-                log_info(f"Exposing program {venv_bin_name} to {link_dest}")
+                log_info(f"  📁 Exposing program {venv_bin_name} to {link_dest}")
             else:
-                log_warm(f"Link {pck_venv} already exist. Skipping {local_bin_name}!")
+                log_warm(f"  🟡 Link for {local_bin_name} already exist. Skipping !")
         else:
-            msg = f"Program {venv_bin_name} not exist in package {package_name_ref}"
+            msg = f" 🔴 Program {venv_bin_name} not exist in package {package_name_ref}"
             raise RuntimeError(
                 msg,
             )
@@ -142,6 +144,12 @@ def run_venv_bin(
     # print(stde, file=sys.stderr)
     sys.exit(rc)
 
+
+# TODO upgrade
+# uv pip install --upgrade jc
+# after upgrade check bin to link or unlink
+
+# TODO upgrade-all
 
 # def venv(package_name, cmdline, *, venv_name: Union[None, str] = None):
 #     """venv is specific to uvpipx. it will replace inject, runpip, uninject

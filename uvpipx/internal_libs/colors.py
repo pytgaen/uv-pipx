@@ -9,6 +9,7 @@ __email__ = "#"
 __status__ = "Development"
 
 
+import os
 import re
 from enum import Enum
 from typing import List
@@ -72,12 +73,18 @@ class Painter:
     @staticmethod
     def hex_color(hexcode: str, background: bool = False) -> str:
         """Generates an ANSI escape sequence from a hex color code."""
+        if os.getenv("NO_ANSI_COLOR", "false").lower() not in ["false", "0"]:
+            return ""
+
         hexcode = hexcode.strip("#")
         r, g, b = int(hexcode[:2], 16), int(hexcode[2:4], 16), int(hexcode[4:6], 16)
         return Color.rgb_color(r, g, b, background)
 
     @staticmethod
     def color_str(message: str, *styles: List[Color]) -> str:
+        if os.getenv("NO_ANSI_COLOR", "false").lower() not in ["false", "0"]:
+            return message
+
         style_codes = "".join(style.value for style in styles)
         return f"{style_codes}{message}{Color.ST_RESET.value}"
 
@@ -89,6 +96,9 @@ class Painter:
 
         # Function to process each match
         def replace_tag(tag: str) -> str:
+            if os.getenv("NO_ANSI_COLOR", "false").lower() not in ["false", "0"]:
+                return ""
+
             tag_ = tag[1:-1]
             if not tag_.startswith("/"):
                 styles_set.add(tag_)
