@@ -1,0 +1,77 @@
+site_name: uv pipx
+site_url: https://gitlab.com/pytgaen-group/uvpipx
+repo_url: https://gitlab.com/pytgaen-group/uvpipx
+
+nav:
+  - Index: index.md
+  - Usable or Not: usable.md
+
+theme:
+  name: "material"
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  language: "en"
+  feature:
+    tabs: false
+  extra:
+    search:
+      language: "en, fr"
+
+  palette: 
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+watch:
+  - uvpipx/
+
+plugins:
+  - search
+  - mermaid2:
+      version: 10.9.0
+  # - kroki:
+  #      ServerURL: "https://kroki.io"
+  - minify:
+      minify_html: false
+      minify_js: true
+  - mkdocstrings:
+      default_handler: python
+      # handlers:
+      #   python:
+      #     setup_commands:
+      #     - import sys
+      #     - sys.path.append("docs")
+      #     selection:
+      #       new_path_syntax: yes
+      #     rendering:
+      #       show_source: true
+
+
+markdown_extensions:
+  - toc:
+      toc_depth: 3
+      permalink: True 
+  - admonition
+  - pymdownx.details
+  - pymdownx.critic
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+      # make exceptions to highlighting of code for mermaid
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format

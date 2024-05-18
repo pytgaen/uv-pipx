@@ -9,7 +9,7 @@ __email__ = "#"
 __status__ = "Development"
 
 
-from uvpipx.internal_libs.args import Arg, ArgParser
+from uvpipx.internal_libs.args import Arg, ArgParser, ArgParserMode
 
 arg_parser: dict[str, ArgParser] = {}
 
@@ -36,6 +36,11 @@ arg_parser["install"] = ArgParser(
             mode="array",
             default=["*"],
             help="""By default, all executable program in bin will be expose to `uvpipx_local_bin`\nYou can use --expose jc to expose only this program. you can use many --expose\n--expose _ tell to expose nothing""",
+        ),
+        Arg(
+            "--force",
+            mode="bool/true",
+            help="""Allow to force reinstall""",
         ),
         verbose_arg,
         help_arg,
@@ -93,4 +98,57 @@ arg_parser["info"] = ArgParser(
     ],
     help="Show information of the python package",
 )
-# arg_parser['...'] = None
+
+arg_parser["upgrade"] = ArgParser(
+    [
+        Arg(
+            "python_pkg",
+            help="""The python package name to upgrade (for example "jc")\nBut you can also give version using "jc==1.25.2" """,
+        ),
+        verbose_arg,
+        help_arg,
+    ],
+    help="Upgrade a python package",
+)
+
+arg_parser["upgrade-all"] = ArgParser(
+    [
+        verbose_arg,
+        help_arg,
+    ],
+    help="Upgrade all python package",
+)
+
+arg_parser["inject"] = ArgParser(
+    [
+        Arg(
+            "python_pkg",
+            help="""The python main package name (for example "jc")\nBut you can also give version using "jc==1.25.2" """,
+        ),
+        Arg(
+            "inject_python_pkg",
+            help="""The python package name to inject (for example "jc")\nBut you can also give version using "jc==1.25.2" """,
+        ),
+        verbose_arg,
+        help_arg,
+    ],
+    mode=ArgParserMode.AUTO_EXTRA_ARGS,
+    help="Inject one or many python package(s) in main python package",
+)
+
+arg_parser["uninject"] = ArgParser(
+    [
+        Arg(
+            "python_pkg",
+            help="""The python main package name (for example "jc")\nBut you can also give version using "jc==1.25.2" """,
+        ),
+        Arg(
+            "uninject_python_pkg",
+            help="""The python package name to uninject (for example "jc")\nBut you can also give version using "jc==1.25.2" """,
+        ),
+        verbose_arg,
+        help_arg,
+    ],
+    mode=ArgParserMode.AUTO_EXTRA_ARGS,
+    help="Uninject one or many python package(s) in main python package",
+)

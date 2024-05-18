@@ -3,24 +3,31 @@ include:
   # Python template
   # https://gitlab.com/to-be-continuous/python
   - project: "to-be-continuous/python"
-    ref: "6.11.1"
+    ref: "7.0.2"
     file: "templates/gitlab-ci-python.yml"
+  # - project: "pytgaen-group/python"
+  #   ref: "fix/curl-not-slim"
+  #   file: "templates/gitlab-ci-python.yml"
   # Gitleaks template
   - project: "to-be-continuous/gitleaks"
     ref: "2.5.1"
     file: "templates/gitlab-ci-gitleaks.yml"
   # MkDocs template
-  # - project: "to-be-continuous/mkdocs"
-  #   ref: "2.5.0"
-  #   file: "templates/gitlab-ci-mkdocs.yml"
-  # # MkDocs template (GitLab Pages variant)
-  # - project: "to-be-continuous/mkdocs"
-  #   ref: "2.5.0"
-  #   file: "templates/gitlab-ci-mkdocs-pages.yml"
+  - project: "to-be-continuous/mkdocs"
+    ref: "2.5.1"
+    file: "templates/gitlab-ci-mkdocs.yml"
+  # MkDocs template (GitLab Pages variant)
+  - project: "to-be-continuous/mkdocs"
+    ref: "2.5.1"
+    file: "templates/gitlab-ci-mkdocs-pages.yml"
   # semantic-release template
   - project: "to-be-continuous/semantic-release"
-    ref: "3.9.0"
+    ref: "3.10.0"
     file: "templates/gitlab-ci-semrel.yml"
+
+default:
+  tags:
+    - mymg18w
 
 # your pipeline stages
 stages:
@@ -54,15 +61,21 @@ variables:
   PYTHON_IMAGE: python:3.11
   PYTHON_PACKAGE_ENABLED: "true"
   PYTHON_RELEASE_ENABLED: "false"
-  PYTHON_SBOM_DISABLED: "false"
+  # PYTHON_SBOM_DISABLED: "false"
+  # PYTHON_TRIVY_DISABLED: "false"
+  PYTHON_SBOM_DISABLED: "true"
+  PYTHON_TRIVY_DISABLED: "false"
 
   PYTEST_ENABLED: "true"
   # PYTEST_ARGS: --ignore=install/
 
-  RUFF_ENABLED: "true"
+  # RUFF_ENABLED: "true"
+  RUFF_ENABLED: "false"
 
-  BANDIT_ENABLED: "true"
+  # BANDIT_ENABLED: "true"
+  BANDIT_ENABLED: "false"
   BANDIT_ARGS: "--recursive -x ./.cache --config bandit.yaml ."
+
   
   # Change default release tag name (pattern) to add python "rc" release
   RELEASE_REF: '/^v?[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/'

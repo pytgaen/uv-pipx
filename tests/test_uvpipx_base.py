@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import os
 import subprocess  # nosec: B404
 import tempfile
@@ -64,12 +65,6 @@ class TestBasicInsUninstall:
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
         assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
 
-        # def test_uninstall_jc(self, env_setup):
-        #
-        #     uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
-
-        runenv = {**os.environ, **uvenvs}
-
         result = subprocess.run(  # nosec: B603, B607
             ["uvpipx", "uninstall", "jc"],  # noqa: S603, S607
             capture_output=True,
@@ -103,10 +98,6 @@ class TestBasicExpose:
         assert venv_jc_path.exists()
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
         assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
-
-        # def test_uninstall_jc(self, env_setup):
-        #
-        #     uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
 
         runenv = {**os.environ, **uvenvs}
 
@@ -206,8 +197,67 @@ class TestBasicRunLocalBin:
         )
 
 
-# TODO test info / info --get-env
-# TODO test venv
+class TestBasicInfo:
+    def test_info(self, env_setup: tuple[str, dict, str]) -> None:
+        uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
+        runenv = {**os.environ, **uvenvs}
 
-# TODO test ensurepath
-# TODO test list
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "install", "jc"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+        venv_jc_path = Path(runenv["UVPIPX_LOCAL_VENVS"]) / "jc/.venv/bin/jc"
+
+        assert venv_jc_path.exists()
+        assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
+        assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "info", "jc"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+        assert "📦 jc (jc==" in result.stdout
+        assert "✅ jc" in result.stdout
+
+
+class TestBasicList:
+    def test_list(self, env_setup: tuple[str, dict, str]) -> None:
+        uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
+        runenv = {**os.environ, **uvenvs}
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "install", "jc"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+        venv_jc_path = Path(runenv["UVPIPX_LOCAL_VENVS"]) / "jc/.venv/bin/jc"
+
+        assert venv_jc_path.exists()
+        assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
+        assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "list"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+        assert "📍 uvpipx venvs are in" in result.stdout
+        assert "📦 jc (jc==" in result.stdout

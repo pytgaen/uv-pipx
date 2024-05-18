@@ -114,7 +114,11 @@ class ArgParser:
                 msg,
             )  # TODO better message indicating the missing list
 
-        self.extra_args = received_args[i_token + 1 :]
+        if self.mode != ArgParserMode.AUTO_EXTRA_ARGS:
+            # if we are here this is because there -- to allow extra extra so we skip one to bypass --
+            i_token += 1
+        self.extra_args = received_args[i_token:]
+
         # print("extra_args", self.extra_args)
 
     def _parse_arg(

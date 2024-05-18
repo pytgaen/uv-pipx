@@ -285,3 +285,4 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/dotenv,python,visualstudiocode,intellij+all
 
 tmp/
+prep_future_feat/

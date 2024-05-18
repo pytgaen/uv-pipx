@@ -21,3 +21,6 @@ repos:
             args: ['--fix=lf']
           - id: no-commit-to-branch
             args: ['--branch', 'master', '--branch', 'main', '--branch', 'develop']
+
+
+# ruff check --select I,F401 --fix     

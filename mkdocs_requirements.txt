@@ -1,0 +1,2 @@
+ # empty file to manage requirement with mkdocs-pre-build.sh
+ # this way will be able to generate mkdocstrings

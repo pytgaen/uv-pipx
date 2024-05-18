@@ -1,6 +1,7 @@
 import sys
 
 from uvpipx.internal_libs.colors import Painter
+from uvpipx.version import show_version
 
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
@@ -10,9 +11,22 @@ __maintainer__ = "Gaëtan Montury"
 __email__ = "#"
 __status__ = "Development"
 
-from uvpipx.cmd_launcher import ensurepath, info, install, uninstall, uvpipx_list, venv
+import uvpipx.cmd_launcher as cmd_launcher
+
+# import (
+#     ensurepath,
+#     info,
+#     install,
+#     uninstall,
+#     uvpipx_list,
+#     venv,
+#     upgrade, upgrade_all,
+#     inject,
+# )
 from uvpipx.internal_libs.print import max_string_length_per_column, wrap_text_in_table
 from uvpipx.uvpipx_args import arg_parser
+
+cmd_map = {"list": "uvpipx_list"}
 
 
 def show_main_help() -> None:
@@ -28,7 +42,6 @@ def show_main_help() -> None:
     for row in wrapped:
         for ss in [list(sub_row) for sub_row in zip(*row)]:
             print("  " + (" | ".join(ss)).rstrip())
-        # print()
 
     print()
 
@@ -38,38 +51,23 @@ def main() -> None:
 
     like pipx but with uv ... intent to be miniamist, small and so fast !
     """
-    print(
-        Painter.parse_color_tags(
-            f"<BRIGHT_WHITE>uvpipx</BRIGHT_WHITE> version <CYAN>{__version__}</CYAN>\n",
-        ),
-    )
+
     if len(sys.argv) <= 1 or (len(sys.argv) == 2 and sys.argv[1] in ["-h", "--help"]):
+        show_version()
         show_main_help()
         sys.exit(0)
 
-    if sys.argv[1] == "install":
-        install(arg_parser["install"])
-
-    elif sys.argv[1] == "uninstall":
-        uninstall(arg_parser["uninstall"])
-
-    elif sys.argv[1] == "venv":
-        venv(arg_parser["venv"])
-
-    elif sys.argv[1] == "ensurepath":
-        ensurepath(arg_parser["ensurepath"])
-
-    elif sys.argv[1] == "list":
-        uvpipx_list(arg_parser["list"])
-
-    elif sys.argv[1] == "info":
-        info(arg_parser["info"])
+    main_cmd = sys.argv[1]
+    if main_cmd in arg_parser:
+        main_cmd_map = main_cmd.replace("-", "_")
+        cmd_function = getattr(cmd_launcher, cmd_map.get(main_cmd_map, main_cmd_map))
+        cmd_function(arg_parser[sys.argv[1]])
 
     else:
-        print(f"Unkonw command {sys.argv[1]}, below the help")
+        print(f"Unknow command {sys.argv[1]}, below the help")
         show_main_help()
 
-        msg = f"Unkonw command {sys.argv[1]}"
+        msg = f"Unknow command {sys.argv[1]}"
         raise RuntimeError(msg)
 
 

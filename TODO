@@ -1,0 +1,88 @@
+# TODO
+
+## roadmap
+
+✔ install jc=1.24.0 should fail because bad @done(24-05-26 21:23)
+✔ upgrade  [ args ] @done(24-05-26 17:15)
+✔ fix bug in upgrade to respect original pipspec @done(24-05-26 20:46)
+✔ upgrade-all  [ args ] @done(24-05-27 21:33) 
+✔ inject  [ args ] @done(24-05-26 21:22)
+✔ fix bug in inject to not reinject without force --option @done(24-05-26 20:47)
+✔ inject  save pkg_ref, respect pipspec, be incremental @done(24-05-26 17:15)
+✔ uninject  [ args ] @done(24-05-26 21:23)
+✔ test upgrade-all @done(24-05-27 21:33)
+✔ add test ugrade @done(24-05-27 21:34)
+✔ add test inject @done(24-05-27 22:25)
+✔ add test uninject @done(24-05-27 22:25)
+--> 0.3.0
+
+☐ info show injected et bin not exposed
+☐ reexpose --remove * --add* [ code / args ]
+☐ upgrade option --force-upgrade to allow to not respect original pipspecf
+--> 0.4.0
+
+
+currently not planned :
+☐ upgrade-all --skip  [ args ]
+☐ inject (option to add bin)  [ args ]
+☐ uninject (remove uninstalled bin)  [ args ]
+
+☐ uninstall-all
+☐ reinstall / -all
+
+☐ environment
+
+☐ +info ... --venv-name
+☐ runpip (replace by venv)
+☐ run
+☐ completions (never or far far away ...)
+
+
+## Program to try
+
+<https://github.com/kellyjonbrazil/jc>
+
+<https://github.com/harelba/q>
+
+<https://github.com/tqdm/tqdm>
+
+<https://github.com/VaasuDevanS/cowsay-python>
+
+<https://github.com/sharkdp/shell-functools>
+
+
+# TODO upgrade
+# uv pip install --upgrade jc
+# after upgrade check bin to link or unlink
+
+# TODO upgrade-all
+
+# def venv(package_name, cmdline, *, venv_name: Union[None, str] = None):
+#     """venv is specific to uvpipx. it will replace inject, runpip, uninject
+
+#     in fact runpip should be replace by uvpipx venv "truc" uv -- pip install me
+#     """
+#     venv_name_ = venv_name or package_name
+#     pck_venv = config.uvpipx_venvs / venv_name_
+
+#     if not (pck_venv / ".venv").exists():
+#         raise RuntimeError("{pck_venv} not ready")
+
+#     # VIRTUAL_ENV=pck_venv / ".venv"
+#     # PATH="$VIRTUAL_ENV/bin:$PATH"
+#     # unset PYTHONHOME
+
+#     rc, stdo, stde = cmd_run(
+#         pck_venv / ".venv" / "bin",
+#         cmdline,
+#     )
+#     print(stdo)
+#     print(stde, file=sys.stderr)
+#     sys.exit(rc)
+*
+
+poetry run uvpipx uninstall jc
+poetry run uvpipx install jc=1.24.0
+poetry run uvpipx upgrade jc
+poetry run uvpipx inject jc icecream
+poetry run uvpipx uninject jc icecream

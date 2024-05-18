@@ -10,11 +10,11 @@ __status__ = "Development"
 
 
 import os
-from pathlib import Path
 import platform
 import shutil
 import subprocess  # nosec: B404
 import time
+from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
 from uvpipx.internal_libs.colors import Color, Painter
@@ -134,11 +134,32 @@ def log_warm(messages: str) -> None:
         print(f"{prefix}{message}")
 
 
+def log_error(messages: str) -> None:
+    """
+    Logs a error message.
+
+    Args:
+        message (str): The error message to be logged.
+
+    Returns:
+        None
+    """
+    text_info = Painter.color_str("ERR ", Color.BRIGHT_RED, Color.ST_BOLD)
+    prefix = (
+        f"[{text_info}] "
+        if os.getenv("UVPIPX_SHOW_LOG_PREFIX", "0").lower() in ["1", "true"]
+        else ""
+    )
+
+    for message in messages.split("\n"):
+        print(f"{prefix}{message}")
+
+
 def shell_run(
     command: str,
     *,
     env: Union[None, Dict[str, str]] = None,
-    raise_on_error: bool = False,
+    raise_on_error: bool = True,
 ) -> Tuple[int, Union[bytes, str], Union[bytes, str]]:
     """
     Executes a shell command and returns the result.
@@ -169,9 +190,14 @@ def shell_run(
             if raise_on_error:
                 raise
 
+        rc = proc.returncode
         stdout = stdout.decode(encoding)
         stderr = stderr.decode(encoding)
-        rc = proc.returncode
+        if rc != 0 and raise_on_error:
+            short_msg = f"{stderr:2000}".rstrip()
+            raise RuntimeError(
+                f"🔴 Command failed with return code {rc} {short_msg}..."
+            )
 
     return rc, stdout, stderr
 
@@ -181,7 +207,7 @@ def cmd_run(
     command: str,
     *,
     env: Union[None, Dict[str, str]] = None,
-    raise_on_error: bool = False,
+    raise_on_error: bool = True,
     raw_pipe: bool = False,
 ) -> Tuple[int, Union[bytes, str], Union[bytes, str]]:
     """
@@ -220,7 +246,12 @@ def cmd_run(
             if raise_on_error:
                 raise
 
-    return proc.returncode, stdout, stderr
+    rc = proc.returncode
+    if rc != 0 and raise_on_error:
+        short_msg = f"{stderr:2000}".rstrip()
+        raise RuntimeError(f"🔴 Command failed with return code {rc} {short_msg}...")
+
+    return rc, stdout, stderr
 
 
 def cmd_prepare_env(env: Dict[str, str]) -> Dict[str, str]:
@@ -247,9 +278,14 @@ def cmd_prepare_encoding() -> str:
     return encoding
 
 
-def shell_run_elapse(command: str, message: str) -> None:
+def shell_run_elapse(
+    command: str,
+    message: str,
+    *,
+    raise_on_error: bool = True,
+) -> None:
     with Elapser() as ela:
-        o, e, rc = shell_run(command)
+        rc, std_o, std_e = shell_run(command, raise_on_error=raise_on_error)
 
     log_info(f"{message}   ⏱️  {ela.elapsed_second}")
 

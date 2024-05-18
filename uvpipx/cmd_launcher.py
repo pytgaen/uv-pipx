@@ -9,7 +9,13 @@ __status__ = "Development"
 import os
 import sys
 
-from uvpipx import uvpipx, uvpipx_infos
+from uvpipx import (
+    uvpipx_all,
+    uvpipx_infos,
+    uvpipx_inject,
+    uvpipx_install,
+    uvpipx_upgrade,
+)
 from uvpipx.internal_libs.args import ArgParser
 from uvpipx.internal_libs.misc import Elapser, log_debug, log_info
 
@@ -32,9 +38,10 @@ def install(argp: ArgParser) -> None:
     common_args(argp)
 
     with Elapser() as ela:
-        uvpipx.install(
+        uvpipx_install.install(
             argp.args["python_pkg"].value,
             expose_bin_names=argp.args["--expose"].defaulted_value(),
+            force_reinstall=argp.args["--force"].defaulted_value(),
         )
 
     log_info(f"\n 🏁 Finish install  ⏱️  {ela.elapsed_second}")
@@ -74,13 +81,64 @@ def uninstall(argp: ArgParser) -> None:
 
     common_args(argp)
 
-    uvpipx.uninstall(
-        argp.args["python_pkg"].value,
-    )
+    with Elapser() as ela:
+        uvpipx_install.uninstall(
+            argp.args["python_pkg"].value,
+        )
+
+    log_info(f"\n 🏁 Finish uninstall  ⏱️  {ela.elapsed_second}")
 
 
 def venv(argp: ArgParser) -> None:
     """run command of a package without installing it"""
     common_args(argp)
 
-    uvpipx.run_venv_bin(argp.args["python_pkg"].value, argp.extra_args)
+    uvpipx_install.run_venv_bin(argp.args["python_pkg"].value, argp.extra_args)
+
+
+def upgrade(argp: ArgParser) -> None:
+    """upgrade package locally in their own venv"""
+
+    common_args(argp)
+
+    with Elapser() as ela:
+        uvpipx_upgrade.upgrade(
+            argp.args["python_pkg"].value,
+        )
+
+    log_info(f"\n 🏁 Finish install  ⏱️  {ela.elapsed_second}")
+
+
+def upgrade_all(argp: ArgParser) -> None:
+    """upgrade all package locally in their own venv"""
+
+    common_args(argp)
+
+    with Elapser() as ela:
+        uvpipx_all.upgrade_all()
+
+    log_info(f"\n 🏁 Finish install  ⏱️  {ela.elapsed_second}")
+
+
+def inject(argp: ArgParser) -> None:
+    """inject package locally in venv"""
+
+    common_args(argp)
+
+    with Elapser() as ela:
+        inject_pkg = [argp.args["inject_python_pkg"].value] + argp.extra_args
+        uvpipx_inject.inject(argp.args["python_pkg"].value, inject_pkg)
+
+    log_info(f"\n 🏁 Finish install  ⏱️  {ela.elapsed_second}")
+
+
+def uninject(argp: ArgParser) -> None:
+    """inject package locally in venv"""
+
+    common_args(argp)
+
+    with Elapser() as ela:
+        inject_pkg = [argp.args["uninject_python_pkg"].value] + argp.extra_args
+        uvpipx_inject.uninject(argp.args["python_pkg"].value, inject_pkg)
+
+    log_info(f"\n 🏁 Finish install  ⏱️  {ela.elapsed_second}")

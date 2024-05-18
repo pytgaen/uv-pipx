@@ -1,4 +1,4 @@
-from uvpipx.internal_libs.args import Arg, ArgParser
+from uvpipx.internal_libs.args import Arg, ArgParser, ArgParserMode
 
 
 def test_general() -> None:
@@ -38,5 +38,26 @@ def test_general() -> None:
     assert argp.args["--dry-run"].defaulted_value() is False
     assert argp.args["--uv"].value is True
     assert argp.extra_args == ["some", "-tricky", "stuff"]
+
+    pass
+
+
+def test_auto_extra() -> None:
+    """test general usage case"""
+    argp = ArgParser(
+        [
+            Arg("cmd"),
+        ],
+        mode=ArgParserMode.AUTO_EXTRA_ARGS,
+    )
+    argp.parse(
+        [
+            "install",
+            "some",
+            "stuff",
+        ]
+    )
+    assert argp.args["cmd"].value == "install"
+    assert argp.extra_args == ["some", "stuff"]
 
     pass

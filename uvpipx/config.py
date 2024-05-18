@@ -31,7 +31,7 @@ uvpipx_home = env_to_path("UVPIPX_HOME", home / ".local/uv-pipx")
 uvpipx_venvs = env_to_path("UVPIPX_LOCAL_VENVS", uvpipx_home / "venvs")
 
 default_local_bin = home / ".local/bin"
-if home == "/root":
+if home == Path("/root"):
     default_local_bin = "/usr/local/bin"
 
 uvpipx_local_bin = env_to_path("UVPIPX_BIN_DIR", default_local_bin)
