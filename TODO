@@ -1,41 +1,59 @@
 # TODO
 
-## roadmap
-
-✔ install jc=1.24.0 should fail because bad @done(24-05-26 21:23)
-✔ upgrade  [ args ] @done(24-05-26 17:15)
-✔ fix bug in upgrade to respect original pipspec @done(24-05-26 20:46)
-✔ upgrade-all  [ args ] @done(24-05-27 21:33) 
-✔ inject  [ args ] @done(24-05-26 21:22)
-✔ fix bug in inject to not reinject without force --option @done(24-05-26 20:47)
-✔ inject  save pkg_ref, respect pipspec, be incremental @done(24-05-26 17:15)
-✔ uninject  [ args ] @done(24-05-26 21:23)
-✔ test upgrade-all @done(24-05-27 21:33)
-✔ add test ugrade @done(24-05-27 21:34)
-✔ add test inject @done(24-05-27 22:25)
-✔ add test uninject @done(24-05-27 22:25)
---> 0.3.0
-
-☐ info show injected et bin not exposed
-☐ reexpose --remove * --add* [ code / args ]
-☐ upgrade option --force-upgrade to allow to not respect original pipspecf
---> 0.4.0
+0.3.0:
+    ✔ install jc=1.24.0 should fail because bad pipspec @done(24-05-26 21:23)
+    ✔ upgrade [ args ] @done(24-05-26 17:15)
+    ✔ fix bug in upgrade to respect original pipspec @done(24-05-26 20:46)
+    ✔ upgrade-all [ args ] @done(24-05-27 21:33) 
+    ✔ inject [ args ] @done(24-05-26 21:22)
+    ✔ fix bug in inject to not reinject without force --option @done(24-05-26 20:47)
+    ✔ inject save pkg_ref, respect pipspec, be incremental @done(24-05-26 17:15)
+    ✔ uninject [ args ] @done(24-05-26 21:23)
+    ✔ test upgrade-all @done(24-05-27 21:33)
+    ✔ add test ugrade @done(24-05-27 21:34)
+    ✔ add test inject @done(24-05-27 22:25)
+    ✔ add test uninject @done(24-05-27 22:25)
 
 
+0.4.0:
+    ✔ info show injected @done(24-05-31 22:59)
+    ✔ show upgrade change @done(24-05-31 22:59)
+    ✔ upgrade not reexpose @done(24-05-31 23:26)
+
+
+0.x+1.0:
+    ☐ inject at install time (so inject exposed)
+    ☐ reinstall (like install with --force) / -all / --force (uninstall/install) base version without injected
+    ☐ avoid to expose script like python* or pip* without change name 
+
+
+0.x+2.0:
+    ☐ upgrade option --force-upgrade to allow to not respect original pipspec and change pipspec to new version
+    ☐ info bin not exposed
+    ☐ reexpose --add X (can use wildcard) / force
+    ☐ reexpose --remove X (can use wildcard)
+
+
+0.x+3.0:
+    ☐ reinstall (like install with --force) / -all / --force (uninstall/install) with injected
+    
+    
 currently not planned :
-☐ upgrade-all --skip  [ args ]
-☐ inject (option to add bin)  [ args ]
-☐ uninject (remove uninstalled bin)  [ args ]
+    ☐ upgrade-all --skip [ args ]
+    ☐ inject (option to add bin) [ args ]
+    ☐ uninject (remove uninstalled bin) [ args ]
 
-☐ uninstall-all
-☐ reinstall / -all
+    ☐ uninstall-all
 
-☐ environment
+    ☐ maybe provide a way to install from url spec and proposed recommanded setup
+    ☐ maybe provide a install way from pure-bash or pure-powershell with indygreg a https://github.com/indygreg/python-build-standalone
 
-☐ +info ... --venv-name
-☐ runpip (replace by venv)
-☐ run
-☐ completions (never or far far away ...)
+    ☐ environment
+
+    ☐ +info ... --venv-name
+    ☐ runpip (replace by venv)
+    ☐ run
+    ☐ completions (never or far far away ...)
 
 
 ## Program to try

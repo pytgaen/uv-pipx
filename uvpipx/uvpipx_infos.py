@@ -55,19 +55,30 @@ export PATH=$PATH:{config.uvpipx_local_bin}
 
 
 def _info(pck_venv: Path) -> str:
+    def get_version(pck_name, stdout_line):
+        vers = next(
+            (line for line in stdout_line if pck_name in line),
+            None,
+        )
+        if vers is None:
+            vers = f"{pck_name} Unknow version"
+
+        return vers
+
     uvpipx_dict = {}
     with (pck_venv / "uvpipx.json").open() as intfile:
         uvpipx_dict = json.load(
             intfile,
         )
     rc, stdout, stderr = shell_run(f"cd {pck_venv}; uv pip freeze")
-    vers = next(
-        (line for line in stdout.split("\n") if uvpipx_dict["package_name"] in line),
-        None,
-    )
-    if vers is None:
-        vers = "Unknow ?"
+    stdout_line =[line for line in stdout.split("\n")]
+    main_vers = get_version(uvpipx_dict["package_name"], stdout_line)
         # vers = "unable to retreive package information"
+
+    injected_vers=[]
+    for pkg_injected in uvpipx_dict.get("injected_package",[]):
+        injected_vers.append(get_version(pkg_injected, stdout_line))
+    injected_vers = sorted(injected_vers)
 
     bins = "\n".join(
         f"   ✅ {bin_.split('/')[-1]}" for _, bin_ in uvpipx_dict["exposed_bins"]
@@ -75,10 +86,21 @@ def _info(pck_venv: Path) -> str:
     if not bins:
         bins = "   ❌ Nothing exposed"
 
-    return f""" 📦 {uvpipx_dict['package_name']} ({vers}) in venv {uvpipx_dict['uvpipx_package_path']}
+    output = f""" 📦 {uvpipx_dict['package_name']} ({main_vers}) in venv {uvpipx_dict['uvpipx_package_path']}"""
+    if injected_vers:
+        output_inject = "\n".join(f"""   📦 {pkg_ver}""" for pkg_ver in injected_vers)
+        output += f"""
+
+ 🎯 Injected packages
+{output_inject}"""
+        
+    output += f"""
 
  🎯 Exposed program
 {bins}\n"""
+    
+    return output
+
 
 
 def info(

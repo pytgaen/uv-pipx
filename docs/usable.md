@@ -11,7 +11,7 @@ List of usable tools (same as pipx):
 - [mypy](https://mypy-lang.org)
 ...
 
-List of not usable tools (mainly because they neeed to acces to project package):
+List of not usable tools (mainly because they neeed to acces to package used in project):
 
-- [Pytest](https://www.google.com/search?q=pytest&sourceid=chrome&ie=UTF-8)
+- [Pytest](https://docs.pytest.org)
 - [deptry](https://deptry.com)
