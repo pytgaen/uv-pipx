@@ -53,6 +53,16 @@
             ]
         },
         {
+            "name": "Uninstall gita",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "uninstall",
+                "gita"
+            ]
+        },
+        {
             "name": "Ensurepath",
             "type": "debugpy",
             "request": "launch",

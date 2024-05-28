@@ -5,6 +5,7 @@ repo_url: https://gitlab.com/pytgaen-group/uvpipx
 nav:
   - Index: index.md
   - Usable or Not: usable.md
+  - Problems: usable.md
 
 theme:
   name: "material"

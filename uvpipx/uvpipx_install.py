@@ -141,7 +141,7 @@ def uninstall(package_name: str, *, venv_name: Union[None, str] = None) -> None:
     pck_venv = config.uvpipx_venvs / venv_name_
 
     if not (pck_venv / ".venv").exists():
-        msg = f"🔴 {package_name} not exist or ready (path {pck_venv})"
+        msg = f"🔴 {package_name} not exist (path {pck_venv})"
         raise RuntimeError(msg)
 
     with (pck_venv / "uvpipx.json").open() as outfile:

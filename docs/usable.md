@@ -1,4 +1,4 @@
-# Usable tools or Not
+# Usable apps or Not
 
 List of usable tools (same as pipx):
 

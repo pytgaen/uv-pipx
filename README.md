@@ -1,7 +1,7 @@
 # uvpipx
 
 ![unpipx logo](https://gitlab.com/pytgaen-group/uvpipx/-/raw/main/uvpipx_logo.jpg)  
-_A small tool like **pipx** using **uv** behind the scene._ ___Fast, Small ...___
+_A small tool like **pipx** using **uv** behind the scene._ _**Fast, Small ...**_
 
 The first intention is to use it in a container or CI, (so with unix) and ⭕ dependency except uv
 
@@ -65,3 +65,8 @@ uvpipx info jc --get-venv
 ```bash
 wc README.md | uvpipx venv jc -- jc --wc 
 ```
+
+## More documentation
+
+[https://uvpipx-pytgaen-group-cc4651f865d7ce5bdaea510cdc656d736634827532.gitlab.io
+](Gitlab pages uvpipx)

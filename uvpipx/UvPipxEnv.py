@@ -75,7 +75,7 @@ class UvPipx:
     def saved_bin_exposed(self) -> List[ExposeBin]:
         return [
             ExposeBin(
-                venv_path=self.pck_venv / "bin",
+                venv_path=self.pck_venv,
                 venv_bin_name=Path(exposed_bin[0]).name,
                 local_bin_path=Path(exposed_bin[1]),
             )
