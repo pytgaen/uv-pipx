@@ -1,5 +1,12 @@
 ChangeLog for uvpipx
 
+## [0.3.1](https://gitlab.com/pytgaen-group/uvpipx/compare/0.3.0...0.3.1) (2024-05-28)
+
+
+### Bug Fixes
+
+* 🐛 fix uninstall ([ccf2101](https://gitlab.com/pytgaen-group/uvpipx/commit/ccf2101b29202b5edb9186b7f46a2422b79a4702))
+
 # [0.3.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.2.0...0.3.0) (2024-05-28)
 
 
