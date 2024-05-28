@@ -1,7 +1,7 @@
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
-__version__ = "0.2.0"  # to bump
+__version__ = "0.3.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
 __email__ = "#"
 __status__ = "Development"
