@@ -1,5 +1,12 @@
 ChangeLog for uvpipx
 
+# [0.4.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.3.1...0.4.0) (2024-06-01)
+
+
+### Features
+
+* 🧑‍💻 show more info about injected and upgrade ([8cf8600](https://gitlab.com/pytgaen-group/uvpipx/commit/8cf8600b86caf05931c0b7af1e5acf8581994291))
+
 ## [0.3.1](https://gitlab.com/pytgaen-group/uvpipx/compare/0.3.0...0.3.1) (2024-05-28)
 
 
