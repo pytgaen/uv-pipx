@@ -23,9 +23,24 @@
             "module": "uvpipx",
             "args": [
                 "install",
-                "jc=1.24.0",
+                "jc==1.24.0",
+                "--force"
                 // "--expose",
                 // "_",
+                // "-v"
+            ]
+        },
+        {
+            "name": "Install jc expose",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "install",
+                "jc==1.24.0",
+                "--force",
+                "--expose",
+                "jc:jc24",
                 // "-v"
             ]
         },
@@ -50,6 +65,15 @@
             "args": [
                 "uninstall",
                 "jc"
+            ]
+        },
+        {
+            "name": "Uninstall all",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "uninstall-all"
             ]
         },
         {
@@ -86,16 +110,21 @@
             "request": "launch",
             "module": "uvpipx",
             "args": [
-                "info", "jc"
+                "info",
+                "jc"
             ]
-        },  
+        },
         {
             "name": "Venv JC",
             "type": "debugpy",
             "request": "launch",
             "module": "uvpipx",
             "args": [
-                "venv", "jc", "--", "jc", "-h"
+                "venv",
+                "jc",
+                "--",
+                "jc",
+                "-h"
             ]
         },
         {
@@ -105,11 +134,22 @@
             "module": "uvpipx",
             "args": [
                 "inject",
-                "jc", 
+                "jc",
                 "icecream",
                 "loguru"
             ]
-        },        
+        },
+        {
+            "name": "Uninject jc - icecream",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "uninject",
+                "jc",
+                "icecream",
+            ]
+        },
         {
             "name": "Python Debugger: Current File",
             "type": "debugpy",

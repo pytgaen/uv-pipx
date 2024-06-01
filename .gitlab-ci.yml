@@ -22,10 +22,7 @@ include:
     file: "templates/gitlab-ci-mkdocs-pages.yml"
   # semantic-release template
   - project: "to-be-continuous/semantic-release"
-    ref: "3.10.0"
-    file: "templates/gitlab-ci-semrel.yml"
-  - project: "pytgaen-group/semantic-release"
-    ref: "fix/npm-cache"
+    ref: "3.11.0"
     file: "templates/gitlab-ci-semrel.yml"
 
 default:

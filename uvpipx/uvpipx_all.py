@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from uvpipx.internal_libs.Logger import get_logger
+from uvpipx.uvpipx_install import uninstall
 from uvpipx.uvpipx_upgrade import upgrade
 
 __author__ = "Gaëtan Montury"
@@ -12,23 +14,45 @@ __status__ = "Development"
 
 
 from uvpipx import config
-from uvpipx.internal_libs.misc import log_info
 
 
 def upgrade_all() -> None:
+    logger = get_logger("upgrade_all")
+
     infos = ""
 
     nb = 0
     if config.uvpipx_venvs.exists():
         for pck_venv in config.uvpipx_venvs.iterdir():
             if nb > 0:
-                print("")
-            upgrade(pck_venv.name)
-            print(" ----------------")
+                logger.log_info("")
+            upgrade(pck_venv.name)  # This is a tricky way to get the name
+            logger.log_info(" ----------------")
             nb += 1
 
     if nb == 0:
         infos += "⭕ Nothing is installed !"
 
     if infos:
-        log_info(infos)
+        logger.log_info(infos)
+
+
+def uninstall_all() -> None:
+    logger = get_logger("uninstall_all")
+
+    infos = ""
+
+    nb = 0
+    if config.uvpipx_venvs.exists():
+        for pck_venv in config.uvpipx_venvs.iterdir():
+            if nb > 0:
+                logger.log_info("")
+            uninstall(pck_venv.name)  # This is a tricky way to get the name
+            logger.log_info(" ----------------")
+            nb += 1
+
+    if nb == 0:
+        infos += "⭕ Nothing is installed !"
+
+    if infos:
+        logger.log_info(infos)

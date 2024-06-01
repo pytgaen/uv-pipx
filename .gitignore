@@ -287,3 +287,4 @@ pyrightconfig.json
 tmp/
 prep_future_feat/
 temp/
+.task/*

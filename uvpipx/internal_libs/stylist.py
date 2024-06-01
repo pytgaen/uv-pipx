@@ -11,6 +11,7 @@ __status__ = "Development"
 
 import os
 import re
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import List
 
@@ -118,3 +119,37 @@ class Painter:
             match_tag = pattern.search(message_)
 
         return message_
+
+
+class RenderEmoji(Enum):
+    EMOJI = "emoji"
+    STR = "str"
+    REMOVE = "remove"
+
+
+@dataclass
+class Emoji:
+    render_emoji: RenderEmoji.EMOJI
+    emoji_to_str: dict = field(
+        default_factory={
+            "🔴": "",
+            "🟢": "",
+            "🎯": "",
+            "⚠️": "",
+            "📥": "",
+            "🗑️": "",
+            "🏗️": "",
+            "⭕": "",
+            "✅": "",
+            "❌": "",
+            "📦": "",
+        }
+    )
+
+    def r(self, emoji: str) -> str:
+        if self.render_emoji == RenderEmoji.EMOJI:
+            return emoji
+        elif self.render_emoji == RenderEmoji.STR:
+            return self.emoji_to_str.get(emoji, "")
+        elif self.render_emoji == RenderEmoji.REMOVE:
+            return ""

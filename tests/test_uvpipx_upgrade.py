@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import json
 import os
-import subprocess  # nosec: B404
+import subprocess  # nosec: B404 # noqa: S404
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, Generator, Tuple
@@ -50,15 +51,15 @@ class TestUpgrade:
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
         assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
 
-        result = subprocess.run(  # nosec: B603, B607
-            ["uvpipx", "install", "jc", "--force"],  # noqa: S603, S607
-            capture_output=True,
-            text=True,
-            env=runenv,
-            check=False,
-        )
+        # result = subprocess.run(  # nosec: B603, B607
+        #     ["uvpipx", "install", "jc", "--force"],  # noqa: S603, S607
+        #     capture_output=True,
+        #     text=True,
+        #     env=runenv,
+        #     check=False,
+        # )
 
-        assert result.returncode == 0
+        # assert result.returncode == 0
 
         result = subprocess.run(  # nosec: B603, B607
             ["uvpipx", "info", "jc"],  # noqa: S603, S607
@@ -71,6 +72,17 @@ class TestUpgrade:
         assert result.returncode == 0
         assert "jc==1.24.0" in result.stdout
 
+        # patch file to allow upgrade
+        with (Path(runenv["UVPIPX_LOCAL_VENVS"]) / "jc/uvpipx.json").open(
+            "r"
+        ) as infile:
+            d_dict = json.load(infile)
+        d_dict["main_package"]["package_name_spec"] = "jc"
+        with (Path(runenv["UVPIPX_LOCAL_VENVS"]) / "jc/uvpipx.json").open(
+            "w"
+        ) as outfile:
+            json.dump(d_dict, outfile)
+
         result = subprocess.run(  # nosec: B603, B607
             ["uvpipx", "upgrade", "jc"],  # noqa: S603, S607
             capture_output=True,
@@ -80,6 +92,8 @@ class TestUpgrade:
         )
 
         assert result.returncode == 0
+        assert "- jc==1.24.0" in result.stdout
+        assert "+ jc==" in result.stdout
 
         result = subprocess.run(  # nosec: B603, B607
             ["uvpipx", "info", "jc"],  # noqa: S603, S607
@@ -113,15 +127,15 @@ class TestUpgradeAll:
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
         assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
 
-        result = subprocess.run(  # nosec: B603, B607
-            ["uvpipx", "install", "jc", "--force"],  # noqa: S603, S607
-            capture_output=True,
-            text=True,
-            env=runenv,
-            check=False,
-        )
+        # result = subprocess.run(  # nosec: B603, B607
+        #     ["uvpipx", "install", "jc", "--force"],  # noqa: S603, S607
+        #     capture_output=True,
+        #     text=True,
+        #     env=runenv,
+        #     check=False,
+        # )
 
-        assert result.returncode == 0
+        # assert result.returncode == 0
 
         result = subprocess.run(  # nosec: B603, B607
             ["uvpipx", "info", "jc"],  # noqa: S603, S607
@@ -133,6 +147,17 @@ class TestUpgradeAll:
 
         assert result.returncode == 0
         assert "jc==1.24.0" in result.stdout
+
+        # patch file to allow upgrade
+        with (Path(runenv["UVPIPX_LOCAL_VENVS"]) / "jc/uvpipx.json").open(
+            "r"
+        ) as infile:
+            d_dict = json.load(infile)
+        d_dict["main_package"]["package_name_spec"] = "jc"
+        with (Path(runenv["UVPIPX_LOCAL_VENVS"]) / "jc/uvpipx.json").open(
+            "w"
+        ) as outfile:
+            json.dump(d_dict, outfile)
 
         result = subprocess.run(  # nosec: B603, B607
             ["uvpipx", "upgrade-all"],  # noqa: S603, S607

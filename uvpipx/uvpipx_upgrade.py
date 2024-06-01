@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
+
 import difflib
 
-from uvpipx.uvpipx_bins import relink_bins
+from uvpipx.internal_libs.Logger import get_logger
+from uvpipx.uvpipx_venv_load import uvpipx_load_venv
 
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
@@ -14,66 +16,53 @@ __email__ = "#"
 __status__ = "Development"
 
 
-import json
-import re
 from typing import Union
 
-from uvpipx import config
 from uvpipx.internal_libs.misc import (
-    log_info,
-    shell_run,
-    shell_run_elapse,
+    Elapser,
 )
+
+# TODO review code at this point
 
 
 def upgrade(
-    package_name_ref: str,
+    package_name: str,
     *,
-    venv_name: Union[None, str] = None,
+    name_override: Union[None, str] = None,
 ) -> None:
-    package_name = re.search(r"([^=<>]+)(==|>)*", package_name_ref)[1]
-    venv_name_ = venv_name or package_name
-    pck_venv = config.uvpipx_venvs / venv_name_
+    logger = get_logger("upgrade")
 
-    if not (pck_venv / ".venv").exists():
-        msg = "{pck_venv} not exist or ready"
-        raise RuntimeError(msg)
+    venv_model, venv = uvpipx_load_venv(package_name, name_override)
 
-    with (pck_venv / "uvpipx.json").open() as outfile:
-        uvpipx_dict = json.load(
-            outfile,
+    old_vers = sorted(venv.installed_package())
+    package_name_spec = venv_model.main_package.package_name_spec
+
+    with Elapser() as ela:
+        venv.install(package_name_spec, allow_upgrade=True)
+    logger.log_info(
+        ela.ela_str(
+            f" 📥 uv pip install {package_name_spec} in uvpipx venv {venv_model.venv.name()}"
         )
-    expose_bin_names_ = uvpipx_dict["bin_names"]
-    package_name_ref_ = uvpipx_dict["package_name_ref"]
-
-    rc, stdout, stderr = shell_run(f"cd {pck_venv}; uv pip freeze")
-    old_vers = sorted(line for line in stdout.split("\n"))
-
-    shell_run_elapse(
-        f"cd {pck_venv}; uv pip install --upgrade {package_name_ref_}",
-        f" 📥 uv pip install {package_name_ref_} in uvpipx venv {venv_name_}",
     )
-    log_info(f" 🟢 uvpipx venv {venv_name_} with {package_name} ready")
-    shell_run(f"cd {pck_venv}; uv pip freeze > requirements.txt")
-    rc, stdout, stderr = shell_run(f"cd {pck_venv}; uv pip freeze")
-    new_vers = sorted(line for line in stdout.split("\n"))
 
-    diff_vers = [
-        n
-        for n in difflib.ndiff(old_vers, new_vers)
-        if n[:2] in ["+ ", "- "]
-    ]
+    logger.log_info(
+        f" 🟢 uvpipx venv {venv.venv_path.name} with {venv_model.main_package.package_name} ready"
+    )
+
+    new_vers = sorted(venv.installed_package())
+
+    diff_vers = [n for n in difflib.ndiff(old_vers, new_vers) if n[:2] in ["+ ", "- "]]
 
     if diff_vers:
-        log_info("\n 🏗️  changes")
-        log_info("\n".join(f"   {n}" for n in diff_vers))
+        logger.log_info("\n 🏗️  changes")
+        logger.log_info("\n".join(f"   {n}" for n in diff_vers))
     else:
-        log_info("\n ⭕ no change")
+        logger.log_info("\n ⭕ no change")
 
-    log_info("")
+    logger.log_info("")
 
-    with (pck_venv / "uvpipx.json").open("w") as outfile:
-        json.dump(uvpipx_dict, outfile, indent=4, default=str)
+    # with (pck_venv / "uvpipx.json").open("w") as outfile:
+    #     json.dump(uvpipx_dict, outfile, indent=4, default=str)
 
-    # log_info(" 🎯 Re-Exposing program change")
+    # logger.log_info(" 🎯 Re-Exposing program change")
     # relink_bins(package_name, expose_bin_names=expose_bin_names_, venv_name=venv_name)

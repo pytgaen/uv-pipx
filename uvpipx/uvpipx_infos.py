@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+from uvpipx.internal_libs.Logger import get_logger
+from uvpipx.uvpipx_core import UvPipxVenv
+from uvpipx.uvpipx_venv_factory import path_link_from_model
+from uvpipx.uvpipx_venv_load import uvpipx_load_venv
+from uvpipx.UvPipxModels import UvPipxModel
 from uvpipx.version import show_version
 
 __author__ = "Gaëtan Montury"
@@ -11,26 +16,27 @@ __email__ = "#"
 __status__ = "Development"
 
 
-import json
 import os
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 from uvpipx import config
-from uvpipx.internal_libs.misc import log_info, shell_run
+from uvpipx.internal_libs.misc import shell_run
 
 
 def ensurepath() -> None:
+    logger = get_logger("uninstall")
+
     path_set = os.environ["PATH"].split(":")
     if str(config.uvpipx_local_bin) + "x" in path_set:
-        log_info("🟢 Configuration of PATH already OK")
+        logger.log_info("🟢 Configuration of PATH already OK")
         return
 
     profile_path = Path(os.environ["HOME"]) / ".profile"
 
     profile_content = Path(profile_path).read_text()
     if "# Added by uvpipx" in profile_content:
-        log_info(f"""⚠️  Configuration already in {profile_path}
+        logger.log_info(f"""⚠️  Configuration already in {profile_path}
 
 ⚠️  To use without restart the shell, launch 
 export PATH=$PATH:{config.uvpipx_local_bin}
@@ -47,15 +53,15 @@ export PATH=$PATH:{config.uvpipx_local_bin}\n"""
     with profile_path.open("a") as file:
         file.write(line_to_add)
 
-    log_info(f"""Configuration added to {profile_path}
+    logger.log_info(f"""Configuration added to {profile_path}
 
 ⚠️  To use without restart the shell, launch 
 export PATH=$PATH:{config.uvpipx_local_bin}
 """)
 
 
-def _info(pck_venv: Path) -> str:
-    def get_version(pck_name, stdout_line):
+def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
+    def get_version(pck_name: str, stdout_line: List[str]) -> str:
         vers = next(
             (line for line in stdout_line if pck_name in line),
             None,
@@ -65,56 +71,62 @@ def _info(pck_venv: Path) -> str:
 
         return vers
 
-    uvpipx_dict = {}
-    with (pck_venv / "uvpipx.json").open() as intfile:
-        uvpipx_dict = json.load(
-            intfile,
-        )
-    rc, stdout, stderr = shell_run(f"cd {pck_venv}; uv pip freeze")
-    stdout_line =[line for line in stdout.split("\n")]
-    main_vers = get_version(uvpipx_dict["package_name"], stdout_line)
-        # vers = "unable to retreive package information"
+    rc, stdout, stderr = shell_run(f"uv pip freeze", cwd=venv.venv_path)
+    stdout_line = stdout.split("\n")
+    main_vers = get_version(uvpipx.main_package.package_name, stdout_line)
 
-    injected_vers=[]
-    for pkg_injected in uvpipx_dict.get("injected_package",[]):
+    injected_vers = []
+    for pkg_injected in list(uvpipx.injected_packages.keys()):
         injected_vers.append(get_version(pkg_injected, stdout_line))
     injected_vers = sorted(injected_vers)
 
-    bins = "\n".join(
-        f"   ✅ {bin_.split('/')[-1]}" for _, bin_ in uvpipx_dict["exposed_bins"]
-    )
+    path_links = [
+        path_link_from_model(uvpipx.exposed, m) for m in uvpipx.exposed.apps.values()
+    ]
+    bins = "\n".join(f"   ✅ {app_bin.show_name_with_link()}" for app_bin in path_links)
+
+    # TODO add show info about install set in advanced view
+
     if not bins:
         bins = "   ❌ Nothing exposed"
 
-    output = f""" 📦 {uvpipx_dict['package_name']} ({main_vers}) in venv {uvpipx_dict['uvpipx_package_path']}"""
+    output = f""" 📦 {uvpipx.main_package.package_name} ({main_vers}) in venv {uvpipx.venv.uvpipx_dir}"""
     if injected_vers:
         output_inject = "\n".join(f"""   📦 {pkg_ver}""" for pkg_ver in injected_vers)
         output += f"""
 
  🎯 Injected packages
 {output_inject}"""
-        
+
     output += f"""
 
  🎯 Exposed program
 {bins}\n"""
-    
+
     return output
 
+
+def _info_pkg(
+    package_name: str,
+    *,
+    name_override: Union[None, str] = None,
+    get_venv: bool = False,
+) -> str:
+    uvpipx, venv = uvpipx_load_venv(package_name, name_override)
+
+    return str(venv.venv_path / ".venv") if get_venv else _info(uvpipx, venv)
 
 
 def info(
     package_name: str,
     *,
-    venv_name: Union[None, str] = None,
+    name_override: Union[None, str] = None,
     get_venv: bool = False,
 ) -> None:
-    venv_name_ = venv_name or package_name
-    pck_venv = config.uvpipx_venvs / venv_name_
+    logger = get_logger("info")
 
-    info = str(pck_venv / ".venv") if get_venv else _info(pck_venv)
-
-    log_info(info)
+    info = _info_pkg(package_name, name_override=name_override, get_venv=get_venv)
+    logger.log_info(info)
 
 
 def uvpipx_list() -> None:
@@ -122,16 +134,18 @@ def uvpipx_list() -> None:
 💻 apps are exposed at {config.uvpipx_local_bin} 
 
 """
+    logger = get_logger("uvpipx_list")
+
     show_version()
 
     nb = 0
     if config.uvpipx_venvs.exists():
         for pck_venv in config.uvpipx_venvs.iterdir():
-            infos += _info(pck_venv)
+            infos += _info_pkg(pck_venv)  # this is a tricky way to get the name
             infos += "\n\n"
             nb += 1
 
     if nb == 0:
         infos += "⭕ Nothing is installed !"
 
-    log_info(infos)
+    logger.log_info(infos)

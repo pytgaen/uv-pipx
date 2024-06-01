@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+from uvpipx.internal_libs.Logger import get_logger
+from uvpipx.req_spec import Requirement
+from uvpipx.uvpipx_venv_load import uvpipx_load_venv
+from uvpipx.UvPipxModels import UvPipxExposeInstallSets, UvPipxPackageModel
+
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
@@ -11,121 +16,106 @@ __email__ = "#"
 __status__ = "Development"
 
 
-import json
-import re
 from typing import Union
 
-from uvpipx import config
 from uvpipx.internal_libs.misc import (
-    log_info,
-    shell_run,
-    shell_run_elapse,
+    Elapser,
 )
 
 
 def inject(
     package_main_name: str,
-    lst_package_name_ref: list[str],
+    lst_package_name_spec: list[str],
     *,
     # expose_bin_names: Optional[List[str]] = None,
-    venv_name: Union[None, str] = None,
+    name_override: Union[None, str] = None,
 ) -> None:
-    package_name = package_main_name
-    # re.search(r"([^=<>]+)(==|>)*", lst_package_name_ref)[1]
-    venv_name_ = venv_name or package_main_name
-    pck_venv = config.uvpipx_venvs / venv_name_
+    logger = get_logger("inject")
 
-    # expose_bin_names_ = expose_bin_names
-    # if expose_bin_names_ is None:
-    #     expose_bin_names_ = ["*"]
+    uvpipx_cfg, venv = uvpipx_load_venv(package_main_name, name_override)
 
-    if not (pck_venv / ".venv").exists():
-        msg = "{pck_venv} not exist or ready"
-        raise RuntimeError(msg)
-
-    with (pck_venv / "uvpipx.json").open() as outfile:
-        uvpipx_dict = json.load(
-            outfile,
-        )
-
-    injected_package = {
-        re.search(r"([^=<>]+)(==|>)*", pck_name)[1]: pck_name
-        for pck_name in lst_package_name_ref
+    injecting_package = {
+        r.name: r for rl in lst_package_name_spec for r in [Requirement.from_str(rl)]
     }
-    pre_injected_package = uvpipx_dict.get("injected_package", {})
 
-    for pck_name in injected_package:
-        if pck_name in pre_injected_package:
+    for pck_name in injecting_package:  # TODO allow upgrade
+        if pck_name in uvpipx_cfg.injected_packages:
             msg = f"🔴 {pck_name} already injected"
             raise RuntimeError(msg)
 
-    pip_packages_spec = " ".join(lst_package_name_ref)
-    shell_run_elapse(
-        f"cd {pck_venv}; uv pip install --upgrade {pip_packages_spec}",
-        f" 📥 uv pip install {pip_packages_spec} in uvpipx venv {venv_name_}",
+    pip_packages_spec = " ".join(lst_package_name_spec)
+    with Elapser() as ela:
+        venv.install(pip_packages_spec, allow_upgrade=False)
+    logger.log_info(
+        ela.ela_str(
+            f" 📥 uv pip install {pip_packages_spec} in uvpipx venv {uvpipx_cfg.venv.name()}"
+        )
     )
-    log_info(f" 🟢 injected {lst_package_name_ref}")
-    shell_run(f"cd {pck_venv}; uv pip freeze > requirements.txt")
-    log_info("")
 
-    tmp_dict = {**pre_injected_package, **injected_package}
-    uvpipx_dict["injected_package"] = {k: tmp_dict[k] for k in sorted(tmp_dict)}
-    with (pck_venv / "uvpipx.json").open("w") as outfile:
-        json.dump(uvpipx_dict, outfile, indent=4, default=str)
+    logger.log_info(f" 🟢 injected {lst_package_name_spec}")
+    (venv.venv_path / "requirements.txt").write_text(venv.freeze())
+    logger.log_info("")
 
-    # log_info(" 🎯 Re-Exposing program change")
-    # relink_bins(package_name, expose_bin_names=expose_bin_names_, venv_name=venv_name)
+    injected_package = {
+        k: UvPipxPackageModel(
+            injecting_package[k].to_str(),
+            k,
+        )
+        for k in injecting_package
+    }
+    tmp_dict = {**uvpipx_cfg.injected_packages, **injected_package}
+    uvpipx_cfg.injected_packages = {k: tmp_dict[k] for k in sorted(tmp_dict)}
+    uvpipx_cfg.exposed.install_sets.append(
+        UvPipxExposeInstallSets(list(injected_package.keys()), [])
+    )
+
+    uvpipx_cfg.save_json("uvpipx.json")
+
+    # TODO add exposing
 
 
 def uninject(
     package_main_name: str,
-    lst_package_name_ref: list[str],
+    lst_package_name_spec: list[str],
     *,
-    venv_name: Union[None, str] = None,
+    name_override: Union[None, str] = None,
 ) -> None:
-    venv_name_ = venv_name or package_main_name
-    pck_venv = config.uvpipx_venvs / venv_name_
+    logger = get_logger("uninject")
 
-    if not (pck_venv / ".venv").exists():
-        msg = "{pck_venv} not exist or ready"
-        raise RuntimeError(msg)
-
-    with (pck_venv / "uvpipx.json").open() as outfile:
-        uvpipx_dict = json.load(
-            outfile,
-        )
-
-    pre_injected_package = uvpipx_dict.get("injected_package", {})
+    uvpipx_cfg, venv = uvpipx_load_venv(package_main_name, name_override)
 
     uninjected_package = {
-        re.search(r"([^=<>]+)(==|>)*", pck_name)[1]: pck_name
-        for pck_name in lst_package_name_ref
+        r.name: r for rl in lst_package_name_spec for r in [Requirement.from_str(rl)]
     }
 
     for pck_name in uninjected_package:
-        if pck_name not in pre_injected_package:
+        if pck_name not in uvpipx_cfg.injected_packages:
             msg = f"🔴 {pck_name} is not injected"
             raise RuntimeError(msg)
 
-    futur_injected_package = {
+    pip_packages_spec = " ".join(uninjected_package.keys())
+    with Elapser() as ela:
+        venv.uninstall(pip_packages_spec)
+    logger.log_info(
+        ela.ela_str(
+            f" 🗑️  uv pip uninstall {pip_packages_spec} in uvpipx venv {uvpipx_cfg.venv.name()}"
+        )
+    )
+
+    logger.log_info(f" 🗑️  uninjected {lst_package_name_spec}")
+    (venv.venv_path / "requirements.txt").write_text(venv.freeze())
+    logger.log_info("")
+
+    stay_injected_package = {
         pck_name: pck_ref
-        for pck_name, pck_ref in pre_injected_package.items()
+        for pck_name, pck_ref in uvpipx_cfg.injected_packages.items()
         if pck_name not in uninjected_package
     }
 
-    pip_packages_spec = " ".join(uninjected_package.keys())
-    shell_run_elapse(
-        f"cd {pck_venv}; uv pip uninstall {pip_packages_spec}",
-        f" 📥 uv pip iunnstall {pip_packages_spec} in uvpipx venv {venv_name_}",
-    )
-    log_info(f" 🟢 iunnjected {lst_package_name_ref}")
-    shell_run(f"cd {pck_venv}; uv pip freeze > requirements.txt")
-    log_info("")
+    uvpipx_cfg.injected_packages = {
+        k: stay_injected_package[k] for k in sorted(stay_injected_package)
+    }
 
-    uvpipx_dict["injected_package"] = sorted(futur_injected_package)
+    uvpipx_cfg.save_json("uvpipx.json")
 
-    with (pck_venv / "uvpipx.json").open("w") as outfile:
-        json.dump(uvpipx_dict, outfile, indent=4, default=str)
-
-    # log_info(" 🎯 Re-Exposing program change")
-    # relink_bins(package_name, expose_bin_names=expose_bin_names_, venv_name=venv_name)
+    # TODO change exposing

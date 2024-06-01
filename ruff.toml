@@ -10,3 +10,5 @@ select = ["E", "F", "B", "ANN", "SIM", "ERA", "A", "COM", "PTH",  "FA", "TRY", "
 # "UP",
 ignore = ["S101", "E501", "ERA001", "ANN101"]
 
+[lint.per-file-ignores]
+"**/{tests,docs,tools}/*" = ["S101"]

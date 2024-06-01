@@ -37,6 +37,12 @@ arg_parser["install"] = ArgParser(
             default=["*"],
             help="""By default, all executable program in bin will be expose to `uvpipx_local_bin`\nYou can use --expose jc to expose only this program. you can use many --expose\n--expose _ tell to expose nothing""",
         ),
+        # Arg(
+        #     "--inject",
+        #     mode="array",
+        #     default=[],
+        #     help="""Inject a package in the venv like main package, so program of injected will be exposed lie main package""",
+        # ),
         Arg(
             "--force",
             mode="bool/true",
@@ -60,6 +66,14 @@ arg_parser["uninstall"] = ArgParser(
     help="Uninstall a python package",
 )
 
+arg_parser["uninstall-all"] = ArgParser(
+    [
+        verbose_arg,
+        help_arg,
+    ],
+    help="Uninstall all python package",
+)
+
 arg_parser["venv"] = ArgParser(
     [
         Arg(
@@ -79,6 +93,7 @@ arg_parser["ensurepath"] = ArgParser(
     ],
     help="Configure PATH for uvpipx",
 )
+
 arg_parser["list"] = ArgParser(
     [
         verbose_arg,

@@ -5,11 +5,10 @@ from dataclasses import dataclass
 from typing import List, Union
 
 RE_PIP_REQ = re.compile(
-    r"""
-    (?P<name>[A-Za-z0-9._-]]+)\s*             # Nom du projet
-    (\[(?P<extras>[A-Za-z0-9._- ,]+)\])?\s*     # Extras optionnels, entourés de []
-    (?P<version_specifiers>[^;]+)?\s*             # Spécifications des versions
-    (;\s*(?P<environment_marker>.+))?       # Environnement optionnel, après ;
+    r"""(?P<name>[A-Za-z0-9._-]+)\s*                   # Nom du projet
+(\[(?P<extras>[A-Za-z0-9._,-]+)\])?\s*        # Extras optionnels, entourés de []
+(?P<version_specifiers>[^;]+)?\s*              # Spécifications des versions
+(;\s*(?P<environment_marker>.+))?              # Environnement optionnel, après ;
 """,
     re.VERBOSE,
 )
@@ -24,21 +23,34 @@ class Requirement:
     environment_marker: Union[None, str] = None
 
     @staticmethod
-    def split_str(data: str) -> List[str]:
+    def _split_str(data: str) -> List[str]:
         return [element.strip() for element in data.split(",")] if data else []
 
     @classmethod
-    def from_line(cls, line: str) -> "Requirement":
+    def from_str(cls, line: str) -> "Requirement":
         match = RE_PIP_REQ.match(line)
         if not match:
             raise RuntimeError(f"Line {line} not match PIP_REQ")
 
         return cls(
             name=match.group("name"),
-            extras=Requirement.split_str(match.group("extras")),
-            specs=Requirement.split_str(match.group("specs")),
-            marker=match.group("marker"),
+            extras=Requirement._split_str(match.group("extras")),
+            version_specifiers=Requirement._split_str(
+                match.group("version_specifiers")
+            ),
+            environment_marker=match.group("environment_marker"),
         )
+
+    def to_str(self) -> str:
+        s = f"{self.name}"
+        if self.extras:
+            s += f"[{','.join(self.extras)}]"
+        if self.version_specifiers:
+            s += f" {','.join(self.version_specifiers)}"
+        if self.environment_marker:
+            s += f"; {self.environment_marker}"
+
+        return s
 
 
 # requirements = [

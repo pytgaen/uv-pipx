@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
@@ -26,7 +28,9 @@ def env_to_path(env_name: str, default: Union[str, None] = None) -> Path:
 
 
 ci_project_dir = env_to_path("CI_PROJECT_DIR", ".")
-home = env_to_path("HOME")
+home = Path(
+    os.path.expanduser("~")
+)  # remark Path.expanduser("~") not work  # noqa: PTH111
 uvpipx_home = env_to_path("UVPIPX_HOME", home / ".local/uv-pipx")
 uvpipx_venvs = env_to_path("UVPIPX_LOCAL_VENVS", uvpipx_home / "venvs")
 
@@ -35,3 +39,9 @@ if home == Path("/root"):
     default_local_bin = "/usr/local/bin"
 
 uvpipx_local_bin = env_to_path("UVPIPX_BIN_DIR", default_local_bin)
+
+platform = "win" if sys.platform.startswith("win") else sys.platform
+
+
+# TODO on windows .venv/bin is .venv/Scripts so need to change expose
+

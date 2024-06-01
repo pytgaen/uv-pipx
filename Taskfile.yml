@@ -1,0 +1,55 @@
+version: "3"
+
+# env:
+
+tasks:
+  py-check:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - echo "Ruff Unimport"
+      - ruff check --select F401 --fix .
+      - echo "Ruff Isort"
+      - ruff check --select I001,I002 --fix .
+      - echo "Ruff Black"
+      - ruff format .
+      # - echo "precommit"
+      # - pre-commit run --all-files  
+      # - |
+      #   if poetry run bash -c "command -v deptry" > /dev/null; then
+      #     echo "Deptry"
+      #     poetry run deptry .
+      #   else
+      #     echo "Deptry 🟠 not found skip"
+      #   fi      
+      - echo "Ruff Bandit"
+      - ruff check --select S . --preview
+      - echo "Bandit if can"
+      - |
+        if command -v bandit >/dev/null 2>&1; then
+          [ -f bandit.yaml ] && bandit -c bandit.yaml -r . || echo "🟠 bandit.yaml configuration file not found"
+        else
+          echo "🟠 Bandit not found, skipping security check"
+        fi
+
+  clean-jc:
+    cmds:
+      - rm -fr /home/gaetan/.local/uv-pipx/venvs/jc
+
+  show-jc:
+    cmds:
+      - cat /home/gaetan/.local/uv-pipx/venvs/jc/uvpipx.json
+
+  repair-my-uvpipxed:
+    vars:
+      LIST: [poetry,pyproject-fmt,ruff,pylyzer,ast-grep-cli,jc]
+
+    cmds:
+      - for: 
+          var: LIST
+        cmd: rm -fr /home/gaetan/.local/uv-pipx/venvs/{{ .ITEM }}
+      - for: 
+          var: LIST
+        cmd: uvpipx install {{ .ITEM }}
+
+  docker-py: docker run -ti --rm --mount type=bind,source=$PWD,target=/mnt/local_dir python:3.12-slim /bin/bash
+

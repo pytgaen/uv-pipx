@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from uvpipx.internal_libs.Logger import Logger, get_logger
+
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
@@ -12,16 +14,14 @@ __status__ = "Development"
 import os
 import platform
 import shutil
-import subprocess  # nosec: B404
+import subprocess  # nosec: B404 # noqa: S404
 import time
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
-from uvpipx.internal_libs.colors import Color, Painter
-
 
 # Définir le chemin du répertoire à parcourir
-def find_executable(dir_path: Path, allow_symlink: bool = False) -> List[str]:
+def find_executable(dir_path: Path, allow_symlink: bool = False) -> List[Path]:
     return [
         file
         for file in dir_path.iterdir()
@@ -64,100 +64,14 @@ class Elapser:
         self.interval_seconds = self.end - self.start
         self.elapsed_second = f"{self.interval_seconds:.3f} seconds"
 
-
-def log_debug(messages: str, level: int = 1) -> None:
-    """
-    Logs a message with an optional verbosity level.
-
-    Args:
-        message (str): The message to be logged.
-        level (int, optional): The verbosity level of the message. Defaults to 1.
-
-    Returns:
-        None
-    """
-
-    if level <= int(os.getenv("UVPIPX_SHOW_DEBUG_LEVEL", "0")):
-        text_info = Painter.color_str(f"DEB{level}", Color.BLUE)
-        prefix = (
-            f"[{text_info}] "
-            if os.getenv("UVPIPX_SHOW_LOG_PREFIX", "0").lower() in ["1", "true"]
-            else ""
-        )
-
-        for message in messages.split("\n"):
-            print(f"{prefix}{message}")
-
-
-def log_info(messages: str) -> None:
-    """
-    Logs an informational message.
-
-    Explanation:
-    This function prints an informational message with a specific format to the console.
-
-    Args:
-        message (str): The message to be logged.
-
-    Returns:
-        None
-    """
-    text_info = Painter.color_str("INFO", Color.BRIGHT_CYAN, Color.ST_BOLD)
-    prefix = (
-        f"[{text_info}] "
-        if os.getenv("UVPIPX_SHOW_LOG_PREFIX", "0").lower() in ["1", "true"]
-        else ""
-    )
-
-    for message in messages.split("\n"):
-        print(f"{prefix}{message}")
-
-
-def log_warm(messages: str) -> None:
-    """
-    Logs a warm message.
-
-    Args:
-        message (str): The warm message to be logged.
-
-    Returns:
-        None
-    """
-    text_info = Painter.color_str("WARM", Color.BRIGHT_YELLOW, Color.ST_BOLD)
-    prefix = (
-        f"[{text_info}] "
-        if os.getenv("UVPIPX_SHOW_LOG_PREFIX", "0").lower() in ["1", "true"]
-        else ""
-    )
-
-    for message in messages.split("\n"):
-        print(f"{prefix}{message}")
-
-
-def log_error(messages: str) -> None:
-    """
-    Logs a error message.
-
-    Args:
-        message (str): The error message to be logged.
-
-    Returns:
-        None
-    """
-    text_info = Painter.color_str("ERR ", Color.BRIGHT_RED, Color.ST_BOLD)
-    prefix = (
-        f"[{text_info}] "
-        if os.getenv("UVPIPX_SHOW_LOG_PREFIX", "0").lower() in ["1", "true"]
-        else ""
-    )
-
-    for message in messages.split("\n"):
-        print(f"{prefix}{message}")
+    def ela_str(self, message: str):
+        return f"{message}   ⏱️  {self.elapsed_second}"
 
 
 def shell_run(
     command: str,
     *,
+    cwd: Union[None, Path] = None,
     env: Union[None, Dict[str, str]] = None,
     raise_on_error: bool = True,
 ) -> Tuple[int, Union[bytes, str], Union[bytes, str]]:
@@ -177,12 +91,18 @@ def shell_run(
     env_ = cmd_prepare_env(env)
     encoding = cmd_prepare_encoding()
 
+    opt_args = {}
+    if cwd is not None:
+        opt_args["cwd"] = cwd
+
     with subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         shell=True,  # noqa: S602
+        text=True,
         env=env_,
+        **opt_args,
     ) as proc:  # nosec: B602
         try:
             stdout, stderr = proc.communicate()
@@ -191,8 +111,8 @@ def shell_run(
                 raise
 
         rc = proc.returncode
-        stdout = stdout.decode(encoding)
-        stderr = stderr.decode(encoding)
+        # stdout = stdout.decode(encoding)
+        # stderr = stderr.decode(encoding)
         if rc != 0 and raise_on_error:
             short_msg = f"{stderr:2000}".rstrip()
             raise RuntimeError(
@@ -232,6 +152,7 @@ def cmd_run(
         stdout=pipe_type,
         stderr=pipe_type,
         cwd=cwd,
+        shell=True, 
         env=env_,
     ) as proc:  # nosec: B603
         try:
@@ -240,8 +161,8 @@ def cmd_run(
                 proc.wait()
             else:
                 stdout, stderr = proc.communicate()
-                stdout = stdout.decode(encoding)
-                stderr = stderr.decode(encoding)
+                # stdout = stdout.decode(encoding)
+                # stderr = stderr.decode(encoding)
         except subprocess.SubprocessError:
             if raise_on_error:
                 raise
@@ -283,11 +204,13 @@ def shell_run_elapse(
     message: str,
     *,
     raise_on_error: bool = True,
+    logger: Union[None, Logger] = None,
 ) -> None:
+    logger_ = logger or get_logger("shell_run_elapse")
     with Elapser() as ela:
         rc, std_o, std_e = shell_run(command, raise_on_error=raise_on_error)
 
-    log_info(f"{message}   ⏱️  {ela.elapsed_second}")
+    logger_.log_info(f"{message}   ⏱️  {ela.elapsed_second}")
 
 
 def command_exists(cmd: str) -> bool:

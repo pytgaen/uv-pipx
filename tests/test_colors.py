@@ -1,4 +1,4 @@
-from uvpipx.internal_libs.colors import Color, Painter
+from uvpipx.internal_libs.stylist import Color, Painter
 
 
 def test_general() -> None:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-import subprocess  # nosec: B404
+import subprocess  # nosec: B404 # noqa: S404
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, Generator, Tuple

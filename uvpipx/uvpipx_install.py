@@ -2,7 +2,21 @@
 
 from __future__ import annotations
 
-from uvpipx.uvpipx_bins import relink_bins
+from uvpipx.internal_libs.Logger import get_logger
+from uvpipx.req_spec import Requirement
+from uvpipx.uvpipx_expose import ExposeApps
+from uvpipx.uvpipx_venv_factory import (
+    path_link_from_model,
+    uvpipx_venv_factory,
+)
+from uvpipx.uvpipx_venv_load import uvpipx_load_venv
+from uvpipx.UvPipxEnv import UvPipVenvNotReady
+from uvpipx.UvPipxModels import (
+    UvPipxExposedModel,
+    UvPipxExposeInstallSets,
+    UvPipxModel,
+    UvPipxPackageModel,
+)
 
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
@@ -13,144 +27,123 @@ __email__ = "#"
 __status__ = "Development"
 
 
-import json
-import re
 import shutil
-import sys
-from pathlib import Path
 from typing import List, Optional, Union
 
-from uvpipx import config
 from uvpipx.internal_libs.misc import (
-    cmd_prepare_env,
-    cmd_run,
-    log_info,
-    shell_run,
-    shell_run_elapse,
+    Elapser,
 )
 
 
 def install(
-    package_name_ref: str,
+    package_name_spec: str,
     *,
-    expose_bin_names: Optional[List[str]] = None,
-    venv_name: Union[None, str] = None,
+    expose_rule_names: Optional[List[str]] = None,
+    name_override: Union[None, str] = None,
     force_reinstall: bool = False,
 ) -> None:
-    package_name = re.search(r"([^=<>]+)(==|>)*", package_name_ref)[1]
-    venv_name_ = venv_name or package_name
-    expose_bin_names_ = expose_bin_names
+    logger = get_logger("install")
 
-    pck_venv = config.uvpipx_venvs / venv_name_
+    package_spec = Requirement.from_str(package_name_spec)
+    package_name = package_spec.name
+    expose_rule_names_ = expose_rule_names or ["*"]
+    venv_model, venv = uvpipx_venv_factory(package_name, name_override)
 
-    if expose_bin_names_ is None:
-        expose_bin_names_ = ["*"]
+    forced_mode = None
+    uvpipx_prev = None
+    venv_prev = None
+    try:
+        uvpipx_prev, venv_prev = uvpipx_load_venv(package_name, name_override)
+        if force_reinstall:
+            forced_mode = True
+            if len(uvpipx_prev.exposed.install_sets) > 1:
+                logger.log_warn(
+                    f"⚠️  {package_name_spec} already installed but in with many step (install/inject). need to manually uninstall/install/inject or just try an upgrade"
+                )
+                return
+        else:
+            if len(uvpipx_prev.exposed.install_sets) > 1:
+                logger.log_warn(
+                    f"⚠️  {package_name_spec} already installed but in with many step (install/inject). need to manually uninstall/install/inject or just try an upgrade"
+                )
+            else:
+                logger.log_warn(
+                    f"⚠️  {package_name_spec} already installed. need to use option --force to reinstall from scratch"
+                )
+            return
+    except UvPipVenvNotReady:
+        pass
 
-    if not force_reinstall and (pck_venv / "uvpipx.json").exists():
-        log_info(
-            f"⚠️  {package_name_ref} already installed. need to use option --force to reinstall"
-        )
-        return
-
-    uvpipx_dict = {
-        "package_name_ref": package_name_ref,
-        "package_name": package_name,
-        "venv_name": venv_name,
-        "bin_names": expose_bin_names_,
-    }
-
-    # if not command_exists("uv"):
-    #     log_info("Install uv")
-    #     shell_run_elapse("pip install uv", "uv installed")
-
-    (config.uvpipx_venvs / venv_name_).mkdir(exist_ok=True, parents=True)
-    uvpipx_dict["uvpipx_package_path"] = pck_venv
-
-    if not (pck_venv / ".venv").exists():
-        shell_run_elapse(
-            f"uv venv {pck_venv / '.venv'}",
-            f" 📦 uv venv {pck_venv} created",
-        )
-
-    shell_run_elapse(
-        f"cd {pck_venv}; uv pip install {package_name_ref}",
-        f" 📥 uv pip install {package_name_ref} in uvpipx venv {venv_name_}",
+    uvpipx_cfg = UvPipxModel(
+        venv=venv_model,
+        main_package=UvPipxPackageModel(
+            package_name_spec,
+            package_name,
+        ),
+        injected_packages={},
+        exposed=UvPipxExposedModel(str(venv.venv_bin)),
     )
-    log_info(f" 🟢 uvpipx venv {venv_name_} with {package_name} ready")
-    shell_run(f"cd {pck_venv}; uv pip freeze > requirements.txt")
-    log_info("")
 
-    with (pck_venv / "uvpipx.json").open("w") as outfile:
-        json.dump(uvpipx_dict, outfile, indent=4, default=str)
+    with Elapser() as ela:
+        created = venv.create_venv_if_need()
+    if created:
+        logger.log_info(ela.ela_str(f" 📦 uv venv {venv_model.name()} created"))
 
-    log_info(" 🎯 Exposing program")
-    relink_bins(package_name, expose_bin_names=expose_bin_names_, venv_name=venv_name)
+    with Elapser() as ela:
+        venv.install(package_name_spec)
+    logger.log_info(
+        ela.ela_str(
+            f" 📥 uv pip install {package_name_spec} in uvpipx venv {venv_model.name()}"
+        )
+    )
+
+    logger.log_info(f" 🟢 uvpipx venv {venv_model.name()} with {package_name} ready")
+
+    (venv.venv_path / "requirements.txt").write_text(venv.freeze())
+    logger.log_info("")
+
+    expo_app = ExposeApps(venv, logger)
+    main_install_set = UvPipxExposeInstallSets([package_name], expose_rule_names_)
+    exposed_bins = expo_app.expose(
+        expose_rule_names_, main_install_set.package_name_sets
+    )
+    install_sets = [main_install_set]
+
+    uvpipx_cfg.exposed = UvPipxExposedModel(
+        venv.venv_path / ".venv/bin", install_sets, exposed_bins
+    )
+
+    uvpipx_cfg.save_json("uvpipx.json")
 
 
 # def reinstall(
-#     package_name_ref: str,
+#     package_name_spec: str,
 #     *,
 #     expose_bin_names: Optional[List[str]] = None,
 #     venv_name: Union[None, str] = None,
 # ) -> None:
 #     return install(
-#         package_name_ref,
+#         package_name_spec,
 #         expose_bin_names=expose_bin_names,
 #         venv_name=venv_name,
 #         force_reinstall=True,
 #     )
 
 
-def run_venv_bin(
-    package_name: str,
-    cmdline: str,
-    *,
-    venv_name: Union[None, str] = None,
-) -> None:
-    """venv is specific to uvpipx. it can replace inject, runpip (oups runuv), uninject
+def uninstall(package_name: str, *, name_override: Union[None, str] = None) -> None:
+    logger = get_logger("uninstall")
 
-    in fact runpip should be replace by uvpipx venv "truc" uv -- pip install me
-    """
-    venv_name_ = venv_name or package_name
-    pck_venv = config.uvpipx_venvs / venv_name_
+    uvpipx, venv = uvpipx_load_venv(package_name, name_override)
 
-    if not (pck_venv / ".venv").exists():
-        msg = "{pck_venv} not exist or ready"
-        raise RuntimeError(msg)
+    logger.log_info(f"🪓 Uninstalling {package_name}\n")
 
-    env = cmd_prepare_env(None)
-    env["VIRTUAL_ENV"] = str(pck_venv / ".venv")
-    env["PATH"] = str(pck_venv / ".venv" / "bin") + ":" + env["PATH"]
-    if "PYTHONHOME" in env:
-        del env["PYTHONHOME"]
+    logger.log_info("🗑️  Remove exposed program")
+    for mpl in uvpipx.exposed.apps.values():
+        pl = path_link_from_model(uvpipx.exposed, mpl)
+        pl.unlink()
+        logger.log_info(f" ❌ Remove Exposed program {pl.show_name_with_link()}")
 
-    rc, stdo, stde = cmd_run(
-        # pck_venv / ".venv" / "bin",
-        Path.cwd(),
-        cmdline,
-        env=env,
-        raw_pipe=True,
-    )
-    # print(stdo)
-    # print(stde, file=sys.stderr)
-    sys.exit(rc)
+    # TODO also delete injected exposed bin
 
-
-def uninstall(package_name: str, *, venv_name: Union[None, str] = None) -> None:
-    venv_name_ = venv_name or package_name
-    pck_venv = config.uvpipx_venvs / venv_name_
-
-    if not (pck_venv / ".venv").exists():
-        msg = f"🔴 {package_name} not exist (path {pck_venv})"
-        raise RuntimeError(msg)
-
-    with (pck_venv / "uvpipx.json").open() as outfile:
-        uvpipx_dict = json.load(
-            outfile,
-        )
-
-    log_info(f"🗑️  Remove exposed program")
-    relink_bins(package_name, expose_bin_names=["_"], venv_name=venv_name)
-
-    log_info(f"  🗑️  Remove uvpipx venv {pck_venv}")
-    shutil.rmtree(pck_venv)
+    logger.log_info(f"\n🗑️  Remove uvpipx venv {venv.venv_path.name}")
+    shutil.rmtree(venv.venv_path)

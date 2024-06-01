@@ -1,6 +1,6 @@
 import sys
 
-from uvpipx.internal_libs.colors import Painter
+from uvpipx.internal_libs.stylist import Painter
 from uvpipx.version import show_version
 
 __author__ = "Gaëtan Montury"
@@ -12,21 +12,10 @@ __email__ = "#"
 __status__ = "Development"
 
 import uvpipx.cmd_launcher as cmd_launcher
-
-# import (
-#     ensurepath,
-#     info,
-#     install,
-#     uninstall,
-#     uvpipx_list,
-#     venv,
-#     upgrade, upgrade_all,
-#     inject,
-# )
 from uvpipx.internal_libs.print import max_string_length_per_column, wrap_text_in_table
 from uvpipx.uvpipx_args import arg_parser
 
-cmd_map = {"list": "uvpipx_list"}
+cmd_map: dict[str, str] = {"list": "uvpipx_list"}
 
 
 def show_main_help() -> None:

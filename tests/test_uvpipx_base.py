@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-import subprocess  # nosec: B404
+import subprocess  # nosec: B404 # noqa: S404
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, Generator, Tuple
@@ -60,6 +60,54 @@ class TestBasicInsUninstall:
 
         assert result.returncode == 0
         venv_jc_path = Path(runenv["UVPIPX_LOCAL_VENVS"]) / "jc/.venv/bin/jc"
+
+        assert venv_jc_path.exists()
+        assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
+        assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "uninstall", "jc"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+
+        assert not venv_jc_path.exists()
+        assert not (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
+
+    def test_install_unins_jc_force(self, env_setup: tuple[str, dict, str]) -> None:
+        uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
+        runenv = {**os.environ, **uvenvs}
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "install", "jc"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+        venv_jc_path = Path(runenv["UVPIPX_LOCAL_VENVS"]) / "jc/.venv/bin/jc"
+
+        assert venv_jc_path.exists()
+        assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
+        assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
+
+        (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").unlink()  # destro the bin jc
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "install", "jc", "--force"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
 
         assert venv_jc_path.exists()
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
@@ -261,3 +309,37 @@ class TestBasicList:
         assert result.returncode == 0
         assert "📍 uvpipx venvs are in" in result.stdout
         assert "📦 jc (jc==" in result.stdout
+
+
+class TestBasicInsAllUninstall:
+    def test_install_unins_jc(self, env_setup: tuple[str, dict, str]) -> None:
+        uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
+        runenv = {**os.environ, **uvenvs}
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "install", "jc"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+        venv_jc_path = Path(runenv["UVPIPX_LOCAL_VENVS"]) / "jc/.venv/bin/jc"
+
+        assert venv_jc_path.exists()
+        assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
+        assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "uninstall-all"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+
+        assert not venv_jc_path.exists()
+        assert not (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
