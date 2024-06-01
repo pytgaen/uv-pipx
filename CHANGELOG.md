@@ -1,5 +1,12 @@
 ChangeLog for uvpipx
 
+## [0.4.1](https://gitlab.com/pytgaen-group/uvpipx/compare/0.4.0...0.4.1) (2024-06-01)
+
+
+### Bug Fixes
+
+* 📝 fix documentation ([a50742a](https://gitlab.com/pytgaen-group/uvpipx/commit/a50742a3b6607c7c24981aae3948a7e1f606f796))
+
 # [0.4.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.3.1...0.4.0) (2024-06-01)
 
 
