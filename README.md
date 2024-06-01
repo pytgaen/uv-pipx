@@ -74,8 +74,8 @@ It's possible because uvpipx has only itself and uv in dependency to download
 
 ### Install poetry study timing
 
-![uvpipx demo](https://gitlab.com/pytgaen-group/uvpipx/-/raw/main/perf_uvpipx_poetry.mp4)  
-![pip demo](https://gitlab.com/pytgaen-group/uvpipx/-/raw/main/perf_pip_poetry.mp4)  
+![uvpipx demo](https://gitlab.com/pytgaen-group/uvpipx/-/raw/main/docs/assets/perf_uvpipx_poetry.mp4)  
+![pip demo](https://gitlab.com/pytgaen-group/uvpipx/-/raw/main/docs/assets/perf_pip_poetry.mp4)  
 
 Timing:
 
@@ -88,5 +88,4 @@ Tool| Time | Time total | Difference
 
 ## More documentation
 
-[https://uvpipx-pytgaen-group-cc4651f865d7ce5bdaea510cdc656d736634827532.gitlab.io
-](Gitlab pages uvpipx)
+[https://uvpipx-pytgaen-group-cc4651f865d7ce5bdaea510cdc656d736634827532.gitlab.io](Gitlab pages uvpipx)
