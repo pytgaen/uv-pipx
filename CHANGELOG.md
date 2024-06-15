@@ -1,5 +1,12 @@
 ChangeLog for uvpipx
 
+# [0.5.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.4.1...0.5.0) (2024-06-15)
+
+
+### Features
+
+* ✨ add uninstall-all ([724c1f3](https://gitlab.com/pytgaen-group/uvpipx/commit/724c1f385132a684a92dc7fb678e5f311bd9c8e0))
+
 ## [0.4.1](https://gitlab.com/pytgaen-group/uvpipx/compare/0.4.0...0.4.1) (2024-06-01)
 
 
