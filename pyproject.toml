@@ -48,6 +48,7 @@ pyyaml-env-tag = { version = "0.1" } # stranges should be managed by mkdocs
 pathspec = { version = "0.12.1" }    # stranges should be managed by mkdocs
 watchdog = { version = "4.0.1" }     # stranges should be managed by mkdocs
 regex = { version = "^2024.5.15" }   # stranges should be managed by mkdocs
+mypy = "^1.10.0"
 
 [tool.poetry.scripts]
 uvpipx = 'uvpipx.__main__:main'

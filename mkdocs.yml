@@ -4,7 +4,7 @@ repo_url: https://gitlab.com/pytgaen-group/uvpipx
 
 nav:
   - Index: index.md
-  - Use to build container image: container.md
+  # - Use to build container image: container.md
   - Usable or Not: usable.md
   - Troubleshooting: troubleshooting.md
 

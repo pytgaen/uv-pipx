@@ -16,7 +16,7 @@ RE_PIP_REQ = re.compile(
 
 @dataclass
 class Requirement:
-    # PEP 508 – Dependency specification for Python Software Packages
+    # PEP 508 - Dependency specification for Python Software Packages
     name: str
     extras: Union[None, List[str]] = None
     version_specifiers: Union[None, List[str]] = None
@@ -27,16 +27,17 @@ class Requirement:
         return [element.strip() for element in data.split(",")] if data else []
 
     @classmethod
-    def from_str(cls, line: str) -> "Requirement":
+    def from_str(cls, line: str) -> "Requirement":  # noqa: ANN102
         match = RE_PIP_REQ.match(line)
         if not match:
-            raise RuntimeError(f"Line {line} not match PIP_REQ")
+            msg = f"Line {line} not match PIP_REQ"
+            raise RuntimeError(msg)
 
         return cls(
             name=match.group("name"),
             extras=Requirement._split_str(match.group("extras")),
             version_specifiers=Requirement._split_str(
-                match.group("version_specifiers")
+                match.group("version_specifiers"),
             ),
             environment_marker=match.group("environment_marker"),
         )

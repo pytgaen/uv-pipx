@@ -31,7 +31,7 @@ def upgrade_all() -> None:
             nb += 1
 
     if nb == 0:
-        infos += "⭕ Nothing is installed !"
+        infos += "⭕ No uvpipx package installed !"
 
     if infos:
         logger.log_info(infos)
@@ -52,7 +52,7 @@ def uninstall_all() -> None:
             nb += 1
 
     if nb == 0:
-        infos += "⭕ Nothing is installed !"
+        infos += "⭕ No uvpipx package installed !"
 
     if infos:
         logger.log_info(infos)

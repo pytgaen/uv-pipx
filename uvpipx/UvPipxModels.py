@@ -96,7 +96,7 @@ class UvPipxModel:
     venv: UvPipxVenvModel
     main_package: UvPipxPackageModel
     injected_packages: Dict[str, UvPipxPackageModel]
-    exposed: UvPipxExposedModel
+    exposed: Union[UvPipxExposedModel, None]
     config_version: str = "0.2.0"
 
     @staticmethod
@@ -117,8 +117,18 @@ class UvPipxModel:
             json.dump(to_dict(self), outfile, indent=4, default=str)
 
 
-def to_dict(obj: T) -> Dict[str, Any]:
+def to_dict(obj: Any) -> Dict[str, Any]:  # noqa: ANN401
     """
     A helper function to recursively convert a dataclass instance to a dictionary.
     """
     return asdict(obj)
+
+
+# cat /home/gaetan/.local/uv-pipx/venvs/jc/uvpipx.json
+
+
+class UvPipVenvNotReady(Exception):
+    def __init__(self, message: str, error_code: Union[None, int] = None) -> None:
+        super().__init__(message)
+        self.message = message
+        self.error_code = error_code

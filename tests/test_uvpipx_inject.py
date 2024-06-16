@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-import subprocess  # nosec: B404 # noqa: S404
+import subprocess  # nosec: B404  # noqa: S404
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, Generator, Tuple
@@ -59,6 +59,76 @@ class TestInject:
         )
 
         assert result.returncode == 0
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "info", "jc", "-g"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+        venv_pass = result.stdout.rstrip()
+        assert Path(f"{venv_pass}/bin/art").exists()
+
+        runenv = {
+            **os.environ,
+            **uvenvs,
+            "PATH": os.environ["PATH"] + ":" + venv_pass + "/bin",
+        }
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["art", "text", "toto"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+        assert result.returncode == 0
+        assert (
+            """ _           _          
+| |_   ___  | |_   ___  
+| __| / _ \\ | __| / _ \\ 
+| |_ | (_) || |_ | (_) |
+ \\__| \\___/  \\__| \\___/"""
+            in result.stdout
+        )
+
+        runenv = {**os.environ, **uvenvs}
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "uninject", "jc", "art"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+
+        assert not Path(f"{venv_pass}/bin/art").exists()
+
+
+class TestInstallInject:
+    def test_inject_jc(self, env_setup: tuple[str, dict, str]) -> None:
+        uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
+        runenv = {**os.environ, **uvenvs}
+
+        result = subprocess.run(  # nosec: B603, B607
+            ["uvpipx", "install", "jc", "--inject", "art"],  # noqa: S603, S607
+            capture_output=True,
+            text=True,
+            env=runenv,
+            check=False,
+        )
+
+        assert result.returncode == 0
+        venv_jc_path = Path(runenv["UVPIPX_LOCAL_VENVS"]) / "jc/.venv/bin/jc"
+
+        assert venv_jc_path.exists()
+        assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
+        assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
 
         result = subprocess.run(  # nosec: B603, B607
             ["uvpipx", "info", "jc", "-g"],  # noqa: S603, S607

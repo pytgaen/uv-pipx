@@ -61,10 +61,10 @@ variables:
   PYTHON_IMAGE: python:3.11
   PYTHON_PACKAGE_ENABLED: "true"
   PYTHON_RELEASE_ENABLED: "false"
-  # PYTHON_SBOM_DISABLED: "false"
-  # PYTHON_TRIVY_DISABLED: "false"
-  PYTHON_SBOM_DISABLED: "true"
+  PYTHON_SBOM_DISABLED: "false"
   PYTHON_TRIVY_DISABLED: "false"
+  # PYTHON_SBOM_DISABLED: "true"
+  # PYTHON_TRIVY_DISABLED: "true"
 
   PYTEST_ENABLED: "true"
   # PYTEST_ARGS: --ignore=install/
@@ -72,11 +72,10 @@ variables:
   # RUFF_ENABLED: "true"
   RUFF_ENABLED: "false"
 
-  # BANDIT_ENABLED: "true"
-  BANDIT_ENABLED: "false"
+  BANDIT_ENABLED: "true"
+  # BANDIT_ENABLED: "false"
   BANDIT_ARGS: "--recursive -x ./.cache --config bandit.yaml ."
 
-  
   # Change default release tag name (pattern) to add python "rc" release
   RELEASE_REF: '/^v?[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/'
 

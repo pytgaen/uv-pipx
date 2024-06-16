@@ -1,10 +1,6 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
-
-// https://marioscalas.medium.com/using-python-and-poetry-inside-a-dev-container-33c80bc5a22c
-// https://medium.com/@chrisschneider/streamline-your-dev-workflow-with-vscode-dev-containers-red-hat-images-3914fb22d5c6
 // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-
 // "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
 // "features": {
 // 	"ghcr.io/devcontainers-contrib/features/bandit:2": {},
@@ -20,27 +16,15 @@
 		"context": "..",
 		"dockerfile": "./Dockerfile"
 	},
-	"settings": {
-		"python.pythonPath": "/usr/local/bin/python"
-	},
-	"extensions": [
-		"ms-python.python",
-		"ms-python.vscode-pylance",
-		"charliermarsh.ruff",
-		"bierner.markdown-preview-github-styles",
-		"fabiospampinato.vscode-todo-plus",
-		"mhutchie.git-graph",
-		"git-emoji.vscode-git-emoji",
-		"eamodio.gitlens",
-		"seatonjiang.gitmoji-vscode",
-		"exiasr.hadolint",
-		"yzhang.markdown-all-in-one",
-		"zaaack.markdown-editor",
-		"task.vscode-task"
-	],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "bash .devcontainer/post-create.sh",
 	"remoteUser": "vscode",
+	// "remoteEnv": {
+	// 	"SSH_AUTH_SOCK": "/ssh-agent"
+	// },
+	// "mounts": [
+	// 	"source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind,consistency=cached"
+	// ],
 	"mounts": [
 		"source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
 	],
@@ -50,8 +34,29 @@
 		// "POETRY_VIRTUALENVS_CREATE": "false"
 	},
 	// Configure tool-specific properties.
-	"customizations": {},
-
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"python.pythonPath": "/usr/local/bin/python"
+			},
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"charliermarsh.ruff",
+				"bierner.markdown-preview-github-styles",
+				"fabiospampinato.vscode-todo-plus",
+				"mhutchie.git-graph",
+				"git-emoji.vscode-git-emoji",
+				"eamodio.gitlens",
+				"seatonjiang.gitmoji-vscode",
+				"exiasr.hadolint",
+				"yzhang.markdown-all-in-one",
+				"zaaack.markdown-editor",
+				"task.vscode-task",
+				"Supermaven.supermaven"
+			]
+		}
+	}
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
-} 
+}

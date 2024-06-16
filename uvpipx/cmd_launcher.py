@@ -8,10 +8,12 @@ __status__ = "Development"
 
 import os
 import sys
+from typing import List
 
 import uvpipx.uvpipx_run
 from uvpipx import (
     uvpipx_all,
+    uvpipx_expose,
     uvpipx_infos,
     uvpipx_inject,
     uvpipx_install,
@@ -19,7 +21,7 @@ from uvpipx import (
 )
 from uvpipx.internal_libs.args import ArgParser
 from uvpipx.internal_libs.Logger import get_logger
-from uvpipx.internal_libs.misc import Elapser
+from uvpipx.internal_libs.misc import Elapser, check_type, check_type_n_None
 
 
 def common_args(argp: ArgParser) -> None:
@@ -42,10 +44,16 @@ def install(argp: ArgParser) -> None:
     common_args(argp)
 
     with Elapser() as ela:
+        expose_rule_names = check_type_n_None(
+            argp.args["--expose"].defaulted_value(),
+            List[str],
+        )
+        force_reinstall = check_type(argp.args["--force"].defaulted_value(), bool)
         uvpipx_install.install(
             argp.args["python_pkg"].value,
-            expose_rule_names=argp.args["--expose"].defaulted_value(),
-            force_reinstall=argp.args["--force"].defaulted_value(),
+            expose_rule_names=expose_rule_names,
+            inject_pkgs=argp.args["--inject"].value,
+            force_reinstall=force_reinstall,
         )
 
     logger.log_info(f"\n 🏁 Finish install  ⏱️  {ela.elapsed_second}")
@@ -74,10 +82,8 @@ def info(
 
     common_args(argp)
 
-    uvpipx_infos.info(
-        argp.args["python_pkg"].value,
-        get_venv=argp.args["--get-venv"].defaulted_value(),
-    )
+    get_venv = check_type(argp.args["--get-venv"].defaulted_value(), bool)
+    uvpipx_infos.info(argp.args["python_pkg"].value, get_venv=get_venv)
 
 
 def uninstall(argp: ArgParser) -> None:
@@ -103,7 +109,7 @@ def uninstall_all(argp: ArgParser) -> None:
     with Elapser() as ela:
         uvpipx_all.uninstall_all()
 
-    logger.log_info(f"\n 🏁 Finish uninstall  ⏱️  {ela.elapsed_second}")
+    logger.log_info(f"\n 🏁 Finish uninstall all ⏱️  {ela.elapsed_second}")
 
 
 def venv(argp: ArgParser) -> None:
@@ -136,7 +142,7 @@ def upgrade_all(argp: ArgParser) -> None:
     with Elapser() as ela:
         uvpipx_all.upgrade_all()
 
-    logger.log_info(f"\n 🏁 Finish upgrade  ⏱️  {ela.elapsed_second}")
+    logger.log_info(f"\n 🏁 Finish upgrade all  ⏱️  {ela.elapsed_second}")
 
 
 def inject(argp: ArgParser) -> None:
@@ -149,7 +155,7 @@ def inject(argp: ArgParser) -> None:
         inject_pkg = [argp.args["inject_python_pkg"].value, *argp.extra_args]
         uvpipx_inject.inject(argp.args["python_pkg"].value, inject_pkg)
 
-    logger.log_info(f"\n 🏁 Finish install  ⏱️  {ela.elapsed_second}")
+    logger.log_info(f"\n 🏁 Finish inject  ⏱️  {ela.elapsed_second}")
 
 
 def uninject(argp: ArgParser) -> None:
@@ -162,4 +168,31 @@ def uninject(argp: ArgParser) -> None:
         inject_pkg = [argp.args["uninject_python_pkg"].value, *argp.extra_args]
         uvpipx_inject.uninject(argp.args["python_pkg"].value, inject_pkg)
 
-    logger.log_info(f"\n 🏁 Finish install  ⏱️  {ela.elapsed_second}")
+    logger.log_info(f"\n 🏁 Finish uninject  ⏱️  {ela.elapsed_second}")
+
+
+def expose(argp: ArgParser) -> None:
+    """expose package locally in venv"""
+    logger = get_logger("expose")
+
+    common_args(argp)
+
+    with Elapser() as ela:
+        uvpipx_expose.expose(
+            argp.args["python_pkg"].value,
+            expose_rule_names=[argp.args["expose_rule_names"].value],
+        )
+
+    logger.log_info(f"\n 🏁 Finish expose  ⏱️  {ela.elapsed_second}")
+
+
+def expose_all(argp: ArgParser) -> None:
+    """expose all package locally in venv"""
+    logger = get_logger("expose")
+
+    common_args(argp)
+
+    with Elapser() as ela:
+        uvpipx_expose.expose_all([argp.args["expose_rule_names"].value])
+
+    logger.log_info(f"\n 🏁 Finish expose all  ⏱️  {ela.elapsed_second}")

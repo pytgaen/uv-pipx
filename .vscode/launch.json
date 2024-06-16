@@ -31,6 +31,32 @@
             ]
         },
         {
+            "name": "Install jc - art",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "install",
+                "jc==1.24.0",
+                "--force",
+                "--inject",
+                "art",
+                "--expose",
+                "__all__",
+                // "-v"
+            ]
+        },
+        {
+            "name": "Install poetry",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "install",
+                "poetry"
+            ]
+        },
+        {
             "name": "Install jc expose",
             "type": "debugpy",
             "request": "launch",
@@ -128,6 +154,18 @@
             ]
         },
         {
+            "name": "Expose jc main-package-scripts",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "expose",
+                "ruff",
+                "__main__"
+                // "--main-package-scripts"
+            ]
+        },        
+        {
             "name": "Inject jc - icecream,loguru",
             "type": "debugpy",
             "request": "launch",
@@ -137,6 +175,17 @@
                 "jc",
                 "icecream",
                 "loguru"
+            ]
+        },
+        {
+            "name": "Inject jc - art",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "inject",
+                "jc",
+                "art"
             ]
         },
         {

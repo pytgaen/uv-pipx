@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 from uvpipx.internal_libs.misc import cmd_prepare_env, cmd_run
 from uvpipx.uvpipx_venv_load import uvpipx_load_venv
@@ -10,7 +10,7 @@ from uvpipx.uvpipx_venv_load import uvpipx_load_venv
 
 def run_venv_bin(
     package_name: str,
-    cmdline: str,
+    cmdline: List[str],
     *,
     name_override: Union[None, str] = None,
 ) -> None:

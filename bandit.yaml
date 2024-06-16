@@ -1,2 +1,2 @@
-exclude_dirs: []
+exclude_dirs: ["prep_future_feat"]
 skips: ["B101"]

@@ -33,25 +33,34 @@ def upgrade(
     logger = get_logger("upgrade")
 
     venv_model, venv = uvpipx_load_venv(package_name, name_override)
+    logger.log_info(f"⬆️  Upgrade {package_name}\n")
 
     old_vers = sorted(venv.installed_package())
-    package_name_spec = venv_model.main_package.package_name_spec
+    package_name_spec = [venv_model.main_package.package_name_spec]
+    inject_name_spec = [
+        inj.package_name_spec for inj in venv_model.injected_packages.values()
+    ]
+    upd_name_spec = " ".join(package_name_spec + inject_name_spec)
 
     with Elapser() as ela:
-        venv.install(package_name_spec, allow_upgrade=True)
+        venv.install(package_name_spec + inject_name_spec, allow_upgrade=True)
     logger.log_info(
         ela.ela_str(
-            f" 📥 uv pip install {package_name_spec} in uvpipx venv {venv_model.venv.name()}"
-        )
+            f" 📥 uv pip install {upd_name_spec} in uvpipx venv {venv_model.venv.name()}",
+        ),
     )
 
     logger.log_info(
-        f" 🟢 uvpipx venv {venv.venv_path.name} with {venv_model.main_package.package_name} ready"
+        f" 🟢 uvpipx venv {venv.venv_path.name} with {venv_model.main_package.package_name} ready",
     )
 
     new_vers = sorted(venv.installed_package())
 
-    diff_vers = [n for n in difflib.ndiff(old_vers, new_vers) if n[:2] in ["+ ", "- "]]
+    diff_vers = [
+        n
+        for n in difflib.ndiff([str(s) for s in old_vers], [str(s) for s in new_vers])
+        if n[:2] in ["+ ", "- "]
+    ]
 
     if diff_vers:
         logger.log_info("\n 🏗️  changes")

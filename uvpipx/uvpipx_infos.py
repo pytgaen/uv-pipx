@@ -71,7 +71,7 @@ def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
 
         return vers
 
-    rc, stdout, stderr = shell_run(f"uv pip freeze", cwd=venv.venv_path)
+    rc, stdout, stderr = shell_run("uv pip freeze", cwd=venv.venv_path)
     stdout_line = stdout.split("\n")
     main_vers = get_version(uvpipx.main_package.package_name, stdout_line)
 
@@ -80,9 +80,11 @@ def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
         injected_vers.append(get_version(pkg_injected, stdout_line))
     injected_vers = sorted(injected_vers)
 
-    path_links = [
-        path_link_from_model(uvpipx.exposed, m) for m in uvpipx.exposed.apps.values()
-    ]
+    path_links = (
+        [path_link_from_model(uvpipx.exposed, m) for m in uvpipx.exposed.apps.values()]
+        if uvpipx.exposed and uvpipx.exposed.apps
+        else []
+    )
     bins = "\n".join(f"   ✅ {app_bin.show_name_with_link()}" for app_bin in path_links)
 
     # TODO add show info about install set in advanced view
@@ -141,11 +143,11 @@ def uvpipx_list() -> None:
     nb = 0
     if config.uvpipx_venvs.exists():
         for pck_venv in config.uvpipx_venvs.iterdir():
-            infos += _info_pkg(pck_venv)  # this is a tricky way to get the name
+            infos += _info_pkg(pck_venv.name)  # this is a tricky way to get the name
             infos += "\n\n"
             nb += 1
 
     if nb == 0:
-        infos += "⭕ Nothing is installed !"
+        infos += "⭕ No uvpipx package installed !"
 
     logger.log_info(infos)

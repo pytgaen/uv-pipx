@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Literal, Tuple, Union
 
 from uvpipx import uvpipx_venv_factory
-from uvpipx.uvpipx_expose import ExposeApps
 from uvpipx.UvPipxModels import (
     UvPipxExposedModel,
     UvPipxExposeInstallSets,
@@ -14,50 +13,42 @@ from uvpipx.UvPipxModels import (
     UvPipxVenvExposeAppModel,
 )
 
-# def read_config(    package_name: str, venv_name: Union[str, None] = None
-# ) -> UvPipxModel:
-#     venv_name_ = venv_name or package_name
-#     pck_venv = config.uvpipx_venvs / venv_name_
 
-#     if not (pck_venv / ".venv").exists():
-#         msg = "{pck_venv} not exist or ready"
-#         raise RuntimeError(msg)
-
-#     with (pck_venv / "uvpipx.json").open() as outfile:
-#         uvpipx_dict = json.load(
-#             outfile,
-#         )
-
-#     return uvpipx_dict
-
-
-def check_and_upgrade(config: Dict[str, Any]):
+def check_and_upgrade(
+    config: Dict[str, Any],
+) -> (
+    Tuple[Dict[str, Any], Literal[False]]
+    | Tuple[dict[str, Any], Literal[True]]
+    | Tuple[None, Literal[False]]
+):
     vers = config.get("config_version")
 
     if vers == "0.2.0":
         return config, False
 
     if vers is None:
-        return asdict(transform_old_to_0_2_0(config)), True
+        transform = transform_old_to_0_2_0(config)
+        if transform:
+            return asdict(transform), True
 
     return None, False
 
 
-def transform_old_to_0_2_0(old_config: dict) -> UvPipxPackageModel:
+def transform_old_to_0_2_0(old_config: dict) -> Union[UvPipxModel, None]:
     vers = old_config.get("version")
 
     if vers is None:
         venv_model, venv = uvpipx_venv_factory.uvpipx_venv_factory(
-            old_config["package_name"], old_config["venv_name"]
+            old_config["package_name"],
+            old_config["venv_name"],
         )
 
         install_sets = [
             UvPipxExposeInstallSets(
-                [old_config["package_name"]], old_config["bin_names"]
-            )
+                [old_config["package_name"]],
+                old_config["bin_names"],
+            ),
         ]
-
-        expo_app = ExposeApps(venv)
 
         exposed_bins = {}
         for bin_pair in old_config["exposed_bins"]:
@@ -74,7 +65,9 @@ def transform_old_to_0_2_0(old_config: dict) -> UvPipxPackageModel:
             )
 
             exposed_bins[venv_bin_split[1]] = UvPipxVenvExposeAppModel(
-                venv_bin_split[1], pl.link_path, install_sets[0].package_name_sets
+                venv_bin_split[1],
+                str(pl.link_path),
+                install_sets[0].package_name_sets,
             )
 
         injected_packages = {
@@ -88,7 +81,9 @@ def transform_old_to_0_2_0(old_config: dict) -> UvPipxPackageModel:
         install_sets.append(UvPipxExposeInstallSets(list(injected_packages.keys()), []))
 
         exposed = UvPipxExposedModel(
-            venv.venv_path / ".venv/bin", install_sets, exposed_bins
+            str(venv.venv_path / ".venv/bin"),
+            install_sets,
+            exposed_bins,
         )
 
         return UvPipxModel(

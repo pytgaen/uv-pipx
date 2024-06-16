@@ -34,15 +34,15 @@ arg_parser["install"] = ArgParser(
         Arg(
             "--expose",
             mode="array",
-            default=["*"],
+            default=["__main__"],
             help="""By default, all executable program in bin will be expose to `uvpipx_local_bin`\nYou can use --expose jc to expose only this program. you can use many --expose\n--expose _ tell to expose nothing""",
         ),
-        # Arg(
-        #     "--inject",
-        #     mode="array",
-        #     default=[],
-        #     help="""Inject a package in the venv like main package, so program of injected will be exposed lie main package""",
-        # ),
+        Arg(
+            "--inject",
+            mode="array",
+            default=[],
+            help="""Inject a package in the venv like main package""",
+        ),
         Arg(
             "--force",
             mode="bool/true",
@@ -166,4 +166,37 @@ arg_parser["uninject"] = ArgParser(
     ],
     mode=ArgParserMode.AUTO_EXTRA_ARGS,
     help="Uninject one or many python package(s) in main python package",
+)
+
+arg_parser["expose"] = ArgParser(
+    [
+        Arg(
+            "python_pkg",
+            help="""The python package name to expose (for example "jc")""",
+        ),
+        Arg(
+            "expose_rule_names",
+            help="""Expose only scripts from main package""",
+        ),
+        verbose_arg,
+        help_arg,
+    ],
+    help="Change exposition of a python package",
+)
+
+arg_parser["expose-all"] = ArgParser(
+    [
+        Arg(
+            "expose_rule_names",
+            help="""Expose only scripts from main package""",
+        ),
+        # Arg(
+        #     "--main-package-scripts",
+        #     help="""Expose only scripts from main package""",
+        #     mode="bool/true",
+        # ),
+        verbose_arg,
+        help_arg,
+    ],
+    help="Change exposition of all python package",
 )

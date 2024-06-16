@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import datetime
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, IntEnum
-from typing import Dict
+from typing import Dict, List
 
 from uvpipx.internal_libs.stylist import Color, Painter
 
@@ -37,19 +37,20 @@ class Logger:
         "1",
         "true",
     ]
+    __buffer: List[LogEntry] = field(init=False)
 
     def __post_init__(self) -> None:
         self.__buffer = []
 
-    def render(self, messages: LogEntry) -> None:
+    def render(self, messages: List[LogEntry]) -> None:
         for message in messages:
             if message.level >= self.show_level:
                 if self.log_mode == LogMode.PRINT:
                     self.screen_log_entry(message)
                 elif self.log_mode == LogMode.BUFFER:
-                    self.__buffer.append(messages)
+                    self.__buffer.append(message)
 
-    def render_level_prefix(self, level: LogLevel) -> None:
+    def render_level_prefix(self, level: LogLevel) -> str:
         text_info = ""
         if level == level.INFO:
             text_info = Painter.color_str("INFO", Color.BRIGHT_CYAN, Color.ST_BOLD)
@@ -62,7 +63,7 @@ class Logger:
 
         return f"[{text_info}] " if self.show_log_mode_prefix else ""
 
-    def screen_log_entry(self, entry: list[LogEntry]) -> None:
+    def screen_log_entry(self, entry: LogEntry) -> None:
         print(f"{self.render_level_prefix(entry.level)}{entry.message}")
 
     def log_at_level(self, level: LogLevel, messages: str) -> None:

@@ -9,6 +9,7 @@ target-version = "py38"
 select = ["E", "F", "B", "ANN", "SIM", "ERA", "A", "COM", "PTH",  "FA", "TRY", "S", "EM", "ARG", "INP", "RUF", "PLW"]
 # "UP",
 ignore = ["S101", "E501", "ERA001", "ANN101"]
+unfixable = ["RUF100"]
 
 [lint.per-file-ignores]
 "**/{tests,docs,tools}/*" = ["S101"]

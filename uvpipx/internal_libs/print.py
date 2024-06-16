@@ -52,7 +52,10 @@ def max_string_length_per_column(table: List[List[str]]) -> List[int]:
     return max_lengths
 
 
-def wrap_text_in_table(table: str, column_widths: int) -> List[str]:
+def wrap_text_in_table(
+    table: List[List[str]],
+    column_widths: List[int],
+) -> List[List[List[str]]]:
     """
     Wraps text in each cell of a table to the specified widths for each column and ensures each line in a cell
     is padded with spaces to maintain the column width. Also ensures all cells in a row have the same number of lines.

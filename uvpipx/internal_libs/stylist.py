@@ -13,7 +13,7 @@ import os
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List
+from typing import Dict
 
 
 class Color(Enum):
@@ -82,7 +82,7 @@ class Painter:
         return Color.rgb_color(r, g, b, background)
 
     @staticmethod
-    def color_str(message: str, *styles: List[Color]) -> str:
+    def color_str(message: str, *styles: Color) -> str:
         if os.getenv("NO_ANSI_COLOR", "false").lower() not in ["false", "0"]:
             return message
 
@@ -129,9 +129,11 @@ class RenderEmoji(Enum):
 
 @dataclass
 class Emoji:
-    render_emoji: RenderEmoji.EMOJI
-    emoji_to_str: dict = field(
-        default_factory={
+    render_emoji: RenderEmoji = RenderEmoji.EMOJI
+    emoji_to_str: Dict[str, str] = field(init=False)
+
+    def __post_init(self) -> None:
+        self.emoji_to_str = {
             "🔴": "",
             "🟢": "",
             "🎯": "",
@@ -144,12 +146,13 @@ class Emoji:
             "❌": "",
             "📦": "",
         }
-    )
 
     def r(self, emoji: str) -> str:
         if self.render_emoji == RenderEmoji.EMOJI:
             return emoji
         elif self.render_emoji == RenderEmoji.STR:
             return self.emoji_to_str.get(emoji, "")
-        elif self.render_emoji == RenderEmoji.REMOVE:
-            return ""
+        # elif self.render_emoji == RenderEmoji.REMOVE:
+        #     return ""
+
+        return ""

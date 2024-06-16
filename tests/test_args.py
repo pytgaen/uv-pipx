@@ -16,7 +16,7 @@ def test_general() -> None:
     argp.parse(
         [
             "install",
-            "--expose",
+            "-e",
             "e1",
             "--expose",
             "e2",
@@ -55,7 +55,7 @@ def test_auto_extra() -> None:
             "install",
             "some",
             "stuff",
-        ]
+        ],
     )
     assert argp.args["cmd"].value == "install"
     assert argp.extra_args == ["some", "stuff"]

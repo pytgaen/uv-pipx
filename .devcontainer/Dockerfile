@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 ENV UVPIPX_HOME=/opt/uvpipx
 
-RUN apt update && apt install --no-install-recommends -y bash-completion git curl && \
+RUN apt update && apt install --no-install-recommends -y bash-completion git curl openssh-client && \
     curl -o ./pkgx --compressed -f --proto '=https' https://pkgx.sh/$(uname)/$(uname -m) && \
     install -m 755 pkgx /usr/local/bin && \
     pkgx install task && \

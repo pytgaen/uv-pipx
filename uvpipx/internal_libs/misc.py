@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from uvpipx.internal_libs.Logger import Logger, get_logger
-
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
@@ -14,10 +12,13 @@ __status__ = "Development"
 import os
 import platform
 import shutil
-import subprocess  # nosec: B404 # noqa: S404
+import subprocess  # nosec: B404  # noqa: S404
 import time
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Type, TypeVar, Union, get_args, get_origin
+
+from uvpipx.internal_libs.Logger import Logger, get_logger
 
 
 # Définir le chemin du répertoire à parcourir
@@ -31,6 +32,7 @@ def find_executable(dir_path: Path, allow_symlink: bool = False) -> List[Path]:
     ]
 
 
+@dataclass
 class Elapser:
     """
     A context manager for measuring elapsed time.
@@ -49,11 +51,10 @@ class Elapser:
             # Code block to measure elapsed time
     """
 
-    def __init__(self) -> None:
-        self.start = None
-        self.end = None
-        self.interval_seconds = None
-        self.elapsed_second = None
+    start: Union[None, float] = None
+    end: Union[None, float] = None
+    interval_seconds: float = -1
+    elapsed_second: str = ""
 
     def __enter__(self) -> Elapser:
         self.start = time.perf_counter()
@@ -61,10 +62,15 @@ class Elapser:
 
     def __exit__(self, *args: list) -> Union[bool, None]:  # , *args
         self.end = time.perf_counter()
+        if self.start is None or self.end is None:
+            msg = "Missing start or end"
+            raise RuntimeError(msg)
+
         self.interval_seconds = self.end - self.start
         self.elapsed_second = f"{self.interval_seconds:.3f} seconds"
+        return None
 
-    def ela_str(self, message: str):
+    def ela_str(self, message: str) -> str:
         return f"{message}   ⏱️  {self.elapsed_second}"
 
 
@@ -74,7 +80,7 @@ def shell_run(
     cwd: Union[None, Path] = None,
     env: Union[None, Dict[str, str]] = None,
     raise_on_error: bool = True,
-) -> Tuple[int, Union[bytes, str], Union[bytes, str]]:
+) -> Tuple[int, Union[str], Union[str]]:
     """
     Executes a shell command and returns the result.
 
@@ -89,14 +95,14 @@ def shell_run(
         Tuple[int, str, str]: A tuple containing the return code, standard output, and standard error.
     """
     env_ = cmd_prepare_env(env)
-    encoding = cmd_prepare_encoding()
+    # encoding = cmd_prepare_encoding()
 
     opt_args = {}
     if cwd is not None:
         opt_args["cwd"] = cwd
 
     with subprocess.Popen(
-        command,
+        command,  # type: ignore[arg-type, call-overload]
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         shell=True,  # noqa: S602
@@ -115,21 +121,22 @@ def shell_run(
         # stderr = stderr.decode(encoding)
         if rc != 0 and raise_on_error:
             short_msg = f"{stderr:2000}".rstrip()
+            msg = f"🔴 Command failed with return code {rc} {short_msg}..."
             raise RuntimeError(
-                f"🔴 Command failed with return code {rc} {short_msg}..."
+                msg,
             )
 
     return rc, stdout, stderr
 
 
 def cmd_run(
-    cwd: str,
-    command: str,
+    cwd: Union[Path, str],
+    command: Union[str, List[str]],
     *,
     env: Union[None, Dict[str, str]] = None,
     raise_on_error: bool = True,
     raw_pipe: bool = False,
-) -> Tuple[int, Union[bytes, str], Union[bytes, str]]:
+) -> Tuple[Union[int, Any], Union[None, str], Union[None, str]]:
     """
     Executes a shell command and returns the result.
 
@@ -144,17 +151,18 @@ def cmd_run(
         Tuple[int, str, str]: A tuple containing the return code, standard output, and standard error.
     """
     env_ = cmd_prepare_env(env)
-    encoding = cmd_prepare_encoding()
+    # encoding = cmd_prepare_encoding()
     pipe_type = None if raw_pipe else subprocess.PIPE
 
     with subprocess.Popen(
-        command,  # noqa: S603
+        command,
         stdout=pipe_type,
         stderr=pipe_type,
         cwd=cwd,
-        shell=True, 
+        shell=True,  # nosec: B602 # noqa: S602
+        text=True,
         env=env_,
-    ) as proc:  # nosec: B603
+    ) as proc:
         try:
             if raw_pipe:
                 stdout, stderr = (None, None)
@@ -170,12 +178,13 @@ def cmd_run(
     rc = proc.returncode
     if rc != 0 and raise_on_error:
         short_msg = f"{stderr:2000}".rstrip()
-        raise RuntimeError(f"🔴 Command failed with return code {rc} {short_msg}...")
+        msg = f"🔴 Command failed with return code {rc} {short_msg}..."
+        raise RuntimeError(msg)
 
     return rc, stdout, stderr
 
 
-def cmd_prepare_env(env: Dict[str, str]) -> Dict[str, str]:
+def cmd_prepare_env(env: Union[None, Dict[str, str]]) -> Dict[str, str]:
     env_ = env
     if env_ is None:
         env_ = os.environ.copy()
@@ -215,3 +224,71 @@ def shell_run_elapse(
 
 def command_exists(cmd: str) -> bool:
     return shutil.which(cmd) is not None
+
+
+class InvalidTypeError(Exception):
+    def __init__(self, expected_types: List[Type], actual_type: Type) -> None:
+        self.expected_types = expected_types
+        self.actual_type = actual_type
+        super().__init__(self.__str__())
+
+    def __str__(self) -> str:
+        expected = ", ".join([t.__name__ for t in self.expected_types])
+        return f"Invalid type: expected one of ({expected}), got {self.actual_type.__name__}"
+
+
+# def check_type(value: Any, expected_types: List[Union[Type, None]]) -> None:
+#     if not any(isinstance(value, t) for t in expected_types):
+#         raise InvalidTypeError(expected_types, type(value))
+
+T = TypeVar("T")
+
+
+def check_type(value: Any, expected_types: Union[Type[T], List[Type[T]]]) -> T:  # noqa: ANN401
+    expected_types_ = (
+        expected_types if isinstance(expected_types, list) else [expected_types]
+    )
+    if value is None:
+        raise InvalidTypeError(expected_types_, type(value))
+
+    for expected_type in expected_types_:
+        origin = get_origin(expected_type)
+        if origin:
+            args = get_args(expected_type)
+            if isinstance(value, origin) and all(
+                isinstance(elem, args[0]) for elem in value
+            ):
+                return value
+
+        if isinstance(value, expected_type):
+            return value
+
+    raise InvalidTypeError(expected_types_, type(value))
+
+
+def check_type_n_None(
+    value: Any,  # noqa: ANN401
+    expected_types: Union[Type[T], List[Type[T]]],
+) -> Union[T, None]:
+    expected_types_ = (
+        expected_types if isinstance(expected_types, list) else [expected_types]
+    )
+    if value is None:
+        return value
+
+    try:
+        for expected_type in expected_types_:
+            origin = get_origin(expected_type)
+            if origin:
+                args = get_args(expected_type)
+                if isinstance(value, origin) and all(
+                    isinstance(elem, args[0]) for elem in value
+                ):
+                    return value
+
+            if isinstance(value, expected_type):
+                return value
+    except Exception as e:
+        raise InvalidTypeError(expected_types_, type(value)) from e
+
+    raise InvalidTypeError(expected_types_, type(value))

@@ -44,12 +44,13 @@ def inject(
             raise RuntimeError(msg)
 
     pip_packages_spec = " ".join(lst_package_name_spec)
+
     with Elapser() as ela:
-        venv.install(pip_packages_spec, allow_upgrade=False)
+        venv.install(lst_package_name_spec, allow_upgrade=False)
     logger.log_info(
         ela.ela_str(
-            f" 📥 uv pip install {pip_packages_spec} in uvpipx venv {uvpipx_cfg.venv.name()}"
-        )
+            f" 📥 uv pip install {pip_packages_spec} in uvpipx venv {uvpipx_cfg.venv.name()}",
+        ),
     )
 
     logger.log_info(f" 🟢 injected {lst_package_name_spec}")
@@ -65,9 +66,13 @@ def inject(
     }
     tmp_dict = {**uvpipx_cfg.injected_packages, **injected_package}
     uvpipx_cfg.injected_packages = {k: tmp_dict[k] for k in sorted(tmp_dict)}
-    uvpipx_cfg.exposed.install_sets.append(
-        UvPipxExposeInstallSets(list(injected_package.keys()), [])
-    )
+    if uvpipx_cfg.exposed:
+        uvpipx_cfg.exposed.install_sets.append(
+            UvPipxExposeInstallSets(list(injected_package.keys()), []),
+        )
+    else:
+        msg = "Cannot inject on empty venv"
+        raise RuntimeError(msg)
 
     uvpipx_cfg.save_json("uvpipx.json")
 
@@ -98,8 +103,8 @@ def uninject(
         venv.uninstall(pip_packages_spec)
     logger.log_info(
         ela.ela_str(
-            f" 🗑️  uv pip uninstall {pip_packages_spec} in uvpipx venv {uvpipx_cfg.venv.name()}"
-        )
+            f" 🗑️  uv pip uninstall {pip_packages_spec} in uvpipx venv {uvpipx_cfg.venv.name()}",
+        ),
     )
 
     logger.log_info(f" 🗑️  uninjected {lst_package_name_spec}")

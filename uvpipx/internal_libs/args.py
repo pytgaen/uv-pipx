@@ -27,7 +27,7 @@ class Arg:
     type_: Any = str
     default: Any = None
     help: str = ""
-    alternate_name: Union[List[str], None] = field(init=False, default_factory=list)
+    alternates_name: Union[List[str], None] = None
     arg_pos: int = field(init=False, default=-1)
     value: Any = field(init=False, default=None)
 
@@ -63,12 +63,14 @@ class ArgParser:
         for arg_def in self.args_def:
             self._process_arg_definition(arg_def)
 
-    def _process_arg_definition(self, arg_def: List[Arg]) -> None:
+    def _process_arg_definition(self, arg_def: Arg) -> None:
         self.args[arg_def.name] = arg_def
         if arg_def.name.startswith("--"):
-            if not arg_def.alternate_name and arg_def.name[1:3] not in self.args:
-                arg_def.alternate_name = [arg_def.name[1:3]]
-                self.args[arg_def.alternate_name[0]] = arg_def
+            if not arg_def.alternates_name and arg_def.name[1:3] not in self.args:
+                arg_def.alternates_name = [arg_def.name[1:3]]
+            if arg_def.alternates_name:            
+                self.args[arg_def.alternates_name[0]] = arg_def
+            
             # TODO manage provider alternate_name
         else:
             arg_def.arg_pos = len(self.args_pos_def)
@@ -125,7 +127,7 @@ class ArgParser:
         self,
         i_token: int,
         received_args: List[str],
-    ) -> Union[Tuple[int, Dict[str, Arg]], Tuple[int, None]]:
+    ) -> Union[Tuple[int, Arg], Tuple[int, None]]:
         val_arg = received_args[i_token]
         if val_arg == "--":
             return -1, None
@@ -139,7 +141,7 @@ class ArgParser:
         self,
         i_token: int,
         received_args: List[str],
-    ) -> Tuple[int, Dict[str, Arg]]:
+    ) -> Tuple[int, Arg]:
         val_arg = received_args[i_token]
 
         if self.args[val_arg].mode == "count":
@@ -158,7 +160,7 @@ class ArgParser:
         try:
             next_val_arg = received_args[i_token + 1]
         except IndexError as e:
-            msg = "Need value for optional arg {val_arg.name}"
+            msg = f"Need value for optional arg {val_arg.name}"
             raise RuntimeError(msg) from e
 
         if self.args[val_arg].mode == "array":
@@ -168,19 +170,19 @@ class ArgParser:
 
         return 2, self.args[val_arg]
 
-    def _parse_array_flag(self, val_arg: Arg, next_val_arg: Arg) -> None:
+    def _parse_array_flag(self, val_arg: str, next_val_arg: str) -> None:
         if self.args[val_arg].value is None:  # not hasattr(self.args[val_arg], "value")
             self.args[val_arg].value = [next_val_arg]
         else:
             self.args[val_arg].value.append(next_val_arg)
 
-    def _parse_count_flag(self, val_arg: Arg) -> None:
+    def _parse_count_flag(self, val_arg: str) -> None:
         if self.args[val_arg].value is None:
             self.args[val_arg].value = 1
         else:
             self.args[val_arg].value += 1
 
-    def _parse_positional_argument(self, val_arg: Arg) -> Tuple[int, Dict[str, Arg]]:
+    def _parse_positional_argument(self, val_arg: str) -> Tuple[int, Arg]:
         i_pos_name = list(self.args_pos_def.keys())[len(self.args_pos.keys())]
         self.args[i_pos_name].value = val_arg
         self.args_pos[i_pos_name] = self.args[i_pos_name]
@@ -202,10 +204,11 @@ class ArgParser:
         info_option = []
         for arg in self.args_def:
             if arg.name.startswith("-"):
-                opt = ", ".join([arg.name, *arg.alternate_name])
+                opt = ", ".join([arg.name, *arg.alternates_name])
                 next_value = (
                     ""
-                    if arg.mode == "count" or arg.mode.startswith("bool/")
+                    if arg.mode == "count"
+                    or (arg.mode and arg.mode.startswith("bool/"))
                     else ' "value"'
                 )
                 info_option.append([f"""{opt}{next_value}""", arg.help])

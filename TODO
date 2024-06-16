@@ -10,20 +10,22 @@
 
 
 0.x+1.0:
-    ☐ inject at install time (injected exposed as/like main)
-    ☐ info show info about install set in advanced view
-    ☐ upgrade also injected but no touch exposed
-    ☐ doc about cache
-    ☐ dockerfile sample
+    ✔ only expose eponym by default @done(24-06-19 20:50)
+    ✔ upgrade also injected @done(24-06-19 21:06)
+    ✔ inject at install time (injected exposed as/like main) @done(24-06-23 19:19)
+        ✔ fix uvpipx.json with injected @done(24-06-23 19:19)
+        ✔ expose ., * @done(24-06-23 19:19)
+    ✔ use console_scripts to generate json in uvpipx directory @done(24-06-23 15:59)
+    ✔ expose/expose-all --package-scripts (main) @done(24-07-09 18:24)
+    ✔ a test for expose/expose-all @done(24-07-12 17:41)
+    ✔ update doc / explain main change and how to migrate @done(24-07-12 23:12)
 
 
 0.x+2.0:
-    ☐ "expose clean/clean-all" link doctor to remove bad link ? maybe ask confirmation
-    ☐ "expose add" link doctor to remove bad link ? maybe ask confirmation
-    ☐ reinstall (uninstall/install) main version without injected
-    ☐ reinstall (uninstall/install) with injected / -all
-    ☐ upgrade option --force-upgrade to allow to not respect original pipspec and change pipspec to new version
-    ☐ upgrade launch doctor to remove probable dead app
+    ☐ dev container sample
+    ☐ dockerfile sample
+    ☐ doc about cache
+    ☐ upgrade option --force-upgrade to allow to not respect original pipspec and change pipspec to new version defined or current
 
 
 0.x+3.0 venv power:
@@ -32,12 +34,18 @@
     ☐ inject
     ☐ uninject
     ☐ upgrade
+    ☐ "expose/expose-all --injected art __eponym__"
+    ☐ "expose add" link doctor to remove bad link ? maybe ask confirmation
+    ☐ info exposed mode, bin not exposed
 
 
 0.x+4.0:
-    ☐ info bin not exposed
-    ☐ reexpose --add X (can use wildcard) / force
-    ☐ reexpose --remove X (can use wildcard)
+    ☐ expose --add X (can use wildcard) / force
+    ☐ "expose clean/clean-all" link doctor to remove bad link ? maybe ask confirmation
+    ☐ expose --remove X (can use wildcard)
+    ☐ reinstall (uninstall/install) main version without injected
+    ☐ reinstall (uninstall/install) with injected / -all
+    ☐ info show info about install set in advanced view
     
     
 currently not planned :

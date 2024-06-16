@@ -26,7 +26,11 @@ tasks:
       - echo "Bandit if can"
       - |
         if command -v bandit >/dev/null 2>&1; then
-          [ -f bandit.yaml ] && bandit -c bandit.yaml -r . || echo "🟠 bandit.yaml configuration file not found"
+          if [ -f bandit.yaml ]; then
+              bandit -c bandit.yaml -r .
+            else
+              echo "🟠 bandit.yaml configuration file not found"
+            fi
         else
           echo "🟠 Bandit not found, skipping security check"
         fi
@@ -51,5 +55,6 @@ tasks:
           var: LIST
         cmd: uvpipx install {{ .ITEM }}
 
-  docker-py: docker run -ti --rm --mount type=bind,source=$PWD,target=/mnt/local_dir python:3.12-slim /bin/bash
+  docker-py-prj: docker run -ti --rm --mount type=bind,source=$PWD,target=/mnt/local_dir python:3.12-slim /bin/bash
 
+  docker-py: docker run -ti --rm python:3.12-slim /bin/bash
