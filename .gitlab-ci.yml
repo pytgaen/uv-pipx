@@ -2,12 +2,12 @@
 include:
   # Python template
   # https://gitlab.com/to-be-continuous/python
-  - project: "to-be-continuous/python"
-    ref: "7.0.2"
-    file: "templates/gitlab-ci-python.yml"
-  # - project: "pytgaen-group/python"
-  #   ref: "fix/curl-not-slim"
+  # - project: "to-be-continuous/python"
+  #   ref: "7.0.2"
   #   file: "templates/gitlab-ci-python.yml"
+  - project: "pytgaen-group/python"
+    ref: "feat/green"
+    file: "templates/gitlab-ci-python.yml"
   # Gitleaks template
   - project: "to-be-continuous/gitleaks"
     ref: "2.5.1"
@@ -63,17 +63,17 @@ variables:
   PYTHON_RELEASE_ENABLED: "false"
   # PYTHON_SBOM_DISABLED: "false"
   # PYTHON_TRIVY_DISABLED: "false"
-  PYTHON_SBOM_DISABLED: "true"
+  PYTHON_SBOM_DISABLED: "false"
   PYTHON_TRIVY_DISABLED: "false"
 
   PYTEST_ENABLED: "true"
   # PYTEST_ARGS: --ignore=install/
 
-  # RUFF_ENABLED: "true"
-  RUFF_ENABLED: "false"
+  RUFF_ENABLED: "true"
+  # RUFF_ENABLED: "false"
 
-  # BANDIT_ENABLED: "true"
-  BANDIT_ENABLED: "false"
+  BANDIT_ENABLED: "true"
+  # BANDIT_ENABLED: "false"
   BANDIT_ARGS: "--recursive -x ./.cache --config bandit.yaml ."
 
   

@@ -47,7 +47,7 @@ class ExposeBin:  # TODO remove
 
     @classmethod
     def build_local_bin_name(
-        cls,
+        cls,  # noqa: ANN102
         venv_path: Path,
         bin_name: str,
         alias_bin_name: Union[None, str] = None,
@@ -90,11 +90,11 @@ class UvPipxTransi:  # TODO remove
 
         prep_expose_bins: list[ExposeBin] = []
         for bin_name in expose_bin_names_:
-            bin_name, local_bin_name = (
+            bin_name_, local_bin_name = (
                 bin_name.split(":") if ":" in bin_name else (bin_name, bin_name)
             )
             prep_expose_bins.append(
-                ExposeBin.build_local_bin_name(self.pck_venv, bin_name, local_bin_name)
+                ExposeBin.build_local_bin_name(self.pck_venv, bin_name_, local_bin_name),
             )
 
         return prep_expose_bins

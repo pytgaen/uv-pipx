@@ -22,13 +22,13 @@ class UvPipxVenv:
 
         if not self.exists():
             rc, std_o, std_e = shell_run(
-                f"uv venv {self.venv_path / '.venv'}", raise_on_error=True
+                f"uv venv {self.venv_path / '.venv'}", raise_on_error=True,
             )
             return True
         return False
 
     def freeze(self) -> str:
-        rc, stdout, stderr = shell_run(f"uv pip freeze", cwd=self.venv_path)
+        rc, stdout, stderr = shell_run("uv pip freeze", cwd=self.venv_path)
         return stdout if isinstance(stdout, str) else stdout.decode("utf-8")
 
     def installed_package(self) -> list[Requirement]:
@@ -43,13 +43,13 @@ class UvPipxVenv:
     def install(self, package_name_spec: str, allow_upgrade: bool = False) -> str:
         opt = " --upgrade" if allow_upgrade else ""
         rc, stdout, stderr = shell_run(
-            f"uv pip install{opt} {package_name_spec}", cwd=self.venv_path
+            f"uv pip install{opt} {package_name_spec}", cwd=self.venv_path,
         )
         return stdout if isinstance(stdout, str) else stdout.decode("utf-8")
 
     def uninstall(self, package_name_spec: str) -> str:
         rc, stdout, stderr = shell_run(
-            f"uv pip uninstall {package_name_spec}", cwd=self.venv_path
+            f"uv pip uninstall {package_name_spec}", cwd=self.venv_path,
         )
         return stdout if isinstance(stdout, str) else stdout.decode("utf-8")
 

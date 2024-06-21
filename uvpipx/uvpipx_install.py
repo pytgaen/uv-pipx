@@ -49,26 +49,24 @@ def install(
     expose_rule_names_ = expose_rule_names or ["*"]
     venv_model, venv = uvpipx_venv_factory(package_name, name_override)
 
-    forced_mode = None
     uvpipx_prev = None
     venv_prev = None
     try:
         uvpipx_prev, venv_prev = uvpipx_load_venv(package_name, name_override)
         if force_reinstall:
-            forced_mode = True
             if len(uvpipx_prev.exposed.install_sets) > 1:
                 logger.log_warn(
-                    f"⚠️  {package_name_spec} already installed but in with many step (install/inject). need to manually uninstall/install/inject or just try an upgrade"
+                    f"⚠️  {package_name_spec} already installed but in with many step (install/inject). need to manually uninstall/install/inject or just try an upgrade",
                 )
                 return
         else:
             if len(uvpipx_prev.exposed.install_sets) > 1:
                 logger.log_warn(
-                    f"⚠️  {package_name_spec} already installed but in with many step (install/inject). need to manually uninstall/install/inject or just try an upgrade"
+                    f"⚠️  {package_name_spec} already installed but in with many step (install/inject). need to manually uninstall/install/inject or just try an upgrade",
                 )
             else:
                 logger.log_warn(
-                    f"⚠️  {package_name_spec} already installed. need to use option --force to reinstall from scratch"
+                    f"⚠️  {package_name_spec} already installed. need to use option --force to reinstall from scratch",
                 )
             return
     except UvPipVenvNotReady:
@@ -93,8 +91,8 @@ def install(
         venv.install(package_name_spec)
     logger.log_info(
         ela.ela_str(
-            f" 📥 uv pip install {package_name_spec} in uvpipx venv {venv_model.name()}"
-        )
+            f" 📥 uv pip install {package_name_spec} in uvpipx venv {venv_model.name()}",
+        ),
     )
 
     logger.log_info(f" 🟢 uvpipx venv {venv_model.name()} with {package_name} ready")
@@ -105,12 +103,12 @@ def install(
     expo_app = ExposeApps(venv, logger)
     main_install_set = UvPipxExposeInstallSets([package_name], expose_rule_names_)
     exposed_bins = expo_app.expose(
-        expose_rule_names_, main_install_set.package_name_sets
+        expose_rule_names_, main_install_set.package_name_sets,
     )
     install_sets = [main_install_set]
 
     uvpipx_cfg.exposed = UvPipxExposedModel(
-        venv.venv_path / ".venv/bin", install_sets, exposed_bins
+        venv.venv_path / ".venv/bin", install_sets, exposed_bins,
     )
 
     uvpipx_cfg.save_json("uvpipx.json")

@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from uvpipx import uvpipx_venv_factory
-from uvpipx.uvpipx_expose import ExposeApps
+# from uvpipx.uvpipx_expose import ExposeApps
 from uvpipx.UvPipxModels import (
     UvPipxExposedModel,
     UvPipxExposeInstallSets,
@@ -31,7 +31,7 @@ from uvpipx.UvPipxModels import (
 #     return uvpipx_dict
 
 
-def check_and_upgrade(config: Dict[str, Any]):
+def check_and_upgrade(config: Dict[str, Any]):  # noqa: ANN201
     vers = config.get("config_version")
 
     if vers == "0.2.0":
@@ -48,16 +48,16 @@ def transform_old_to_0_2_0(old_config: dict) -> UvPipxPackageModel:
 
     if vers is None:
         venv_model, venv = uvpipx_venv_factory.uvpipx_venv_factory(
-            old_config["package_name"], old_config["venv_name"]
+            old_config["package_name"], old_config["venv_name"],
         )
 
         install_sets = [
             UvPipxExposeInstallSets(
-                [old_config["package_name"]], old_config["bin_names"]
-            )
+                [old_config["package_name"]], old_config["bin_names"],
+            ),
         ]
 
-        expo_app = ExposeApps(venv)
+        # expo_app = ExposeApps(venv)
 
         exposed_bins = {}
         for bin_pair in old_config["exposed_bins"]:
@@ -74,7 +74,7 @@ def transform_old_to_0_2_0(old_config: dict) -> UvPipxPackageModel:
             )
 
             exposed_bins[venv_bin_split[1]] = UvPipxVenvExposeAppModel(
-                venv_bin_split[1], pl.link_path, install_sets[0].package_name_sets
+                venv_bin_split[1], pl.link_path, install_sets[0].package_name_sets,
             )
 
         injected_packages = {
@@ -88,7 +88,7 @@ def transform_old_to_0_2_0(old_config: dict) -> UvPipxPackageModel:
         install_sets.append(UvPipxExposeInstallSets(list(injected_packages.keys()), []))
 
         exposed = UvPipxExposedModel(
-            venv.venv_path / ".venv/bin", install_sets, exposed_bins
+            venv.venv_path / ".venv/bin", install_sets, exposed_bins,
         )
 
         return UvPipxModel(

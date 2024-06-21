@@ -143,7 +143,7 @@ class Emoji:
             "✅": "",
             "❌": "",
             "📦": "",
-        }
+        },
     )
 
     def r(self, emoji: str) -> str:

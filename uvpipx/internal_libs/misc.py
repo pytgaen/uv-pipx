@@ -14,7 +14,7 @@ __status__ = "Development"
 import os
 import platform
 import shutil
-import subprocess  # nosec: B404 # noqa: S404
+import subprocess  # nosec: B404
 import time
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
@@ -64,7 +64,7 @@ class Elapser:
         self.interval_seconds = self.end - self.start
         self.elapsed_second = f"{self.interval_seconds:.3f} seconds"
 
-    def ela_str(self, message: str):
+    def ela_str(self, message: str) -> str:
         return f"{message}   ⏱️  {self.elapsed_second}"
 
 
@@ -89,7 +89,7 @@ def shell_run(
         Tuple[int, str, str]: A tuple containing the return code, standard output, and standard error.
     """
     env_ = cmd_prepare_env(env)
-    encoding = cmd_prepare_encoding()
+    encoding = cmd_prepare_encoding()  # noqa: F841
 
     opt_args = {}
     if cwd is not None:
@@ -115,8 +115,9 @@ def shell_run(
         # stderr = stderr.decode(encoding)
         if rc != 0 and raise_on_error:
             short_msg = f"{stderr:2000}".rstrip()
+            msg = f"🔴 Command failed with return code {rc} {short_msg}..."
             raise RuntimeError(
-                f"🔴 Command failed with return code {rc} {short_msg}..."
+                msg,
             )
 
     return rc, stdout, stderr
@@ -144,17 +145,17 @@ def cmd_run(
         Tuple[int, str, str]: A tuple containing the return code, standard output, and standard error.
     """
     env_ = cmd_prepare_env(env)
-    encoding = cmd_prepare_encoding()
+    encoding = cmd_prepare_encoding()  # noqa: F841
     pipe_type = None if raw_pipe else subprocess.PIPE
 
-    with subprocess.Popen(
-        command,  # noqa: S603
+    with subprocess.Popen(   
+        command,
         stdout=pipe_type,
         stderr=pipe_type,
         cwd=cwd,
-        shell=True, 
+        shell=True,   # noqa: S602  # nosec: B602
         env=env_,
-    ) as proc:  # nosec: B603
+    ) as proc:  
         try:
             if raw_pipe:
                 stdout, stderr = (None, None)
@@ -170,7 +171,8 @@ def cmd_run(
     rc = proc.returncode
     if rc != 0 and raise_on_error:
         short_msg = f"{stderr:2000}".rstrip()
-        raise RuntimeError(f"🔴 Command failed with return code {rc} {short_msg}...")
+        msg = f"🔴 Command failed with return code {rc} {short_msg}..."
+        raise RuntimeError(msg)
 
     return rc, stdout, stderr
 

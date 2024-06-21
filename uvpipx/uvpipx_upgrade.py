@@ -41,12 +41,12 @@ def upgrade(
         venv.install(package_name_spec, allow_upgrade=True)
     logger.log_info(
         ela.ela_str(
-            f" 📥 uv pip install {package_name_spec} in uvpipx venv {venv_model.venv.name()}"
-        )
+            f" 📥 uv pip install {package_name_spec} in uvpipx venv {venv_model.venv.name()}",
+        ),
     )
 
     logger.log_info(
-        f" 🟢 uvpipx venv {venv.venv_path.name} with {venv_model.main_package.package_name} ready"
+        f" 🟢 uvpipx venv {venv.venv_path.name} with {venv_model.main_package.package_name} ready",
     )
 
     new_vers = sorted(venv.installed_package())

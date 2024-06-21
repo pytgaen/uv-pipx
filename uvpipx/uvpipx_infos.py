@@ -71,7 +71,7 @@ def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
 
         return vers
 
-    rc, stdout, stderr = shell_run(f"uv pip freeze", cwd=venv.venv_path)
+    rc, stdout, stderr = shell_run("uv pip freeze", cwd=venv.venv_path)
     stdout_line = stdout.split("\n")
     main_vers = get_version(uvpipx.main_package.package_name, stdout_line)
 

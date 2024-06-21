@@ -29,8 +29,8 @@ def env_to_path(env_name: str, default: Union[str, None] = None) -> Path:
 
 ci_project_dir = env_to_path("CI_PROJECT_DIR", ".")
 home = Path(
-    os.path.expanduser("~")
-)  # remark Path.expanduser("~") not work  # noqa: PTH111
+    os.path.expanduser("~"),  # noqa: PTH111
+)  # remark Path.expanduser("~") not work
 uvpipx_home = env_to_path("UVPIPX_HOME", home / ".local/uv-pipx")
 uvpipx_venvs = env_to_path("UVPIPX_LOCAL_VENVS", uvpipx_home / "venvs")
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from typing import Union
 
@@ -9,7 +11,7 @@ from uvpipx.UvPipxModelsUpgrader import check_and_upgrade
 
 
 def uvpipx_load_venv(
-    package_name: str, name_override: Union[str, None] = None
+    package_name: str, name_override: Union[str, None] = None,
 ) -> tuple[UvPipxModel, UvPipxVenv]:
     venv_m, venv = uvpipx_venv_factory(package_name, name_override)
 

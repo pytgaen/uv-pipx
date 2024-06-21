@@ -1,3 +1,4 @@
+from __future__ import annotations
 import sys
 
 from uvpipx.internal_libs.stylist import Painter
