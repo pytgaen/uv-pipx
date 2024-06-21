@@ -10,7 +10,7 @@ from uvpipx.uvpipx_venv_load import uvpipx_load_venv
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
-__version__ = "0.5.0"  # to bump
+__version__ = "0.6.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
 __email__ = "#"
 __status__ = "Development"

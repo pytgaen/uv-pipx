@@ -1,5 +1,12 @@
 ChangeLog for uvpipx
 
+# [0.6.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.5.0...0.6.0) (2024-06-21)
+
+
+### Features
+
+* test python green ([8e61951](https://gitlab.com/pytgaen-group/uvpipx/commit/8e61951b1728df88711acdf0b2248d93c8af4eb9))
+
 # [0.5.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.4.1...0.5.0) (2024-06-15)
 
 
