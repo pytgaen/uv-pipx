@@ -1,5 +1,12 @@
 ChangeLog for uvpipx
 
+## [0.6.2](https://gitlab.com/pytgaen-group/uvpipx/compare/0.6.1...0.6.2) (2024-07-15)
+
+
+### Bug Fixes
+
+* 🐛 fix new exposing fallback to __all__ ([e15b0e9](https://gitlab.com/pytgaen-group/uvpipx/commit/e15b0e97d0d46a402504da6d309a1727daf9056f))
+
 ## [0.6.1](https://gitlab.com/pytgaen-group/uvpipx/compare/0.6.0...0.6.1) (2024-07-15)
 
 
