@@ -2,6 +2,8 @@ ChangeLog for uvpipx
 
 # [0.6.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.5.0...0.6.0) (2024-07-15)
 
+This release will be republished as 0.6.1 because of a bug publish in 0.6.0
+
 
 ### Features
 
