@@ -1,5 +1,12 @@
 ChangeLog for uvpipx
 
+# [0.6.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.5.0...0.6.0) (2024-07-15)
+
+
+### Features
+
+* ✨add inject a install time and change exposing ([36f6931](https://gitlab.com/pytgaen-group/uvpipx/commit/36f6931a72aca2342403b2dabca06e5cf421b9f3))
+
 # [0.5.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.4.1...0.5.0) (2024-06-15)
 
 
