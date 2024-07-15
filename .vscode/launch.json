@@ -47,13 +47,13 @@
             ]
         },
         {
-            "name": "Install poetry",
+            "name": "Install ast-grep-cli",
             "type": "debugpy",
             "request": "launch",
             "module": "uvpipx",
             "args": [
                 "install",
-                "poetry"
+                "ast-grep-cli"
             ]
         },
         {

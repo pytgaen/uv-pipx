@@ -73,14 +73,14 @@ class ExposeApps:
                 )
 
         if expose_fallback == "__eponym__":
-            if self.venv.venv_bin(main_package_name).exists():
+            if self.venv.venv_bin(main_package_name, fail_if_notexist=False).exists():
                 self.logger_.log_info(" 🔰 fallback to eponym app is OK ")
                 expose_fallback = None
                 expose_apps_list = [self.venv.venv_bin(main_package_name)]
             else:
                 expose_fallback = "__all__"
                 self.logger_.log_warn(
-                    f" ⚠️  fallback also fail no find eponym app {self.venv.venv_bin(main_package_name)}. will fallback to all app in venv",
+                    f" ⚠️  fallback also fail no find eponym app {main_package_name}. will fallback to all app in venv",
                 )
 
         if expose_app_rules == ["__all__"] or expose_fallback == "__all__":
