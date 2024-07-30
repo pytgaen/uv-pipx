@@ -36,7 +36,7 @@ class TestUpgrade:
         uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
         runenv = {**os.environ, **uvenvs}
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "install", "jc==1.24.0"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -51,7 +51,7 @@ class TestUpgrade:
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
         assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
 
-        # result = subprocess.run(  # nosec: B603, B607
+        # result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
         #     ["uvpipx", "install", "jc", "--force"],
         #     capture_output=True,
         #     text=True,
@@ -61,7 +61,7 @@ class TestUpgrade:
 
         # assert result.returncode == 0
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "info", "jc"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -83,7 +83,7 @@ class TestUpgrade:
         ) as outfile:
             json.dump(d_dict, outfile)
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "upgrade", "jc"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -95,7 +95,7 @@ class TestUpgrade:
         assert "- jc==1.24.0" in result.stdout
         assert "+ jc==" in result.stdout
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "info", "jc"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -112,7 +112,7 @@ class TestUpgradeAll:
         uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
         runenv = {**os.environ, **uvenvs}
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "install", "jc==1.24.0"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -127,7 +127,7 @@ class TestUpgradeAll:
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
         assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
 
-        # result = subprocess.run(  # nosec: B603, B607
+        # result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
         #     ["uvpipx", "install", "jc", "--force"],
         #     capture_output=True,
         #     text=True,
@@ -137,7 +137,7 @@ class TestUpgradeAll:
 
         # assert result.returncode == 0
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "info", "jc"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -159,7 +159,7 @@ class TestUpgradeAll:
         ) as outfile:
             json.dump(d_dict, outfile)
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607  # noqa: S603, S607
             ["uvpipx", "upgrade-all"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -169,7 +169,7 @@ class TestUpgradeAll:
 
         assert result.returncode == 0
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607   # noqa: S603, S607
             ["uvpipx", "info", "jc"],  # noqa: S603, S607
             capture_output=True,
             text=True,

@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Tuple, Union
 
+import uvpipx.platform
 from uvpipx import config
-from uvpipx.internal_libs.misc import find_executable, shell_run
+from uvpipx.internal_libs.misc import file_md5, find_executable, shell_run
 from uvpipx.req_spec import Requirement
 
 
@@ -42,7 +44,11 @@ class UvPipxVenv:
 
         return req_tuple
 
-    def install(self, packages_name_spec: List[str], allow_upgrade: bool = False) -> str:
+    def install(
+        self,
+        packages_name_spec: List[str],
+        allow_upgrade: bool = False,
+    ) -> str:
         opt = " --upgrade" if allow_upgrade else ""
         install_pkgs = " ".join(packages_name_spec)
         rc, stdout, stderr = shell_run(
@@ -59,7 +65,7 @@ class UvPipxVenv:
         return stdout  # if isinstance(stdout, str) else stdout.decode("utf-8")
 
     def venv_bin_dir(self) -> Path:
-        return self.venv_path / ".venv/bin"
+        return self.venv_path / ".venv" / uvpipx.platform.venv_bin_dir
 
     def venv_bins(self, regex_to_exclude: list[str]) -> list[Path]:
         re_comp_to_exclude = [re.compile(r) for r in regex_to_exclude]
@@ -69,7 +75,7 @@ class UvPipxVenv:
         ]
 
     def venv_bin(self, name: str, fail_if_notexist: bool = True) -> Path:
-        path_ = self.venv_bin_dir() / name
+        path_ = self.venv_bin_dir() / (name + uvpipx.platform.bin_ext)
 
         if fail_if_notexist and not path_.exists():
             msg = f"🔴 {name} not exist (path {path_})"
@@ -83,11 +89,13 @@ class UvPipxVenv:
         *,
         cwd: Union[None, Path] = None,
         env: Union[None, Dict[str, str]] = None,
-    ) -> None:
+    ) -> Tuple[int, str, str]:
         rc, stdo, stde = shell_run(cmdline, cwd=cwd, env=env)
         if rc != 0:
             msg = f"🔴 Command failed with return code {rc} {stdo} {stde}"
             raise RuntimeError(msg)
+
+        return rc, stdo, stde
 
     def update_metadata(self, if_not_exist: bool = True) -> None:
         pip_metadata = self.venv_path / "pip_metadata.json"
@@ -99,8 +107,9 @@ class UvPipxVenv:
         )
         python_venv_bin = self.venv_bin_dir() / "python"
         self.run_in_venv(
-            f"{python_venv_bin} {uvpipx_console_scripts} {pip_metadata}",
+            f"{python_venv_bin} {uvpipx_console_scripts} {self.venv_path} {pip_metadata}",
         )
+
 
 @dataclass
 class PathLink:
@@ -122,6 +131,11 @@ class PathLink:
             msg = "link_path is None"
             raise ValueError(msg)
 
+        if uvpipx.platform.sys_platform == "win":
+            return self.link_path.exists() and file_md5(self.link_path) == file_md5(
+                self.local_path,
+            )
+
         if self.link_path.exists():
             return self.link_path.is_symlink() and (
                 self.local_path == self.link_path.resolve()
@@ -134,7 +148,10 @@ class PathLink:
             msg = "link_path is None"
             raise ValueError(msg)
 
-        os.symlink(self.local_path, self.link_path)
+        if uvpipx.platform.sys_platform == "win":
+            shutil.copy2(self.local_path, self.link_path)
+        else:
+            os.symlink(self.local_path, self.link_path)
 
     def unlink(self, if_valid: bool = True) -> None:
         if self.link_path is None:
@@ -143,6 +160,7 @@ class PathLink:
 
         if (if_valid and self.is_valid()) or (not if_valid and self.exists()):
             self.link_path.unlink()
+        # TODO maybe is not valid we shoud explain this
 
     def show_name_with_link(self) -> str:
         if self.link_path is None:

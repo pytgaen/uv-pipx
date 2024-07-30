@@ -1,7 +1,11 @@
 from __future__ import annotations
 
-from uvpipx.internal_libs.Logger import get_logger
+import sys
+
+from uvpipx.internal_libs.Logger import Logger, LogMode, get_logger
+from uvpipx.platform.win import get_env_variable, set_env_variable
 from uvpipx.uvpipx_core import UvPipxVenv
+from uvpipx.uvpipx_uv import uv_get_version
 from uvpipx.uvpipx_venv_factory import path_link_from_model
 from uvpipx.uvpipx_venv_load import uvpipx_load_venv
 from uvpipx.UvPipxModels import UvPipxModel
@@ -20,44 +24,90 @@ import os
 from pathlib import Path
 from typing import List, Union
 
+import uvpipx.platform
 from uvpipx import config
 from uvpipx.internal_libs.misc import shell_run
 
 
-def ensurepath() -> None:
-    logger = get_logger("uninstall")
+def ensurepath(just_check: bool = False) -> str:
+    if uvpipx.platform.sys_platform == "win":
+        return ensurepath_win(just_check)
 
-    path_set = os.environ["PATH"].split(":")
-    if str(config.uvpipx_local_bin) + "x" in path_set:
+    return ensurepath_unix(just_check)
+
+
+def ensurepath_unix(just_check: bool = False) -> str:
+    logger = Logger(log_mode=LogMode.BUFFER) if just_check else get_logger("ensurepath")
+
+    logger.log_info(f"Search {config.uvpipx_local_bin} in PATH\n")
+
+    path_os_setted = os.environ["PATH"].split(":")
+    if str(config.uvpipx_local_bin) in path_os_setted:
         logger.log_info("🟢 Configuration of PATH already OK")
-        return
+        return "OK"
 
     profile_path = Path(os.environ["HOME"]) / ".profile"
 
     profile_content = Path(profile_path).read_text()
     if "# Added by uvpipx" in profile_content:
-        logger.log_info(f"""⚠️  Configuration already in {profile_path}
+        logger.log_info(f"""🟣  Configuration already in {profile_path}
 
 ⚠️  To use without restart the shell, launch 
 export PATH=$PATH:{config.uvpipx_local_bin}
 """)
-        return
+        return "OK/RESTART_NEED"
 
-    line_to_add = ""
-    if Path(profile_path).read_text()[-1] != "\n":
-        line_to_add = "\n"
+    if just_check:
+        return "KO"
 
+    line_to_add = "\n" if Path(profile_path).read_text()[-1] != "\n" else ""
     line_to_add += f"""# Added by uvpipx
 export PATH=$PATH:{config.uvpipx_local_bin}\n"""
 
     with profile_path.open("a") as file:
         file.write(line_to_add)
 
-    logger.log_info(f"""Configuration added to {profile_path}
+    logger.log_info(f"""⚙️  Configuration added to {profile_path}
 
 ⚠️  To use without restart the shell, launch 
 export PATH=$PATH:{config.uvpipx_local_bin}
 """)
+
+    return "OK/RESTART_NEED"
+
+
+def ensurepath_win(just_check: bool = False) -> str:
+    logger = Logger(log_mode=LogMode.BUFFER) if just_check else get_logger("ensurepath")
+
+    logger.log_info(f"Search {config.uvpipx_local_bin} in PATH\n")
+
+    path_os_setted = os.environ["PATH"].split(";")
+    if str(config.uvpipx_local_bin) in path_os_setted:
+        logger.log_info("🟢 Configuration of PATH already OK")
+        return "OK"
+
+    path_reg_level = None
+    path_reg_user = get_env_variable("PATH")
+    if str(config.uvpipx_local_bin) in path_reg_user.split(";"):
+        path_reg_level = "user"
+
+    if path_reg_level is None:
+        path_reg_system = get_env_variable("PATH", system=True)
+        if str(config.uvpipx_local_bin) in path_reg_system.split(";"):
+            path_reg_level = "system"
+
+    if path_reg_level:
+        logger.log_info(f"""🟣  Configuration of PATH already in registry {path_reg_level} but not in shell.
+                        
+⚠️ you should restart the shell to use the new configuration.""")
+        return "OK/RESTART_NEED"
+
+    set_env_variable("PATH", f"{config.uvpipx_local_bin};{path_reg_user}")
+    logger.log_info("""⚙️  Configuration added to PATH in user environnement vars.
+
+⚠️ you should restart the shell to use the new configuration.""")
+
+    return "OK/RESTART_NEED"
 
 
 def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
@@ -151,3 +201,55 @@ def uvpipx_list() -> None:
         infos += "⭕ No uvpipx package installed !"
 
     logger.log_info(infos)
+
+
+def uvpipx_show_config() -> None:
+    logger = get_logger("uvpipx_show_config")
+
+    show_version()
+
+    uv_version = uv_get_version()
+    py_version = f"{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}"
+
+    logger.log_info("🔍 Uvpipx configuration:")
+
+    logger.log_info(f"💻 platform = {uvpipx.platform.sys_platform}")
+    logger.log_info(f"💻 python version = {py_version}")
+    logger.log_info(f"💻 uv version = {uv_version}")
+    logger.log_info(f"🏠 user home = {config.home}")
+
+    logger.log_info(f"\n🌳 uvpipx home = {config.uvpipx_home}")
+    logger.log_info("    Path to the main directory of uvpipx.")
+    if uvpipx.platform.sys_platform == "win":
+        logger.log_info(
+            "    🎚️  Defined by the UVPIPX_HOME environment variable or defaults to $HOME/.local/uv-pipx",
+        )
+    else:
+        logger.log_info(
+            "    🎚️  Defined by the UVPIPX_HOME environment variable or defaults to ~/.local/uv-pipx",
+        )
+
+    logger.log_info(f"\n🌿 uvpipx venvs = {config.uvpipx_venvs}")
+    logger.log_info("    Path to the directory of uvpipx virtual environments.")
+    logger.log_info(
+        "    🎚️  Defined by the UVPIPX_LOCAL_VENVS environment variable or defaults to $UVPIPX_HOME/venvs",
+    )
+
+    logger.log_info(f"\n📁 exposing bin directory = {config.uvpipx_local_bin}")
+    logger.log_info("    Default path for exposed executables.")
+    if uvpipx.platform.sys_platform == "win":
+        logger.log_info(
+            """    Default to %HOME%/.local/bin""",
+        )
+    else:
+        logger.log_info(
+            """    Default:
+            ~/.local/bin for normal users or
+            /usr/local/bin for root.""",
+        )
+    logger.log_info(
+        "    🎚️  Can be defined by the UVPIPX_BIN_DIR environment variable",
+    )
+    # logger.log_info(
+    #     "    Note: The value for Windows is not defined in the provided code.",
+    # )

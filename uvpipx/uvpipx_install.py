@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uvpipx
 from uvpipx import config
 
 __author__ = "Gaëtan Montury"
@@ -16,6 +17,7 @@ import shutil
 from dataclasses import dataclass
 from typing import List, Tuple, Union
 
+import uvpipx.platform
 from uvpipx.internal_libs.Logger import get_logger
 from uvpipx.internal_libs.misc import Elapser
 from uvpipx.req_spec import Requirement
@@ -54,7 +56,7 @@ class Installer:
         self.venv_model = None
         self.venv = None
 
-    def prepare_expose_rule_names(self)  -> None:
+    def prepare_expose_rule_names(self) -> None:
         self.expose_rule_names_def = self.expose_rule_names or ["__main__"]
 
     def check_existing_installation(self) -> Tuple:
@@ -102,9 +104,11 @@ class Installer:
         uvpipx_console_scripts = (
             config.uvpipx_self_dir / "uvpipx/uvpipx_console_scripts.py"
         )
-        python_venv_bin = self.venv.venv_bin_dir() / "python"
+        python_venv_bin = self.venv.venv_bin_dir() / (
+            "python" + uvpipx.platform.bin_ext
+        )
         self.venv.run_in_venv(
-            f"{python_venv_bin} {uvpipx_console_scripts} {pip_metadata}",
+            f"{python_venv_bin} {uvpipx_console_scripts} {self.venv.venv_path} {pip_metadata}",
         )
 
     def expose_binaries(
@@ -124,7 +128,7 @@ class Installer:
         )
         install_sets = [main_install_set]
         self.uvpipx_cfg.exposed = UvPipxExposedModel(
-            str(self.venv.venv_path / ".venv/bin"),
+            str(self.venv.venv_bin_dir()),
             install_sets,
             exposed_bins,
         )
@@ -151,7 +155,7 @@ class Installer:
             venv=self.venv_model,
             main_package=UvPipxPackageModel(self.package_name_spec, self.package_name),
             injected_packages=uvpipx_injected_package,
-            exposed=UvPipxExposedModel(str(self.venv.venv_bin)),
+            exposed=UvPipxExposedModel(str(self.venv.venv_bin_dir())),
         )
 
         self.create_virtual_env_if_needed()

@@ -18,7 +18,7 @@ import uvpipx.cmd_launcher as cmd_launcher
 from uvpipx.internal_libs.print import max_string_length_per_column, wrap_text_in_table
 from uvpipx.uvpipx_args import arg_parser
 
-cmd_map: Dict[str, str] = {"list": "uvpipx_list"}
+cmd_map: Dict[str, str] = {"list": "uvpipx_list", "environnement": "uvpipx_show_config"}
 
 
 def show_main_help() -> None:

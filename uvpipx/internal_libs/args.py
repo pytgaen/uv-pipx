@@ -68,9 +68,9 @@ class ArgParser:
         if arg_def.name.startswith("--"):
             if not arg_def.alternates_name and arg_def.name[1:3] not in self.args:
                 arg_def.alternates_name = [arg_def.name[1:3]]
-            if arg_def.alternates_name:            
+            if arg_def.alternates_name:
                 self.args[arg_def.alternates_name[0]] = arg_def
-            
+
             # TODO manage provider alternate_name
         else:
             arg_def.arg_pos = len(self.args_pos_def)

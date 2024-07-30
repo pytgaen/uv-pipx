@@ -25,24 +25,24 @@ class SitePackagesManager:
     site_packages_path: pathlib.Path
 
     @classmethod
-    def from_sys_path(cls) -> SitePackagesManager:
+    def from_sys_path(cls, venv: str) -> SitePackagesManager:
         """
         Creates a new instance of the SitePackagesManager class from the system path.
 
         Returns:
             SitePackagesManager: A new instance of the SitePackagesManager class.
         """
-        return cls(pathlib.Path(SitePackagesManager.get_site_packages_dir()))
+        return cls(pathlib.Path(SitePackagesManager.get_site_packages_dir(venv)))
 
     @staticmethod
-    def get_site_packages_dir() -> str:
+    def get_site_packages_dir(venv: str) -> str:
         """
         Returns the directory path for the site-packages.
 
         Returns:
             str: The path to the site-packages directory.
         """
-        return next(p for p in sys.path if "site-packages" in p)
+        return next(p for p in sys.path if p.startswith(venv) and "site-packages" in p)
 
     def get_package_name(self, dist_info_dir: pathlib.Path) -> str:
         """
@@ -56,7 +56,7 @@ class SitePackagesManager:
         """
         metadata_file = dist_info_dir / "METADATA"
         if metadata_file.exists():
-            with metadata_file.open() as f:
+            with metadata_file.open(encoding="utf-8") as f:
                 for line in f:
                     if line.startswith("Name:"):
                         return line.split(":", 1)[1].strip()
@@ -96,8 +96,8 @@ class SitePackagesManager:
             json.dump(metadata, outfile, indent=4, default=str)
 
 
-def main(json_file: Union[str, None]) -> None:
-    manager = SitePackagesManager.from_sys_path()
+def main(venv: str, json_file: Union[str, None]=None) -> None:
+    manager = SitePackagesManager.from_sys_path(venv)
     if json_file is None:
         pprint(manager.find_console_scripts())
     else:
@@ -105,7 +105,7 @@ def main(json_file: Union[str, None]) -> None:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        main(None)
-    else:
+    if len(sys.argv) == 2:
         main(sys.argv[1])
+    else:
+        main(sys.argv[1], sys.argv[2])

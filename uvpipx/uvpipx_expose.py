@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
+import uvpipx
+import uvpipx.platform
 from uvpipx import config
 from uvpipx.internal_libs.Logger import Logger, get_logger
 from uvpipx.uvpipx_core import UvPipxVenv
@@ -57,7 +59,8 @@ class ExposeApps:
                 metadata_dict = json.load(infile)
 
             console_scripts = metadata_dict["console_scripts"].get(
-                main_package_name, [],
+                main_package_name,
+                [],
             )
             if console_scripts:
                 expose_apps_list = [
@@ -84,9 +87,14 @@ class ExposeApps:
                 )
 
         if expose_app_rules == ["__all__"] or expose_fallback == "__all__":
-            expose_apps_list = self.venv.venv_bins(
-                regex_to_exclude=[r"^(python|pip)(\d+(\.\d+)?)?$"],
-            )
+            if uvpipx.platform.sys_platform == "win":
+                expose_apps_list = self.venv.venv_bins(
+                    regex_to_exclude=[r"^(python|pythonw|pip)(\d+(\.\d+)?)?(\.exe)?$"],
+                )
+            else:
+                expose_apps_list = self.venv.venv_bins(
+                    regex_to_exclude=[r"^(python|pip)(\d+(\.\d+)?)?$"],
+                )
         elif not expose_apps_list:
             renamed_apps = {
                 key: value
@@ -206,7 +214,9 @@ def expose(package_name: str, expose_rule_names: List[str]) -> None:
     package_name = uvpipx_model.main_package.package_name
 
     uvpipx_model.exposed.apps = expo_app.expose(
-        package_name, expose_rule_names_, [package_name],
+        package_name,
+        expose_rule_names_,
+        [package_name],
     )
     uvpipx_model.save_json("uvpipx.json")
 

@@ -200,3 +200,11 @@ arg_parser["expose-all"] = ArgParser(
     ],
     help="Change exposition of all python package",
 )
+
+arg_parser["environnement"] = ArgParser(
+    [
+        verbose_arg,
+        help_arg,
+    ],
+    help="Show config of uvpipx",
+)

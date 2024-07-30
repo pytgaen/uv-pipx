@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import os
 import subprocess  # nosec: B404  # noqa: S404
 import tempfile
@@ -36,7 +35,7 @@ class TestExpose:
         uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
         runenv = {**os.environ, **uvenvs}
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "install", "bandit"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -51,7 +50,7 @@ class TestExpose:
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "bandit").exists()
         assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "bandit").resolve()
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "expose", "bandit", "__all__"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -79,7 +78,7 @@ class TestExposeAll:
         uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
         runenv = {**os.environ, **uvenvs}
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607 # noqa: S603, S607
             ["uvpipx", "install", "bandit"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -94,7 +93,7 @@ class TestExposeAll:
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "bandit").exists()
         assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "bandit").resolve()
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "expose-all", "__all__"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -104,5 +103,3 @@ class TestExposeAll:
 
         assert result.returncode == 0
         assert "program bandit-config-generator" in result.stdout
-
-

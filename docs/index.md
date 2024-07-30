@@ -2,24 +2,28 @@
 
 ![uvpipx logo](https://gitlab.com/pytgaen-group/uvpipx/-/raw/main/uvpipx_logo.jpg)
 
-**uvpipx** is a lightweight tool similar to **pipx**, using **uv** behind the scenes. It's designed to install and run Python applications in isolated environments, ensuring that your global Python setup remains clean and uncluttered.
+**uvpipx** is a lightweight tool similar to **pipx**, using **uv** behind the scenes, offering enhanced speed and efficiency. It's designed to install and run Python applications in isolated environments, ensuring that your global Python setup remains clean and uncluttered.
 
-## Key Features
+## 🌟 Key Features
 
-- 🚀 Fast and lightweight: Leverages the speed of uv for quick installations
-- 📦 Containerization-friendly: Ideal for use in containers or CI environments (Unix-based systems)
-- 🔗 Minimal dependencies: Requires only uv, reducing potential conflicts
-- 🌐 Environment preservation: Keeps your global Python environment clean
+- 🚀 **Fast and lightweight**: Leverages uv for rapid installations
+- 📦 **Containerization-friendly**: Ideal for containers and CI environments
+- 🔗 **Minimal dependencies**: Only requires uv, reducing potential conflicts
+- 🌐 **Environment preservation**: Keeps your global Python setup clean
+- 🪟 **Cross-platform**: Supports Windows and Unix-based systems
 
-## Why use uvpipx?
+## 🤔 Why use uvpipx?
 
 uvpipx solves the common problem of installing Python applications without affecting your system-wide Python setup. It creates isolated environments for each application, allowing you to:
 
-1. Install and use CLI tools without worrying about dependency conflicts
-2. Easily manage and remove applications without impacting other tools
-3. Experiment with different versions of the same tool
+1. **Isolation**: Install CLI tools without dependency conflicts
+2. **Easy management**: Add or remove applications without affecting others
+3. **Experimentation**: Test different versions of the same tool safely
+4. **Speed**: Significantly faster than traditional methods, especially in CI/CD pipelines
 
-## Installation
+## 🚀 Getting Started
+
+### Installation
 
 To get started with uvpipx, simply install it using pip:
 
@@ -27,9 +31,9 @@ To get started with uvpipx, simply install it using pip:
 pip install uvpipx
 ```
 
-## Usage
+### Basic Usage
 
-### Install a package
+#### Install a package
 
 Use the `install` command to add a new package:
 
@@ -45,7 +49,7 @@ uvpipx install jc
 
 This command creates a new virtual environment and installs the specified package along with its dependencies.
 
-### Check the path
+#### Check the path
 
 After installation, ensure that the uvpipx bin directory is in your PATH:
 
@@ -55,7 +59,23 @@ uvpipx ensurepath
 
 This command helps you set up your environment correctly to use installed applications.
 
-### Inject a program during installation (since v0.6.0)
+#### Run the program directly
+
+You can run the program directly from the command line:
+
+```bash
+echo "Hello World!" | wc  | jc --wc
+```
+
+Return:
+
+```bash
+[{"filename":null,"lines":1,"words":2,"characters":13}]
+```
+
+### 🛠️ Advanced Features
+
+#### Inject a program during installation (since v0.6.0)
 
 You can install additional programs alongside the main package:
 
@@ -71,7 +91,7 @@ uvpipx install jc --inject art
 
 This feature is useful when you need complementary tools in the same environment.
 
-### List all installed packages
+#### List all installed packages
 
 To see what you've installed with uvpipx:
 
@@ -81,7 +101,7 @@ uvpipx list
 
 This provides an overview of all packages managed by uvpipx.
 
-### Uninstall a package
+#### Uninstall a package
 
 Remove a package and its isolated environment:
 
@@ -91,7 +111,7 @@ uvpipx uninstall <package_name>
 
 This command completely removes the package and its dedicated environment.
 
-### Get information about a package
+#### Get information about a package
 
 For details about an installed package:
 
@@ -107,9 +127,11 @@ uvpipx info <package_name> --get-venv
 
 This is useful for debugging or when you need to interact directly with the virtual environment.
 
-### Run a package in its virtual environment
+#### Run a package in its virtual environment
 
-Execute a command in a package's isolated environment:
+By default programs are exposed (look below for more detail). So you can run them directly from the command line.
+
+But you want advanced control or run side program not exposed by uvpipx. You can execute a command in a package's isolated environment:
 
 ```bash
 uvpipx venv <package_name> -- <command>
@@ -144,7 +166,7 @@ Example:
 uvpipx expose jc __main__
 ```
 
-#### Changes since v0.6.0
+### 📖 Changes since v0.6.0
 
 In previous versions, uvpipx exposed programs by default with the `__all__` rule. Now, the default rule is `__main__`. This is a significant change but is more consistent with pipx behavior. To update all your existing venvs to the new rule:
 
@@ -160,7 +182,7 @@ uvpipx install <package_name> --expose __all__
 
 These exposure options give you fine-grained control over which tools are accessible from each installed package.
 
-## Performance
+## 🚀 Performance
 
 uvpipx can significantly speed up container builds and CI processes. Here's a comparison of installation times for poetry:
 
@@ -174,4 +196,4 @@ uvpipx can significantly speed up container builds and CI processes. Here's a co
 
 As shown, uvpipx can offer significant time savings, especially in scenarios where multiple tools need to be installed quickly, such as in CI/CD pipelines or container builds.
 
-Next page [Usable or Not](usable.md)
+Next page [Config](config.md)

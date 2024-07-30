@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import uvpipx
+
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
@@ -9,6 +11,7 @@ __email__ = "#"
 __status__ = "Development"
 
 
+import hashlib
 import os
 import platform
 import shutil
@@ -18,11 +21,19 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Type, TypeVar, Union, get_args, get_origin
 
+import uvpipx.platform
 from uvpipx.internal_libs.Logger import Logger, get_logger
 
 
 # Définir le chemin du répertoire à parcourir
 def find_executable(dir_path: Path, allow_symlink: bool = False) -> List[Path]:
+    if uvpipx.platform.sys_platform == "win":
+        return [
+            file
+            for file in dir_path.iterdir()
+            if file.is_file() and file.suffix.lower() == uvpipx.platform.bin_ext.lower()
+        ]
+
     return [
         file
         for file in dir_path.iterdir()
@@ -101,11 +112,11 @@ def shell_run(
     if cwd is not None:
         opt_args["cwd"] = cwd
 
-    with subprocess.Popen(
+    with subprocess.Popen(  # nosec: B602 # noqa: S602
         command,  # type: ignore[arg-type, call-overload]
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        shell=True,  # noqa: S602
+        shell=True,  # nosec: B602 # noqa: S602
         text=True,
         env=env_,
         **opt_args,
@@ -154,7 +165,7 @@ def cmd_run(
     # encoding = cmd_prepare_encoding()
     pipe_type = None if raw_pipe else subprocess.PIPE
 
-    with subprocess.Popen(
+    with subprocess.Popen(  # nosec: B602 # noqa: S602
         command,
         stdout=pipe_type,
         stderr=pipe_type,
@@ -292,3 +303,16 @@ def check_type_n_None(
         raise InvalidTypeError(expected_types_, type(value)) from e
 
     raise InvalidTypeError(expected_types_, type(value))
+
+
+def file_md5(file_path) -> str:
+    md5_hash = hashlib.md5(usedforsecurity=False)
+    file_path = Path(file_path)
+
+    if not file_path.is_file():
+        raise FileNotFoundError(f"File not found: {file_path}")
+
+    with file_path.open(mode="rb") as file:
+        for chunk in iter(lambda: file.read(4096), b""):
+            md5_hash.update(chunk)
+    return md5_hash.hexdigest()

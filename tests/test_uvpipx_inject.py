@@ -35,7 +35,7 @@ class TestInject:
         uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
         runenv = {**os.environ, **uvenvs}
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "install", "jc"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -50,7 +50,7 @@ class TestInject:
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
         assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "inject", "jc", "art"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -60,7 +60,7 @@ class TestInject:
 
         assert result.returncode == 0
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "info", "jc", "-g"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -78,7 +78,7 @@ class TestInject:
             "PATH": os.environ["PATH"] + ":" + venv_pass + "/bin",
         }
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["art", "text", "toto"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -97,7 +97,7 @@ class TestInject:
 
         runenv = {**os.environ, **uvenvs}
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "uninject", "jc", "art"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -115,7 +115,7 @@ class TestInstallInject:
         uvpipx_local_venvs, uvenvs, uvpipx_bin_dir = env_setup
         runenv = {**os.environ, **uvenvs}
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "install", "jc", "--inject", "art"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -130,7 +130,7 @@ class TestInstallInject:
         assert (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").exists()
         assert venv_jc_path == (Path(runenv["UVPIPX_BIN_DIR"]) / "jc").resolve()
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "info", "jc", "-g"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -148,7 +148,7 @@ class TestInstallInject:
             "PATH": os.environ["PATH"] + ":" + venv_pass + "/bin",
         }
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["art", "text", "toto"],  # noqa: S603, S607
             capture_output=True,
             text=True,
@@ -167,7 +167,7 @@ class TestInstallInject:
 
         runenv = {**os.environ, **uvenvs}
 
-        result = subprocess.run(  # nosec: B603, B607
+        result = subprocess.run(  # nosec: B603, B607  # noqa: S603, S607
             ["uvpipx", "uninject", "jc", "art"],  # noqa: S603, S607
             capture_output=True,
             text=True,

@@ -67,6 +67,14 @@ def ensurepath(argp: ArgParser) -> None:
     uvpipx_infos.ensurepath()
 
 
+def uvpipx_show_config(argp: ArgParser) -> None:
+    """show the list of uvpipx venv"""
+
+    common_args(argp)
+
+    uvpipx_infos.uvpipx_show_config()
+
+
 def uvpipx_list(argp: ArgParser) -> None:
     """show the list of uvpipx venv"""
 
