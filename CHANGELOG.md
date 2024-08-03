@@ -1,5 +1,12 @@
 ChangeLog for uvpipx
 
+# [0.7.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.6.2...0.7.0) (2024-08-03)
+
+
+### Features
+
+* ✨ Add initial Windows support and improve CLI ([cb67d2d](https://gitlab.com/pytgaen-group/uvpipx/commit/cb67d2d69c47c23185a9d9a357a5aa8e40a25d49))
+
 ## [0.6.2](https://gitlab.com/pytgaen-group/uvpipx/compare/0.6.1...0.6.2) (2024-07-15)
 
 
