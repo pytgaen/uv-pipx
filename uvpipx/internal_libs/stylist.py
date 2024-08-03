@@ -14,6 +14,9 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict
+import os
+import sys
+import unicodedata
 
 
 class Color(Enum):
@@ -66,15 +69,15 @@ class Color(Enum):
         """Generates an ANSI escape sequence for a given RGB color."""
         if background:
             return f"\033[48;2;{r};{g};{b}m"  # ANSI escape for background color
-        else:
-            return f"\033[38;2;{r};{g};{b}m"  # ANSI escape for foreground color
+
+        return f"\033[38;2;{r};{g};{b}m"  # ANSI escape for foreground color
 
 
 class Painter:
     @staticmethod
     def hex_color(hexcode: str, background: bool = False) -> str:
         """Generates an ANSI escape sequence from a hex color code."""
-        if os.getenv("NO_ANSI_COLOR", "false").lower() not in ["false", "0"]:
+        if os.getenv("NO_COLOR", "") != "":
             return ""
 
         hexcode = hexcode.strip("#")
@@ -82,8 +85,15 @@ class Painter:
         return Color.rgb_color(r, g, b, background)
 
     @staticmethod
+    def reset() -> str:
+        if os.getenv("NO_COLOR", "") != "":
+            return ""
+
+        return f"{Color.ST_RESET.value}"
+
+    @staticmethod
     def color_str(message: str, *styles: Color) -> str:
-        if os.getenv("NO_ANSI_COLOR", "false").lower() not in ["false", "0"]:
+        if os.getenv("NO_COLOR", "") != "":
             return message
 
         style_codes = "".join(style.value for style in styles)
@@ -97,7 +107,7 @@ class Painter:
 
         # Function to process each match
         def replace_tag(tag: str) -> str:
-            if os.getenv("NO_ANSI_COLOR", "false").lower() not in ["false", "0"]:
+            if os.getenv("NO_COLOR", "") != "":
                 return ""
 
             tag_ = tag[1:-1]
@@ -147,12 +157,47 @@ class Emoji:
             "📦": "",
         }
 
-    def r(self, emoji: str) -> str:
-        if self.render_emoji == RenderEmoji.EMOJI:
-            return emoji
-        elif self.render_emoji == RenderEmoji.STR:
-            return self.emoji_to_str.get(emoji, "")
-        # elif self.render_emoji == RenderEmoji.REMOVE:
-        #     return ""
+    @staticmethod
+    def use_emoji() -> bool:
+        return not (
+            os.getenv("NO_EMOJI", "") != ""
+            # or "--no-emoji" in sys.argv
+            or sys.stdout.encoding.lower() != "utf-8"
+        )
 
+    @staticmethod
+    def is_emoji(char) -> bool:
+        return unicodedata.category(char) in ("So", "Sk", "Sm")
+
+    @staticmethod
+    def get_emoji_name(char: str) -> str:
+        return unicodedata.name(char, "EMOJI")
+
+    @staticmethod
+    def remove_emoji(text: str) -> str:
+        return "".join("" if Emoji.is_emoji(char) else char for char in text)
+
+    def replace_emoji(self, text: str) -> str:
+        return "".join(
+            self.emoji_to_str.get(char, "") if Emoji.is_emoji(char) else char for char in text
+        )
+
+    def m(self, text: str) -> str:
+        """handle message with render_emoji mode or NO_EMOJI"""
+        if Emoji.use_emoji() and self.render_emoji == RenderEmoji.EMOJI:
+            return text
+
+        if self.render_emoji == RenderEmoji.STR:
+            return self.replace_emoji(text)
+
+        return self.remove_emoji(text)
+
+    def r(self, emoji: str) -> str:
+        """handle emoji with render_emoji mode or NO_EMOJI"""
+        if Emoji.use_emoji() and self.render_emoji == RenderEmoji.EMOJI:
+            return emoji
+        if self.render_emoji == RenderEmoji.STR:
+            return self.emoji_to_str.get(emoji, "")
+
+        #  RenderEmoji.REMOVE:
         return ""

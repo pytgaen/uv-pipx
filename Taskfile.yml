@@ -35,6 +35,11 @@ tasks:
           echo "🟠 Bandit not found, skipping security check"
         fi
 
+  py-test-html:
+    cmds:
+      - rm -fr htmlcov
+      - poetry run pytest --cov --cov-report=html --html=report.html --self-contained-html
+
   clean-jc:
     cmds:
       - rm -fr /home/gaetan/.local/uv-pipx/venvs/jc

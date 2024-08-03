@@ -45,7 +45,6 @@ uvpipx uses environment variables for its configuration. Here are the main varia
 
 ### 🌳 UVPIPX_HOME
 
-🌳 UVPIPX_HOME
 The path to the main directory of uvpipx. This variable is used to define the location of the uvpipx home directory, which contains the virtual environments and the bin directory.
 
 🎚️ Default value is `~/.local/uv-pipx`.
@@ -60,10 +59,10 @@ The path to the directory of uvpipx virtual environments. This variable is used 
 
 The path to the directory where the executables of uvpipx are exposed. This variable is used to define the location of the uvpipx exposed bin directory.  
 
- ❕**Tip**: Ensure that `UVPIPX_BIN_DIR` is in your PATH. Use `uvpipx ensurepath` to check and add it if necessary.
+💡**Tip**: Ensure that `UVPIPX_BIN_DIR` is in your PATH. Use `uvpipx ensurepath` to check and add it if necessary.
 
 🎚️ Default value:
-    - on unix: `~/.local/bin` for normal users or `/usr/local/bin` for root.
-    - on windows: `%HOME%\.local\bin`.
+- on unix: `~/.local/bin` for normal users or `/usr/local/bin` for root.
+- on windows: `%HOME%\.local\bin`.
 
 Next page [Use to build container image](concainer.md)

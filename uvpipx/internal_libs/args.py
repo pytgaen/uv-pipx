@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Tuple, Union
 
-from uvpipx.internal_libs.print import max_string_length_per_column, wrap_text_in_table
+from uvpipx.internal_libs.text_formatter import max_string_length_per_column, wrap_text_in_table
 
 
 @dataclass

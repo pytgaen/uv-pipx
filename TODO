@@ -1,51 +1,40 @@
 # TODO
 
-0.5.0 *:
-    ✔ new logger @done(24-06-09 22:49)
-    ✔ upgrade uvpipx.json / inject @done(24-06-15 11:25)
-    ✔ avoid to expose script like python* or pip* without change name @done(24-06-09 22:49)
-    ✔ test inject / uninject basic @done(24-06-12 20:25)
-    ✔ rethink install --force @done(24-06-14 18:26)
-    ✔ uninstall-all @done(24-06-13 18:49)
-
-
-0.6.0:
-    ✔ only expose eponym by default @done(24-06-19 20:50)
-    ✔ upgrade also injected @done(24-06-19 21:06)
-    ✔ inject at install time (injected exposed as/like main) @done(24-06-23 19:19)
-        ✔ fix uvpipx.json with injected @done(24-06-23 19:19)
-        ✔ expose ., * @done(24-06-23 19:19)
-    ✔ use console_scripts to generate json in uvpipx directory @done(24-06-23 15:59)
-    ✔ expose/expose-all --package-scripts (main) @done(24-07-09 18:24)
-    ✔ a test for expose/expose-all @done(24-07-12 17:41)
-    ✔ update doc / explain main change and how to migrate @done(24-07-12 23:12)
-
-
-0.x+1.0:
-    ☐ windows support
+0.7.0:
+    ✔ windows support @done(24-08-03 14:25)
         ✔ test eponym, main, all @done(24-07-28 18:58)
         ✔ jc, art, ruff @done(24-07-28 18:59)
         ✔ ensurepath @done(24-08-01 12:55)
     ✔ environment (show config) @done(24-08-01 12:55)
     ✔ dockerfile sample @done(24-08-01 19:01)
-    ☐ test on windows  
+    ✔ test on windows @done(24-08-03 14:25)
     ✔ test environnement (linux) @done(24-08-01 19:10)
     ✔ test environnement ( windows) @done(24-08-01 19:23)
     ✔ test ensurepath (linux) @done(24-08-01 19:10)
-    ☐ test ensurepath (winndows)
-    ☐ add test expose to not fallback in normal case (winndows)
-    ☐ add test expose to fallback (winndows)
+    ✔ test ensurepath (winndows) @done(24-08-03 14:25)
+    ✔ add test expose to not fallback in normal case (winndows) @done(24-08-03 14:25)
+    ✔ add test expose to fallback (windows) @done(24-08-03 14:25)
 
-0.x+2.0:
+0.x+1.0:
+    ✔ add test cover 90% at least on internal libs @done(24-08-03 17:45)
+    ☐ add test on uvpipx in pure python and not by subprocess
     ☐ split uvpipx into uvpipx and uvpipx-core
     ☐ uvpipx-core should find and use system uv
-    ☐ dev container sample
 
-0.x+2b.0:
+0.x+2.0:
+    ☐ add collection concept
+        ☐ tag/untag venv
+        ☐ export tag to collection file
+        ☐ import/install collection to tag (from file or from url)
+        ☐ uninstall collection
+
+
+0.x+5.0:
     ☐ info exposed mode, bin not exposed
     ☐ provide a install way from pure-bash or pure-powershell with indygreg a https://github.com/indygreg/python-build-standalone
 
-0.x+3.0 venv power:
+    
+0.x+7.0 venv power:
     ☐ install
     ☐ uninstall
     ☐ inject
@@ -55,7 +44,7 @@
     ☐ "expose add" link doctor to remove bad link ? maybe ask confirmation
 
 
-0.x+4.0:
+0.x+9.0:
     ☐ doc about cache
     ☐ upgrade option --force-upgrade to allow to not respect original pipspec and change pipspec to new version defined or current
     ☐ expose --add X (can use wildcard) / force
@@ -70,8 +59,6 @@ currently not planned :
     ☐ upgrade-all --skip [ args ]
     ☐ inject (option to add bin) [ args ]
     ☐ uninject (remove uninstalled bin) [ args ]
-
-    ☐ maybe provide a way to install from url spec and proposed recommanded setup
 
     ☐ +info ... --venv-name
     ☐ runpip (replace by venv)

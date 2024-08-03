@@ -49,6 +49,8 @@ pathspec = { version = "0.12.1" }    # stranges should be managed by mkdocs
 watchdog = { version = "4.0.1" }     # stranges should be managed by mkdocs
 regex = { version = "^2024.5.15" }   # stranges should be managed by mkdocs
 mypy = "^1.10.0"
+pytest-cov = "^5.0.0"
+pytest-html = "^4.1.1"
 
 [tool.poetry.scripts]
 uvpipx = 'uvpipx.__main__:main'

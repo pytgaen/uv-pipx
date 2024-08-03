@@ -1,14 +1,14 @@
 from uvpipx.internal_libs.args import Arg, ArgParser, ArgParserMode
 
 
-def test_general() -> None:
+def test_general(capsys) -> None:
     """test general usage case"""
     argp = ArgParser(
         [
-            Arg("cmd"),
+            Arg("cmd", help="the command"),
             Arg("pkg"),
             Arg("--expose", mode="array"),
-            Arg("--verbose", mode="count"),
+            Arg("--verbose", mode="count", help="verbose"),
             Arg("--dry-run", mode="bool/true"),
             Arg("--uv", mode="bool/true"),
         ],
@@ -39,7 +39,23 @@ def test_general() -> None:
     assert argp.args["--uv"].value is True
     assert argp.extra_args == ["some", "-tricky", "stuff"]
 
-    pass
+
+    argp.print_help()
+    captured = capsys.readouterr()
+    assert """  cmd                  | the command
+
+  pkg                  |
+
+  --expose, -e "value" |
+
+  --verbose, -v        | verbose
+
+  --dry-run, -d        |
+
+  --uv, -u             |
+
+""" in captured.out
+
 
 
 def test_auto_extra() -> None:
