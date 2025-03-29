@@ -39,10 +39,10 @@ def test_general(capsys) -> None:
     assert argp.args["--uv"].value is True
     assert argp.extra_args == ["some", "-tricky", "stuff"]
 
-
     argp.print_help()
     captured = capsys.readouterr()
-    assert """  cmd                  | the command
+    assert (
+        """  cmd                  | the command
 
   pkg                  |
 
@@ -54,8 +54,9 @@ def test_general(capsys) -> None:
 
   --uv, -u             |
 
-""" in captured.out
-
+"""
+        in captured.out
+    )
 
 
 def test_auto_extra() -> None:

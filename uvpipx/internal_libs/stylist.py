@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 __author__ = "Gaëtan Montury"
-__copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
+__copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
 __version__ = "0.2.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
@@ -11,12 +11,11 @@ __status__ = "Development"
 
 import os
 import re
+import sys
+import unicodedata
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict
-import os
-import sys
-import unicodedata
 
 
 class Color(Enum):
@@ -178,9 +177,7 @@ class Emoji:
         return "".join("" if Emoji.is_emoji(char) else char for char in text)
 
     def replace_emoji(self, text: str) -> str:
-        return "".join(
-            self.emoji_to_str.get(char, "") if Emoji.is_emoji(char) else char for char in text
-        )
+        return "".join(self.emoji_to_str.get(char, "") if Emoji.is_emoji(char) else char for char in text)
 
     def m(self, text: str) -> str:
         """handle message with render_emoji mode or NO_EMOJI"""

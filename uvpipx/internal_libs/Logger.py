@@ -68,9 +68,7 @@ class Logger:
 
     def log_at_level(self, level: LogLevel, messages: str) -> None:
         ts = datetime.datetime.now().astimezone()
-        log_messages = [
-            LogEntry(level, ts, message) for message in messages.split("\n")
-        ]
+        log_messages = [LogEntry(level, ts, message) for message in messages.split("\n")]
         self.render(log_messages)
 
     def log_debug(self, messages: str) -> None:

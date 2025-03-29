@@ -13,11 +13,14 @@ import pytest
 @pytest.fixture(scope="class")
 def env_setup() -> Generator[Tuple[str, Dict, str], Any, None]:
     # Créer des répertoires temporaires
-    with tempfile.TemporaryDirectory(
-        prefix="uvpipxbindir-",
-    ) as uvpipx_bin_dir, tempfile.TemporaryDirectory(
-        prefix="uvpipxvenvs-",
-    ) as uvpipx_local_venvs:
+    with (
+        tempfile.TemporaryDirectory(
+            prefix="uvpipxbindir-",
+        ) as uvpipx_bin_dir,
+        tempfile.TemporaryDirectory(
+            prefix="uvpipxvenvs-",
+        ) as uvpipx_local_venvs,
+    ):
         # Configurer les variables d'environnement
         uvenvs = {}
         uvenvs["UVPIPX_LOCAL_VENVS"] = uvpipx_local_venvs

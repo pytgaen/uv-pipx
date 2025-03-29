@@ -97,14 +97,9 @@ class ExposeApps:
                 )
         elif not expose_apps_list:
             renamed_apps = {
-                key: value
-                for item in expose_app_rules
-                if ":" in item
-                for key, value in [item.split(":", 1)]
+                key: value for item in expose_app_rules if ":" in item for key, value in [item.split(":", 1)]
             }
-            expose_apps_list = [
-                self.venv.venv_bin(item.split(":", 1)[0]) for item in expose_app_rules
-            ]
+            expose_apps_list = [self.venv.venv_bin(item.split(":", 1)[0]) for item in expose_app_rules]
 
         return expose_apps_list, renamed_apps
 
@@ -115,13 +110,9 @@ class ExposeApps:
         if self.prev_exposed is None:
             return {}
 
-        prev_exposed_apps = {
-            k: Path(app.exposed_app_path) for k, app in self.prev_exposed.apps.items()
-        }
+        prev_exposed_apps = {k: Path(app.exposed_app_path) for k, app in self.prev_exposed.apps.items()}
         # remove pre_exposed_apps that are not in future_exposed_apps
-        return {
-            k: v for k, v in prev_exposed_apps.items() if k not in future_exposed_apps
-        }
+        return {k: v for k, v in prev_exposed_apps.items() if k not in future_exposed_apps}
 
     def add_exposing(
         self,

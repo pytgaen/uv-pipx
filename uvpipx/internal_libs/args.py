@@ -5,7 +5,7 @@ from __future__ import annotations
 from uvpipx.internal_libs.stylist import Painter
 
 __author__ = "Gaëtan Montury"
-__copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
+__copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
 __version__ = "0.2.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
@@ -17,7 +17,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Tuple, Union
 
-from uvpipx.internal_libs.text_formatter import max_string_length_per_column, wrap_text_in_table
+from uvpipx.internal_libs.text_formatter import (
+    max_string_length_per_column,
+    wrap_text_in_table,
+)
 
 
 @dataclass
@@ -94,10 +97,7 @@ class ArgParser:
                         break
 
                 i_token += nb_consumed_element
-                if (
-                    self.mode == ArgParserMode.AUTO_EXTRA_ARGS
-                    and len(self.args_pos) == self._nb_expected_args
-                ):
+                if self.mode == ArgParserMode.AUTO_EXTRA_ARGS and len(self.args_pos) == self._nb_expected_args:
                     break
             except IndexError as e:
                 msg = f"Unable to parse arg {received_args[i_token]}"
@@ -106,11 +106,7 @@ class ArgParser:
                 ) from e
 
         # if nb_consumed_element == -1 and self.mode in [ArgParserMode.ALLOW_MISSING_POSITIONAL, ArgParserMode.STRICT]:
-        if (
-            self.mode == ArgParserMode.STRICT
-            and stopper is None
-            and len(self.args_pos) != self._nb_expected_args
-        ):
+        if self.mode == ArgParserMode.STRICT and stopper is None and len(self.args_pos) != self._nb_expected_args:
             msg = "Missing some parameter"
             raise RuntimeError(
                 msg,
@@ -205,12 +201,7 @@ class ArgParser:
         for arg in self.args_def:
             if arg.name.startswith("-"):
                 opt = ", ".join([arg.name, *arg.alternates_name])
-                next_value = (
-                    ""
-                    if arg.mode == "count"
-                    or (arg.mode and arg.mode.startswith("bool/"))
-                    else ' "value"'
-                )
+                next_value = "" if arg.mode == "count" or (arg.mode and arg.mode.startswith("bool/")) else ' "value"'
                 info_option.append([f"""{opt}{next_value}""", arg.help])
             else:
                 info_not_option.append([arg.name, arg.help])

@@ -3,7 +3,7 @@ from __future__ import annotations
 import uvpipx
 
 __author__ = "Gaëtan Montury"
-__copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
+__copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
 __version__ = "0.2.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
@@ -37,9 +37,7 @@ def find_executable(dir_path: Path, allow_symlink: bool = False) -> List[Path]:
     return [
         file
         for file in dir_path.iterdir()
-        if file.is_file()
-        and os.access(file, os.X_OK)
-        and (not file.is_symlink() or allow_symlink)
+        if file.is_file() and os.access(file, os.X_OK) and (not file.is_symlink() or allow_symlink)
     ]
 
 
@@ -256,9 +254,7 @@ T = TypeVar("T")
 
 
 def check_type(value: Any, expected_types: Union[Type[T], List[Type[T]]]) -> T:  # noqa: ANN401
-    expected_types_ = (
-        expected_types if isinstance(expected_types, list) else [expected_types]
-    )
+    expected_types_ = expected_types if isinstance(expected_types, list) else [expected_types]
     if value is None:
         raise InvalidTypeError(expected_types_, type(value))
 
@@ -266,9 +262,7 @@ def check_type(value: Any, expected_types: Union[Type[T], List[Type[T]]]) -> T: 
         origin = get_origin(expected_type)
         if origin:
             args = get_args(expected_type)
-            if isinstance(value, origin) and all(
-                isinstance(elem, args[0]) for elem in value
-            ):
+            if isinstance(value, origin) and all(isinstance(elem, args[0]) for elem in value):
                 return value
 
         if isinstance(value, expected_type):
@@ -281,9 +275,7 @@ def check_type_n_None(
     value: Any,  # noqa: ANN401
     expected_types: Union[Type[T], List[Type[T]]],
 ) -> Union[T, None]:
-    expected_types_ = (
-        expected_types if isinstance(expected_types, list) else [expected_types]
-    )
+    expected_types_ = expected_types if isinstance(expected_types, list) else [expected_types]
     if value is None:
         return value
 
@@ -292,9 +284,7 @@ def check_type_n_None(
             origin = get_origin(expected_type)
             if origin:
                 args = get_args(expected_type)
-                if isinstance(value, origin) and all(
-                    isinstance(elem, args[0]) for elem in value
-                ):
+                if isinstance(value, origin) and all(isinstance(elem, args[0]) for elem in value):
                     return value
 
             if isinstance(value, expected_type):

@@ -1,7 +1,7 @@
 from uvpipx.internal_libs.stylist import Painter
 
 __author__ = "Gaëtan Montury"
-__copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
+__copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
 __version__ = "0.7.0"  # to bump
 __maintainer__ = "Gaëtan Montury"

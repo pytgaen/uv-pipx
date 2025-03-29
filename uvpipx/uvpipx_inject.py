@@ -8,7 +8,7 @@ from uvpipx.uvpipx_venv_load import uvpipx_load_venv
 from uvpipx.UvPipxModels import UvPipxExposeInstallSets, UvPipxPackageModel
 
 __author__ = "Gaëtan Montury"
-__copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
+__copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
 __version__ = "0.7.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
@@ -34,9 +34,7 @@ def inject(
 
     uvpipx_cfg, venv = uvpipx_load_venv(package_main_name, name_override)
 
-    injecting_package = {
-        r.name: r for rl in lst_package_name_spec for r in [Requirement.from_str(rl)]
-    }
+    injecting_package = {r.name: r for rl in lst_package_name_spec for r in [Requirement.from_str(rl)]}
 
     for pck_name in injecting_package:  # TODO allow upgrade
         if pck_name in uvpipx_cfg.injected_packages:
@@ -89,9 +87,7 @@ def uninject(
 
     uvpipx_cfg, venv = uvpipx_load_venv(package_main_name, name_override)
 
-    uninjected_package = {
-        r.name: r for rl in lst_package_name_spec for r in [Requirement.from_str(rl)]
-    }
+    uninjected_package = {r.name: r for rl in lst_package_name_spec for r in [Requirement.from_str(rl)]}
 
     for pck_name in uninjected_package:
         if pck_name not in uvpipx_cfg.injected_packages:
@@ -117,9 +113,7 @@ def uninject(
         if pck_name not in uninjected_package
     }
 
-    uvpipx_cfg.injected_packages = {
-        k: stay_injected_package[k] for k in sorted(stay_injected_package)
-    }
+    uvpipx_cfg.injected_packages = {k: stay_injected_package[k] for k in sorted(stay_injected_package)}
 
     uvpipx_cfg.save_json("uvpipx.json")
 

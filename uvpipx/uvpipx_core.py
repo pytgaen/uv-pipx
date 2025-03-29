@@ -70,9 +70,7 @@ class UvPipxVenv:
     def venv_bins(self, regex_to_exclude: list[str]) -> list[Path]:
         re_comp_to_exclude = [re.compile(r) for r in regex_to_exclude]
         all_bins = find_executable(self.venv_bin_dir())
-        return [
-            s for s in all_bins if not any(r.search(s.name) for r in re_comp_to_exclude)
-        ]
+        return [s for s in all_bins if not any(r.search(s.name) for r in re_comp_to_exclude)]
 
     def venv_bin(self, name: str, fail_if_notexist: bool = True) -> Path:
         path_ = self.venv_bin_dir() / (name + uvpipx.platform.bin_ext)
@@ -102,9 +100,7 @@ class UvPipxVenv:
         if pip_metadata.exists() and if_not_exist:
             return
 
-        uvpipx_console_scripts = (
-            config.uvpipx_self_dir / "uvpipx/uvpipx_console_scripts.py"
-        )
+        uvpipx_console_scripts = config.uvpipx_self_dir / "uvpipx/uvpipx_console_scripts.py"
         python_venv_bin = self.venv_bin_dir() / "python"
         self.run_in_venv(
             f"{python_venv_bin} {uvpipx_console_scripts} {self.venv_path} {pip_metadata}",
@@ -137,9 +133,7 @@ class PathLink:
             )
 
         if self.link_path.exists():
-            return self.link_path.is_symlink() and (
-                self.local_path == self.link_path.resolve()
-            )
+            return self.link_path.is_symlink() and (self.local_path == self.link_path.resolve())
 
         return False
 

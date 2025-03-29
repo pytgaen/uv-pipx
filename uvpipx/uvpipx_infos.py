@@ -12,7 +12,7 @@ from uvpipx.UvPipxModels import UvPipxModel
 from uvpipx.version import show_version
 
 __author__ = "Gaëtan Montury"
-__copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
+__copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
 __version__ = "0.7.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
@@ -146,14 +146,12 @@ def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
     if injected_vers:
         output_inject = "\n".join(f"""   📦 {pkg_ver}""" for pkg_ver in injected_vers)
         output += f"""
-
  🎯 Injected packages
 {output_inject}"""
 
     output += f"""
-
  🎯 Exposed program
-{bins}\n"""
+{bins}"""
 
     return output
 

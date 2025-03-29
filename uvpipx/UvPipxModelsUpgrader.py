@@ -16,11 +16,7 @@ from uvpipx.UvPipxModels import (
 
 def check_and_upgrade(
     config: Dict[str, Any],
-) -> (
-    Tuple[Dict[str, Any], Literal[False]]
-    | Tuple[dict[str, Any], Literal[True]]
-    | Tuple[None, Literal[False]]
-):
+) -> Tuple[Dict[str, Any], Literal[False]] | Tuple[dict[str, Any], Literal[True]] | Tuple[None, Literal[False]]:
     vers = config.get("config_version")
 
     if vers == "0.2.0":
@@ -54,9 +50,7 @@ def transform_old_to_0_2_0(old_config: dict) -> Union[UvPipxModel, None]:
         for bin_pair in old_config["exposed_bins"]:
             venv_bin_split = bin_pair[0].rsplit("/", maxsplit=1)
             local_bin_split = bin_pair[1].rsplit("/", maxsplit=1)
-            ren_bin = (
-                local_bin_split[1] if local_bin_split[1] != venv_bin_split[1] else None
-            )
+            ren_bin = local_bin_split[1] if local_bin_split[1] != venv_bin_split[1] else None
 
             pl = uvpipx_venv_factory.path_link_factory(
                 Path(bin_pair[0]),

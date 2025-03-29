@@ -7,11 +7,7 @@ def set_env_variable(name: str, value: str, system=False):
 
     try:
         root_key = winreg.HKEY_LOCAL_MACHINE if system else winreg.HKEY_CURRENT_USER
-        subkey = (
-            r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
-            if system
-            else "Environment"
-        )
+        subkey = r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment" if system else "Environment"
 
         key = winreg.OpenKey(root_key, subkey, 0, winreg.KEY_ALL_ACCESS)
         winreg.SetValueEx(key, name, 0, winreg.REG_EXPAND_SZ, value)
@@ -36,11 +32,7 @@ def get_env_variable(name: str, system=False) -> str:
 
     try:
         root_key = winreg.HKEY_LOCAL_MACHINE if system else winreg.HKEY_CURRENT_USER
-        subkey = (
-            r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
-            if system
-            else "Environment"
-        )
+        subkey = r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment" if system else "Environment"
 
         key = winreg.OpenKey(root_key, subkey, 0, winreg.KEY_READ)
         value, _ = winreg.QueryValueEx(key, name)

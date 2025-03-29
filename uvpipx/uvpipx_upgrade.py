@@ -8,7 +8,7 @@ from uvpipx.internal_libs.Logger import get_logger
 from uvpipx.uvpipx_venv_load import uvpipx_load_venv
 
 __author__ = "Gaëtan Montury"
-__copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
+__copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
 __version__ = "0.7.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
@@ -37,9 +37,7 @@ def upgrade(
 
     old_vers = sorted(venv.installed_package())
     package_name_spec = [venv_model.main_package.package_name_spec]
-    inject_name_spec = [
-        inj.package_name_spec for inj in venv_model.injected_packages.values()
-    ]
+    inject_name_spec = [inj.package_name_spec for inj in venv_model.injected_packages.values()]
     upd_name_spec = " ".join(package_name_spec + inject_name_spec)
 
     with Elapser() as ela:
@@ -57,9 +55,7 @@ def upgrade(
     new_vers = sorted(venv.installed_package())
 
     diff_vers = [
-        n
-        for n in difflib.ndiff([str(s) for s in old_vers], [str(s) for s in new_vers])
-        if n[:2] in ["+ ", "- "]
+        n for n in difflib.ndiff([str(s) for s in old_vers], [str(s) for s in new_vers]) if n[:2] in ["+ ", "- "]
     ]
 
     if diff_vers:

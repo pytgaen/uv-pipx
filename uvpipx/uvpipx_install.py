@@ -6,7 +6,7 @@ import uvpipx
 from uvpipx import config
 
 __author__ = "Gaëtan Montury"
-__copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
+__copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = "GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"
 __version__ = "0.5.0"
 __maintainer__ = "Gaëtan Montury"
@@ -45,9 +45,7 @@ class Installer:
         self.logger = get_logger("install")
         self.package_spec = Requirement.from_str(self.package_name_spec)
         self._inject_pkgs_name_spec = self.inject_pkgs_name_spec or []
-        self.inject_pkgs_spec = [
-            Requirement.from_str(pkg) for pkg in self._inject_pkgs_name_spec
-        ]
+        self.inject_pkgs_spec = [Requirement.from_str(pkg) for pkg in self._inject_pkgs_name_spec]
         self.all_pkgs_name_spec = [self.package_name_spec, *self._inject_pkgs_name_spec]
         self.all_pkgs_spec = [self.package_spec, *self._inject_pkgs_name_spec]
         self.package_name = self.package_spec.name
@@ -81,13 +79,15 @@ class Installer:
 
         return uvpipx_prev, venv_prev, True
 
-    def create_virtual_env_if_needed(self) -> None:
+    def create_virtual_env_if_needed(self) -> bool:
+        created = False
         with Elapser() as ela:
             created = self.venv.create_venv_if_need()
         if created:
             self.logger.log_info(
                 ela.ela_str(f" 📦 uv venv {self.venv_model.name()} created"),
             )
+        return created
 
     def install_all_packages(self) -> None:
         with Elapser() as ela:
@@ -101,12 +101,8 @@ class Installer:
     def save_pip_infos(self) -> None:
         (self.venv.venv_path / "requirements.txt").write_text(self.venv.freeze())
         pip_metadata = self.venv.venv_path / "pip_metadata.json"
-        uvpipx_console_scripts = (
-            config.uvpipx_self_dir / "uvpipx/uvpipx_console_scripts.py"
-        )
-        python_venv_bin = self.venv.venv_bin_dir() / (
-            "python" + uvpipx.platform.bin_ext
-        )
+        uvpipx_console_scripts = config.uvpipx_self_dir / "uvpipx/uvpipx_console_scripts.py"
+        python_venv_bin = self.venv.venv_bin_dir() / ("python" + uvpipx.platform.bin_ext)
         self.venv.run_in_venv(
             f"{python_venv_bin} {uvpipx_console_scripts} {self.venv.venv_path} {pip_metadata}",
         )
@@ -158,17 +154,24 @@ class Installer:
             exposed=UvPipxExposedModel(str(self.venv.venv_bin_dir())),
         )
 
-        self.create_virtual_env_if_needed()
-        self.install_all_packages()
+        created = self.create_virtual_env_if_needed()
+        try:
+            self.install_all_packages()
 
-        self.save_pip_infos()
-        self.logger.log_info("")
-        self.expose_binaries(prev_exposed=uvpipx_prev.exposed if uvpipx_prev else None)
-        self.uvpipx_cfg.save_json("uvpipx.json")
+            self.save_pip_infos()
+            self.logger.log_info("")
+            self.expose_binaries(prev_exposed=uvpipx_prev.exposed if uvpipx_prev else None)
+            self.uvpipx_cfg.save_json("uvpipx.json")
 
-        self.logger.log_info(
-            f" 🟢 uvpipx venv {self.venv_model.name()} with {self.package_name} ready",
-        )
+            self.logger.log_info(
+                f" 🟢 uvpipx venv {self.venv_model.name()} with {self.package_name} ready",
+            )
+        except Exception as e:
+            if created:
+                shutil.rmtree(self.venv.venv_path)
+                raise RuntimeError("❌ Failed to install, clean virtual env") from e
+
+            raise e
 
 
 def install(

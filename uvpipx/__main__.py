@@ -7,7 +7,7 @@ from uvpipx.internal_libs.stylist import Painter
 from uvpipx.version import show_version
 
 __author__ = "Gaëtan Montury"
-__copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
+__copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
 __version__ = "0.7.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
@@ -15,7 +15,10 @@ __email__ = "#"
 __status__ = "Development"
 
 import uvpipx.cmd_launcher as cmd_launcher
-from uvpipx.internal_libs.text_formatter import max_string_length_per_column, wrap_text_in_table
+from uvpipx.internal_libs.text_formatter import (
+    max_string_length_per_column,
+    wrap_text_in_table,
+)
 from uvpipx.uvpipx_args import arg_parser
 
 cmd_map: Dict[str, str] = {"list": "uvpipx_list", "environnement": "uvpipx_show_config"}

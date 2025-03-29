@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 __author__ = "Gaëtan Montury"
-__copyright__ = "Copyright (c) 2024-2024 Gaëtan Montury"
+__copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
 __version__ = "0.7.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
@@ -96,7 +96,7 @@ class SitePackagesManager:
             json.dump(metadata, outfile, indent=4, default=str)
 
 
-def main(venv: str, json_file: Union[str, None]=None) -> None:
+def main(venv: str, json_file: Union[str, None] = None) -> None:
     manager = SitePackagesManager.from_sys_path(venv)
     if json_file is None:
         pprint(manager.find_console_scripts())

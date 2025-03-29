@@ -49,13 +49,8 @@ class UvPipxExposedModel:
     def from_dict(data: Dict[str, Any]) -> "UvPipxExposedModel":
         return UvPipxExposedModel(
             venv_bin_dir=data["venv_bin_dir"],
-            install_sets=[
-                UvPipxExposeInstallSets.from_dict(item) for item in data["install_sets"]
-            ],
-            apps={
-                k: UvPipxVenvExposeAppModel.from_dict(v)
-                for k, v in data["apps"].items()
-            },
+            install_sets=[UvPipxExposeInstallSets.from_dict(item) for item in data["install_sets"]],
+            apps={k: UvPipxVenvExposeAppModel.from_dict(v) for k, v in data["apps"].items()},
         )
 
 
@@ -104,10 +99,7 @@ class UvPipxModel:
         return UvPipxModel(
             venv=UvPipxVenvModel.from_dict(data["venv"]),
             main_package=UvPipxPackageModel.from_dict(data["main_package"]),
-            injected_packages={
-                k: UvPipxPackageModel.from_dict(v)
-                for k, v in data["injected_packages"].items()
-            },
+            injected_packages={k: UvPipxPackageModel.from_dict(v) for k, v in data["injected_packages"].items()},
             exposed=UvPipxExposedModel.from_dict(data["exposed"]),
             config_version=data.get("config_version", "0.2.0"),
         )
