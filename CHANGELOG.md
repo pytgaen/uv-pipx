@@ -1,5 +1,13 @@
 ChangeLog for uvpipx
 
+# [0.8.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.7.0...0.8.0) (2025-03-30)
+
+
+### Features
+
+* 🧑‍💻  issue from github: readability ([2102edd](https://gitlab.com/pytgaen-group/uvpipx/commit/2102eddad93f103cac52b3221630be5625564a6a))
+* add test on internal libs ([a75098e](https://gitlab.com/pytgaen-group/uvpipx/commit/a75098e296ff87fa7ba999a8c72b4750d6dd43a7))
+
 # [0.7.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.6.2...0.7.0) (2024-08-03)
 
 

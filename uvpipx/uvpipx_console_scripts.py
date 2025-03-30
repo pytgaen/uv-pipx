@@ -5,7 +5,7 @@ from __future__ import annotations
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
 __license__ = """GNU GENERAL PUBLIC LICENSE refer to file LICENSE in repo"""
-__version__ = "0.7.0"  # to bump
+__version__ = "0.8.0"  # to bump
 __maintainer__ = "Gaëtan Montury"
 __email__ = "#"
 __status__ = "Development"

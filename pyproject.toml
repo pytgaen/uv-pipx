@@ -5,7 +5,7 @@ requires = ["poetry-core"]
 [tool.poetry]
 name = "uvpipx"
 description = "A small tool like pipx using uv behind the scene. Fast, Small ..."
-version = "0.7.0"  # to bump
+version = "0.8.0" # to bump
 authors = ["Pytgaen <32298455+pytgaen@users.noreply.github.com>"]
 readme = "README.md"
 license = "GPL"
