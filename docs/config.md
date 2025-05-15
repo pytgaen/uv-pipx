@@ -9,7 +9,7 @@ This guide will help you understand and configure uvpipx effectively.
 To see your current configuration, use the following command:
 
 ```bash
-uvpipx environnement
+uvpipx environment
 ```
 
 This will display detailed information about your configuration, by example:

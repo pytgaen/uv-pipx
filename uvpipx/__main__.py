@@ -21,7 +21,7 @@ from uvpipx.internal_libs.text_formatter import (
 )
 from uvpipx.uvpipx_args import arg_parser
 
-cmd_map: Dict[str, str] = {"list": "uvpipx_list", "environnement": "uvpipx_show_config"}
+cmd_map: Dict[str, str] = {"list": "uvpipx_list", "environnement": "uvpipx_show_config", "environment": "uvpipx_show_config"}
 
 
 def show_main_help() -> None:
@@ -59,10 +59,10 @@ def main() -> None:
         cmd_function(arg_parser[sys.argv[1]])
 
     else:
-        print(f"Unknow command {sys.argv[1]}, below the help")
+        print(f"Unknown command {sys.argv[1]}, below the help")
         show_main_help()
 
-        msg = f"Unknow command {sys.argv[1]}"
+        msg = f"Unknown command {sys.argv[1]}"
         raise RuntimeError(msg)
 
 

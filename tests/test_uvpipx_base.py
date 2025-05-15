@@ -45,7 +45,7 @@ def test_help(env_setup: tuple[str, dict, str]) -> None:
         check=False,
     )
     assert result.returncode == 0
-    assert "Show the list of python package installed" in result.stdout
+    assert "Show the list of python packages installed" in result.stdout
 
 
 class TestBasicInsUninstall:

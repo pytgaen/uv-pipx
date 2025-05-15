@@ -83,7 +83,7 @@ class ExposeApps:
             else:
                 expose_fallback = "__all__"
                 self.logger_.log_warn(
-                    f" ⚠️  fallback also fail no find eponym app {main_package_name}. will fallback to all app in venv",
+                    f" ⚠️  fallback also failed: unable to find eponym app {main_package_name}. will fallback to all app in venv",
                 )
 
         if expose_app_rules == ["__all__"] or expose_fallback == "__all__":
@@ -234,7 +234,7 @@ def expose_all(expose_rule_names: List[str]) -> None:
             nb += 1
 
     if nb == 0:
-        infos += "⭕ No uvpipx package installed !"
+        infos += "⭕ No uvpipx package installed!"
 
     if infos:
         logger.log_info(infos)

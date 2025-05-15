@@ -117,7 +117,7 @@ def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
             None,
         )
         if vers is None:
-            vers = f"{pck_name} Unknow version"
+            vers = f"{pck_name} Unknown version"
 
         return vers
 
@@ -191,12 +191,14 @@ def uvpipx_list() -> None:
     nb = 0
     if config.uvpipx_venvs.exists():
         for pck_venv in config.uvpipx_venvs.iterdir():
+            if pck_venv.name.startswith("."):
+                continue
             infos += _info_pkg(pck_venv.name)  # this is a tricky way to get the name
             infos += "\n\n"
             nb += 1
 
     if nb == 0:
-        infos += "⭕ No uvpipx package installed !"
+        infos += "⭕ No uvpipx package installed!"
 
     logger.log_info(infos)
 

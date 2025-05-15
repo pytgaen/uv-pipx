@@ -35,7 +35,7 @@ arg_parser["install"] = ArgParser(
             "--expose",
             mode="array",
             default=["__main__"],
-            help="""By default, all executable program in bin will be expose to `uvpipx_local_bin`\nYou can use --expose jc to expose only this program. you can use many --expose\n--expose _ tell to expose nothing""",
+            help="""By default, all executable program in bin will be exposed to `uvpipx_local_bin`\nYou can use --expose jc to expose only this program. you can use many --expose\n--expose _ tell to expose nothing""",
         ),
         Arg(
             "--inject",
@@ -71,7 +71,7 @@ arg_parser["uninstall-all"] = ArgParser(
         verbose_arg,
         help_arg,
     ],
-    help="Uninstall all python package",
+    help="Uninstall all python packages",
 )
 
 arg_parser["venv"] = ArgParser(
@@ -99,7 +99,7 @@ arg_parser["list"] = ArgParser(
         verbose_arg,
         help_arg,
     ],
-    help="Show the list of python package installed",
+    help="Show the list of python packages installed",
 )
 arg_parser["info"] = ArgParser(
     [
@@ -111,7 +111,7 @@ arg_parser["info"] = ArgParser(
         help_arg,
         Arg("--get-venv", mode="bool/true"),
     ],
-    help="Show information of the python package",
+    help="Show information about a python package",
 )
 
 arg_parser["upgrade"] = ArgParser(
@@ -131,7 +131,7 @@ arg_parser["upgrade-all"] = ArgParser(
         verbose_arg,
         help_arg,
     ],
-    help="Upgrade all python package",
+    help="Upgrade all python packages",
 )
 
 arg_parser["inject"] = ArgParser(
@@ -181,7 +181,7 @@ arg_parser["expose"] = ArgParser(
         verbose_arg,
         help_arg,
     ],
-    help="Change exposition of a python package",
+    help="Expose a python package",
 )
 
 arg_parser["expose-all"] = ArgParser(
@@ -198,10 +198,18 @@ arg_parser["expose-all"] = ArgParser(
         verbose_arg,
         help_arg,
     ],
-    help="Change exposition of all python package",
+    help="Expose all python packages",
 )
 
 arg_parser["environnement"] = ArgParser(
+    [
+        verbose_arg,
+        help_arg,
+    ],
+    help="Show config of uvpipx (deprecated use environment)",
+)
+
+arg_parser["environment"] = ArgParser(
     [
         verbose_arg,
         help_arg,

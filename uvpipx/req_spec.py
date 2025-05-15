@@ -4,6 +4,8 @@ import re
 from dataclasses import dataclass
 from typing import List, Union
 
+import urllib.parse
+
 RE_PIP_REQ = re.compile(
     r"""(?P<name>[A-Za-z0-9._-]+)\s*                   # Nom du projet
 (\[(?P<extras>[A-Za-z0-9._,-]+)\])?\s*        # Extras optionnels, entourés de []
@@ -28,6 +30,9 @@ class Requirement:
 
     @classmethod
     def from_str(cls, line: str) -> "Requirement":  # noqa: ANN102
+        if line.startswith("git+"):
+            return cls.from_git_str(line)
+
         match = RE_PIP_REQ.match(line)
         if not match:
             msg = f"Line {line} not match PIP_REQ"
@@ -40,6 +45,24 @@ class Requirement:
                 match.group("version_specifiers"),
             ),
             environment_marker=match.group("environment_marker"),
+        )
+    
+    @classmethod
+    def from_git_str(cls, line: str) -> "Requirement":  # noqa: ANN102
+        match = re.match(r"git\+(?P<url>.+)", line)
+        if not match:
+            msg = f"Line {line} not match git+"
+            raise RuntimeError(msg)
+
+        git_url, _, git_ref = match["url"].partition("@")
+        git_url_parsed = urllib.parse.urlparse(git_url)
+        git_path = git_url_parsed.path
+
+        return cls(
+            name=git_path.split("/")[-1],
+            extras=[],
+            version_specifiers=[git_ref],
+            environment_marker=None,
         )
 
     def to_str(self) -> str:

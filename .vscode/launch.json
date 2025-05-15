@@ -5,6 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Install from github",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "install",
+                "git+https://github.com/pytgaen/win_python_env_vars"
+            ]
+        },
+        {
             "name": "Install Ruff",
             "type": "debugpy",
             "request": "launch",
@@ -78,6 +88,19 @@
             "args": [
                 "upgrade",
                 "jc", // ==1.24.0",
+                // "--expose",
+                // "_",
+                // "-v"
+            ]
+        },
+        {
+            "name": "Upgrade win_python_env_vars",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvpipx",
+            "args": [
+                "upgrade",
+                "win_python_env_vars", // ==1.24.0",
                 // "--expose",
                 // "_",
                 // "-v"

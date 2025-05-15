@@ -30,7 +30,7 @@ def uvpipx_load_venv(
 
     current_vers_dict, upgraded = check_and_upgrade(file_dict)
     if current_vers_dict is None:
-        msg = "Bad venv, please unistall and install"
+        msg = "Bad venv, please unistall and install again"
         raise UvPipVenvNotReady(msg)
 
     uvpipx_cfg = UvPipxModel.from_dict(current_vers_dict)

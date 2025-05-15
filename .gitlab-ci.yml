@@ -3,26 +3,26 @@ include:
   # Python template
   # https://gitlab.com/to-be-continuous/python
   - project: "to-be-continuous/python"
-    ref: "7.9.1"
+    ref: "7.10.2"
     file: "templates/gitlab-ci-python.yml"
   # - project: "pytgaen-group/python"
   #   ref: "fix/curl-not-slim"
   #   file: "templates/gitlab-ci-python.yml"
   # Gitleaks template
   - project: "to-be-continuous/gitleaks"
-    ref: "2.7.0"
+    ref: "2.7.1"
     file: "templates/gitlab-ci-gitleaks.yml"
   # MkDocs template
   - project: "to-be-continuous/mkdocs"
-    ref: "2.8.0"
+    ref: "2.8.2"
     file: "templates/gitlab-ci-mkdocs.yml"
   # MkDocs template (GitLab Pages variant)
   - project: "to-be-continuous/mkdocs"
-    ref: "2.8.0"
+    ref: "2.8.2"
     file: "templates/gitlab-ci-mkdocs-pages.yml"
   # semantic-release template
   - project: "to-be-continuous/semantic-release"
-    ref: "3.13.1"
+    ref: "3.14.2"
     file: "templates/gitlab-ci-semrel.yml"
 
 default:
