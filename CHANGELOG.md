@@ -6,7 +6,14 @@ ChangeLog for uvpipx
 ### Bug Fixes
 
 * 🐛 3 issues from community ([6fad300](https://gitlab.com/pytgaen-group/uvpipx/commit/6fad300e3e2f8a763054ad5defab236b768c26f3)), closes [#3](https://gitlab.com/pytgaen-group/uvpipx/issues/3) [#4](https://gitlab.com/pytgaen-group/uvpipx/issues/4)
+<<<<<<< HEAD
 
+=======
+  - Fix various user facing spelling and grammar errors (MR on Gitlab from Pearl Lee)
+  - Fix Error on .files, for example .DS_Store of macOS (Issue #3 on Github)
+  - Fix Wrong venv name for git packages (Issue #4 on Github)
+- 
+>>>>>>> d3ded61 (chore(semantic-release): [ci skip on tag] 0.8.1)
 # [0.8.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.7.0...0.8.0) (2025-03-30)
 
 
