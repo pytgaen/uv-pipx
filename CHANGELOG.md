@@ -1,5 +1,12 @@
 ChangeLog for uvpipx
 
+## [0.8.1](https://gitlab.com/pytgaen-group/uvpipx/compare/0.8.0...0.8.1) (2025-05-16)
+
+
+### Bug Fixes
+
+* 🐛 3 issues from community ([6fad300](https://gitlab.com/pytgaen-group/uvpipx/commit/6fad300e3e2f8a763054ad5defab236b768c26f3)), closes [#3](https://gitlab.com/pytgaen-group/uvpipx/issues/3) [#4](https://gitlab.com/pytgaen-group/uvpipx/issues/4)
+
 # [0.8.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.7.0...0.8.0) (2025-03-30)
 
 
