@@ -15,7 +15,6 @@ import sys
 import unicodedata
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict
 
 
 class Color(Enum):
@@ -139,9 +138,9 @@ class RenderEmoji(Enum):
 @dataclass
 class Emoji:
     render_emoji: RenderEmoji = RenderEmoji.EMOJI
-    emoji_to_str: Dict[str, str] = field(init=False)
+    emoji_to_str: dict[str, str] = field(init=False)
 
-    def __post_init(self) -> None:
+    def __post_init__(self) -> None:
         self.emoji_to_str = {
             "🔴": "",
             "🟢": "",

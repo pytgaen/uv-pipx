@@ -57,11 +57,12 @@ The path to the directory of uvpipx virtual environments. This variable is used 
 
 ### 📁 UVPIPX_BIN_DIR
 
-The path to the directory where the executables of uvpipx are exposed. This variable is used to define the location of the uvpipx exposed bin directory.  
+The path to the directory where the executables of uvpipx are exposed. This variable is used to define the location of the uvpipx exposed bin directory.
 
 💡**Tip**: Ensure that `UVPIPX_BIN_DIR` is in your PATH. Use `uvpipx ensurepath` to check and add it if necessary.
 
 🎚️ Default value:
+
 - on unix: `~/.local/bin` for normal users or `/usr/local/bin` for root.
 - on windows: `%HOME%\.local\bin`.
 

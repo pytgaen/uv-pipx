@@ -33,7 +33,7 @@
     ☐ info exposed mode, bin not exposed
     ☐ provide a install way from pure-bash or pure-powershell with indygreg a https://github.com/indygreg/python-build-standalone
 
-    
+
 0.x+7.0 venv power:
     ☐ install
     ☐ uninstall
@@ -52,8 +52,8 @@
     ☐ expose --remove X (can use wildcard)
     ☐ reinstall (uninstall/install) main version without injected
     ☐ reinstall (uninstall/install) with injected / -all
-    
-    
+
+
 currently not planned :
     ☐ info show info about install set in advanced view
     ☐ upgrade-all --skip [ args ]
@@ -77,4 +77,3 @@ currently not planned :
 <https://github.com/VaasuDevanS/cowsay-python>
 
 <https://github.com/sharkdp/shell-functools>
-

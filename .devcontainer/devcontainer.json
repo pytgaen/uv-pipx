@@ -11,52 +11,52 @@
 // 	"ghcr.io/va-h/devcontainers-features/uv:1": {}
 // }
 {
-	"name": "Python 3.12 - Poetry",
-	"build": {
-		"context": "..",
-		"dockerfile": "./Dockerfile"
-	},
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "bash .devcontainer/post-create.sh",
-	"remoteUser": "vscode",
-	// "remoteEnv": {
-	// 	"SSH_AUTH_SOCK": "/ssh-agent"
-	// },
-	// "mounts": [
-	// 	"source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind,consistency=cached"
-	// ],
-	"mounts": [
-		"source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
-	],
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [],
-	"remoteEnv": {
-		// "POETRY_VIRTUALENVS_CREATE": "false"
-	},
-	// Configure tool-specific properties.
-	"customizations": {
-		"vscode": {
-			"settings": {
-				"python.pythonPath": "/usr/local/bin/python"
-			},
-			"extensions": [
-				"ms-python.python",
-				"ms-python.vscode-pylance",
-				"charliermarsh.ruff",
-				"bierner.markdown-preview-github-styles",
-				"fabiospampinato.vscode-todo-plus",
-				"mhutchie.git-graph",
-				"git-emoji.vscode-git-emoji",
-				"eamodio.gitlens",
-				"seatonjiang.gitmoji-vscode",
-				"exiasr.hadolint",
-				"yzhang.markdown-all-in-one",
-				"zaaack.markdown-editor",
-				"task.vscode-task",
-				"Supermaven.supermaven"
-			]
-		}
-	}
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+  "name": "Python 3.12 - Poetry",
+  "build": {
+    "context": "..",
+    "dockerfile": "./Dockerfile"
+  },
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "remoteUser": "vscode",
+  // "remoteEnv": {
+  // 	"SSH_AUTH_SOCK": "/ssh-agent"
+  // },
+  // "mounts": [
+  // 	"source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind,consistency=cached"
+  // ],
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+  ],
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [],
+  "remoteEnv": {
+    // "POETRY_VIRTUALENVS_CREATE": "false"
+  },
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.pythonPath": "/usr/local/bin/python"
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "bierner.markdown-preview-github-styles",
+        "fabiospampinato.vscode-todo-plus",
+        "mhutchie.git-graph",
+        "git-emoji.vscode-git-emoji",
+        "eamodio.gitlens",
+        "seatonjiang.gitmoji-vscode",
+        "exiasr.hadolint",
+        "yzhang.markdown-all-in-one",
+        "zaaack.markdown-editor",
+        "task.vscode-task",
+        "Supermaven.supermaven"
+      ]
+    }
+  }
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
 }

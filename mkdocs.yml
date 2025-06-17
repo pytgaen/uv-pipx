@@ -20,11 +20,11 @@ theme:
     search:
       language: "en, fr"
 
-  palette: 
+  palette:
     # Palette toggle for light mode
     - scheme: default
       toggle:
-        icon: material/brightness-7 
+        icon: material/brightness-7
         name: Switch to dark mode
 
     # Palette toggle for dark mode
@@ -57,11 +57,10 @@ plugins:
       #     rendering:
       #       show_source: true
 
-
 markdown_extensions:
   - toc:
       toc_depth: 3
-      permalink: True 
+      permalink: True
   - admonition
   - pymdownx.details
   - pymdownx.critic

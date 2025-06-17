@@ -11,7 +11,7 @@ While uvpipx is designed to simplify the installation and management of Python a
 After installing gita with uvpipx, you might encounter the following error when trying to run it:
 
 ```bash
-$ uvpipx install gita 
+$ uvpipx install gita
 $ gita
 
 Traceback (most recent call last):

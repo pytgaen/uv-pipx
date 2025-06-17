@@ -1,233 +1,188 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Install from github",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "install",
-                "git+https://github.com/pytgaen/win_python_env_vars"
-            ]
-        },
-        {
-            "name": "Install Ruff",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "install",
-                "ruff",
-                "--expose",
-                "_"
-            ]
-        },
-        {
-            "name": "Install jc",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "install",
-                "jc==1.24.0",
-                "--force"
-                // "--expose",
-                // "_",
-                // "-v"
-            ]
-        },
-        {
-            "name": "Install jc - art",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "install",
-                "jc==1.24.0",
-                "--force",
-                "--inject",
-                "art",
-                "--expose",
-                "__all__",
-                // "-v"
-            ]
-        },
-        {
-            "name": "Install ast-grep-cli",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "install",
-                "ast-grep-cli"
-            ]
-        },
-        {
-            "name": "Install jc expose",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "install",
-                "jc==1.24.0",
-                "--force",
-                "--expose",
-                "jc:jc24",
-                // "-v"
-            ]
-        },
-        {
-            "name": "Upgrade jc",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "upgrade",
-                "jc", // ==1.24.0",
-                // "--expose",
-                // "_",
-                // "-v"
-            ]
-        },
-        {
-            "name": "Upgrade win_python_env_vars",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "upgrade",
-                "win_python_env_vars", // ==1.24.0",
-                // "--expose",
-                // "_",
-                // "-v"
-            ]
-        },
-        {
-            "name": "Uninstall jc",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "uninstall",
-                "jc"
-            ]
-        },
-        {
-            "name": "Uninstall all",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "uninstall-all"
-            ]
-        },
-        {
-            "name": "Uninstall gita",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "uninstall",
-                "gita"
-            ]
-        },
-        {
-            "name": "Ensurepath",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "ensurepath"
-            ]
-        },
-        {
-            "name": "List",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "list"
-            ]
-        },
-        {
-            "name": "Info",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "info",
-                "jc"
-            ]
-        },
-        {
-            "name": "Venv JC",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "venv",
-                "jc",
-                "--",
-                "jc",
-                "-h"
-            ]
-        },
-        {
-            "name": "Expose jc main-package-scripts",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "expose",
-                "ruff",
-                "__main__"
-                // "--main-package-scripts"
-            ]
-        },        
-        {
-            "name": "Inject jc - icecream,loguru",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "inject",
-                "jc",
-                "icecream",
-                "loguru"
-            ]
-        },
-        {
-            "name": "Inject jc - art",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "inject",
-                "jc",
-                "art"
-            ]
-        },
-        {
-            "name": "Uninject jc - icecream",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvpipx",
-            "args": [
-                "uninject",
-                "jc",
-                "icecream",
-            ]
-        },
-        {
-            "name": "Python Debugger: Current File",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Install from github",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["install", "git+https://github.com/pytgaen/win_python_env_vars"]
+    },
+    {
+      "name": "Install Ruff",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["install", "ruff", "--expose", "_"]
+    },
+    {
+      "name": "Install jc",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": [
+        "install",
+        "jc==1.24.0",
+        "--force"
+        // "--expose",
+        // "_",
+        // "-v"
+      ]
+    },
+    {
+      "name": "Install jc - art",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": [
+        "install",
+        "jc==1.24.0",
+        "--force",
+        "--inject",
+        "art",
+        "--expose",
+        "__all__"
+        // "-v"
+      ]
+    },
+    {
+      "name": "Install ast-grep-cli",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["install", "ast-grep-cli"]
+    },
+    {
+      "name": "Install jc expose",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": [
+        "install",
+        "jc==1.24.0",
+        "--force",
+        "--expose",
+        "jc:jc24"
+        // "-v"
+      ]
+    },
+    {
+      "name": "Upgrade jc",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": [
+        "upgrade",
+        "jc" // ==1.24.0",
+        // "--expose",
+        // "_",
+        // "-v"
+      ]
+    },
+    {
+      "name": "Upgrade win_python_env_vars",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": [
+        "upgrade",
+        "win_python_env_vars" // ==1.24.0",
+        // "--expose",
+        // "_",
+        // "-v"
+      ]
+    },
+    {
+      "name": "Uninstall jc",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["uninstall", "jc"]
+    },
+    {
+      "name": "Uninstall all",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["uninstall-all"]
+    },
+    {
+      "name": "Uninstall gita",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["uninstall", "gita"]
+    },
+    {
+      "name": "Ensurepath",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["ensurepath"]
+    },
+    {
+      "name": "List",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["list"]
+    },
+    {
+      "name": "Info",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["info", "jc"]
+    },
+    {
+      "name": "Venv JC",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["venv", "jc", "--", "jc", "-h"]
+    },
+    {
+      "name": "Expose jc main-package-scripts",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": [
+        "expose",
+        "ruff",
+        "__main__"
+        // "--main-package-scripts"
+      ]
+    },
+    {
+      "name": "Inject jc - icecream,loguru",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["inject", "jc", "icecream", "loguru"]
+    },
+    {
+      "name": "Inject jc - art",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["inject", "jc", "art"]
+    },
+    {
+      "name": "Uninject jc - icecream",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvpipx",
+      "args": ["uninject", "jc", "icecream"]
+    },
+    {
+      "name": "Python Debugger: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    }
+  ]
 }

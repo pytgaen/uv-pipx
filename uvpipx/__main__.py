@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from typing import Dict
 
 from uvpipx.internal_libs.stylist import Painter
 from uvpipx.version import show_version
@@ -21,7 +20,11 @@ from uvpipx.internal_libs.text_formatter import (
 )
 from uvpipx.uvpipx_args import arg_parser
 
-cmd_map: Dict[str, str] = {"list": "uvpipx_list", "environnement": "uvpipx_show_config", "environment": "uvpipx_show_config"}
+cmd_map: dict[str, str] = {
+    "list": "uvpipx_list",
+    "environnement": "uvpipx_show_config",
+    "environment": "uvpipx_show_config",
+}
 
 
 def show_main_help() -> None:
@@ -35,7 +38,7 @@ def show_main_help() -> None:
 
     wrapped = wrap_text_in_table(help_, [size_col[0], 100 - size_col[0]])
     for row in wrapped:
-        for ss in [list(sub_row) for sub_row in zip(*row)]:
+        for ss in [list(sub_row) for sub_row in zip(*row, strict=False)]:
             print("  " + (" | ".join(ss)).rstrip())
 
     print()

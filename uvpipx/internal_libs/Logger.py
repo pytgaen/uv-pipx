@@ -4,7 +4,6 @@ import datetime
 import os
 from dataclasses import dataclass, field
 from enum import Enum, IntEnum
-from typing import Dict, List
 
 from uvpipx.internal_libs.stylist import Color, Painter
 
@@ -37,12 +36,12 @@ class Logger:
         "1",
         "true",
     ]
-    __buffer: List[LogEntry] = field(init=False)
+    __buffer: list[LogEntry] = field(init=False)
 
     def __post_init__(self) -> None:
         self.__buffer = []
 
-    def render(self, messages: List[LogEntry]) -> None:
+    def render(self, messages: list[LogEntry]) -> None:
         for message in messages:
             if message.level >= self.show_level:
                 if self.log_mode == LogMode.PRINT:
@@ -144,7 +143,7 @@ class Logger:
         self.log_at_level(LogLevel.ERROR, messages)
 
 
-LOGGER: Dict[str, Logger] = {}
+LOGGER: dict[str, Logger] = {}
 
 
 def get_logger(name: str = "default") -> Logger:

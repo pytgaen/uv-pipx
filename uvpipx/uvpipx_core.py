@@ -5,17 +5,37 @@ import re
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Tuple, Union
 
 import uvpipx.platform
 from uvpipx import config
-from uvpipx.internal_libs.misc import file_md5, find_executable, shell_run
+from uvpipx.exceptions import BinaryNotFoundError
+from uvpipx.internal_libs.misc import (
+    file_md5,
+    find_executable,
+    shell_run,
+    shell_run_safe,
+    validate_venv_path,
+)
 from uvpipx.req_spec import Requirement
 
 
 @dataclass
 class UvPipxVenv:
     venv_path: Path
+
+    def __post_init__(self) -> None:
+        """
+        Validate venv_path on initialization to prevent path traversal.
+
+        Security:
+            Ensures venv_path is within UVPIPX_LOCAL_VENVS directory.
+            Prevents directory traversal attacks.
+
+        Raises:
+            ValueError: If venv_path is invalid or outside allowed directory
+        """
+        # Validate path is within allowed venvs directory
+        self.venv_path = validate_venv_path(self.venv_path, config.uvpipx_venvs)
 
     def exists(self) -> bool:
         return (self.venv_path / ".venv").exists()
@@ -24,15 +44,16 @@ class UvPipxVenv:
         self.venv_path.mkdir(exist_ok=True, parents=True)
 
         if not self.exists():
-            rc, std_o, std_e = shell_run(
-                f"uv venv {self.venv_path / '.venv'}",
+            venv_path_str = str(self.venv_path / ".venv")
+            _ = shell_run_safe(  # rc, stdout, stderr unused
+                ["uv", "venv", venv_path_str],
                 raise_on_error=True,
             )
             return True
         return False
 
     def freeze(self) -> str:
-        rc, stdout, stderr = shell_run("uv pip freeze", cwd=self.venv_path)
+        _, stdout, _ = shell_run_safe(["uv", "pip", "freeze"], cwd=self.venv_path)  # rc, stderr unused
         return stdout  # if isinstance(stdout, str) else stdout.decode("utf-8")
 
     def installed_package(self) -> list[str]:
@@ -46,20 +67,22 @@ class UvPipxVenv:
 
     def install(
         self,
-        packages_name_spec: List[str],
+        packages_name_spec: list[str],
         allow_upgrade: bool = False,
     ) -> str:
-        opt = " --upgrade" if allow_upgrade else ""
-        install_pkgs = " ".join(packages_name_spec)
-        rc, stdout, stderr = shell_run(
-            f"uv pip install{opt} {install_pkgs}",
+        cmd = ["uv", "pip", "install"]
+        if allow_upgrade:
+            cmd.append("--upgrade")
+        cmd.extend(packages_name_spec)
+        _, stdout, _ = shell_run_safe(  # rc, stderr unused
+            cmd,
             cwd=self.venv_path,
         )
         return stdout  # if isinstance(stdout, str) else stdout.decode("utf-8")
 
     def uninstall(self, package_name_spec: str) -> str:
-        rc, stdout, stderr = shell_run(
-            f"uv pip uninstall {package_name_spec}",
+        _, stdout, _ = shell_run_safe(  # rc, stderr unused
+            ["uv", "pip", "uninstall", package_name_spec],
             cwd=self.venv_path,
         )
         return stdout  # if isinstance(stdout, str) else stdout.decode("utf-8")
@@ -76,8 +99,9 @@ class UvPipxVenv:
         path_ = self.venv_bin_dir() / (name + uvpipx.platform.bin_ext)
 
         if fail_if_notexist and not path_.exists():
-            msg = f"🔴 {name} not exist (path {path_})"
-            raise RuntimeError(msg)
+            # Get available binaries for helpful error message
+            available = [p.stem for p in find_executable(self.venv_bin_dir())]
+            raise BinaryNotFoundError(name, self.venv_path, available)
 
         return path_
 
@@ -85,15 +109,33 @@ class UvPipxVenv:
         self,
         cmdline: str,
         *,
-        cwd: Union[None, Path] = None,
-        env: Union[None, Dict[str, str]] = None,
-    ) -> Tuple[int, str, str]:
-        rc, stdo, stde = shell_run(cmdline, cwd=cwd, env=env)
+        cwd: None | Path = None,
+        env: None | dict[str, str] = None,
+    ) -> tuple[int, str, str]:
+        """
+        Run a command in the venv context.
+
+        WARNING: This uses shell=True for user-provided commands (uvpipx venv pkg -- cmd).
+        This is intentional to allow shell features, but means the cmdline must be trusted.
+
+        Args:
+            cmdline: Shell command to execute (USER INPUT - must be trusted)
+            cwd: Working directory
+            env: Environment variables
+
+        Returns:
+            Tuple of (return_code, stdout, stderr)
+
+        Security Note:
+            Only use with trusted input (direct user commands).
+            Never pass package names or untrusted data here.
+        """
+        rc, stdout, stderr = shell_run(cmdline, cwd=cwd, env=env)
         if rc != 0:
-            msg = f"🔴 Command failed with return code {rc} {stdo} {stde}"
+            msg = f"🔴 Command failed with return code {rc} {stdout} {stderr}"
             raise RuntimeError(msg)
 
-        return rc, stdo, stde
+        return rc, stdout, stderr
 
     def update_metadata(self, if_not_exist: bool = True) -> None:
         pip_metadata = self.venv_path / "pip_metadata.json"
@@ -110,7 +152,7 @@ class UvPipxVenv:
 @dataclass
 class PathLink:
     local_path: Path
-    link_path: Union[Path, None] = None
+    link_path: Path | None = None
 
     def exists(self) -> bool:
         return self.local_path.exists()
@@ -161,8 +203,4 @@ class PathLink:
             msg = "link_path is None"
             raise ValueError(msg)
 
-        return (
-            self.link_path.name
-            if self.link_path.name == self.local_path.name
-            else f" {self.local_path.name} -> {self.link_path.name}"
-        )
+        return self.link_path.name if self.link_path.name == self.local_path.name else f" {self.local_path.name} -> {self.link_path.name}"

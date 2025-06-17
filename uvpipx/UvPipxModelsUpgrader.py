@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, Dict, Literal, Tuple, Union
+from typing import Any, Literal
 
 from uvpipx import uvpipx_venv_factory
 from uvpipx.UvPipxModels import (
@@ -15,8 +15,8 @@ from uvpipx.UvPipxModels import (
 
 
 def check_and_upgrade(
-    config: Dict[str, Any],
-) -> Tuple[Dict[str, Any], Literal[False]] | Tuple[dict[str, Any], Literal[True]] | Tuple[None, Literal[False]]:
+    config: dict[str, Any],
+) -> tuple[dict[str, Any], Literal[False]] | tuple[dict[str, Any], Literal[True]] | tuple[None, Literal[False]]:
     vers = config.get("config_version")
 
     if vers == "0.2.0":
@@ -30,7 +30,7 @@ def check_and_upgrade(
     return None, False
 
 
-def transform_old_to_0_2_0(old_config: dict) -> Union[UvPipxModel, None]:
+def transform_old_to_0_2_0(old_config: dict) -> UvPipxModel | None:
     vers = old_config.get("version")
 
     if vers is None:

@@ -22,11 +22,10 @@ __status__ = "Development"
 
 import os
 from pathlib import Path
-from typing import List, Union
 
 import uvpipx.platform
 from uvpipx import config
-from uvpipx.internal_libs.misc import shell_run
+from uvpipx.internal_libs.misc import shell_run_safe
 
 
 def ensurepath(just_check: bool = False) -> str:
@@ -50,11 +49,13 @@ def ensurepath_unix(just_check: bool = False) -> str:
 
     profile_content = Path(profile_path).read_text()
     if "# Added by uvpipx" in profile_content:
-        logger.log_info(f"""🟣  Configuration already in {profile_path}
+        logger.log_info(
+            f"""🟣  Configuration already in {profile_path}
 
-⚠️  To use without restart the shell, launch 
+⚠️  To use without restart the shell, launch
 export PATH=$PATH:{config.uvpipx_local_bin}
-""")
+"""
+        )
         return "OK/RESTART_NEED"
 
     if just_check:
@@ -67,11 +68,13 @@ export PATH=$PATH:{config.uvpipx_local_bin}\n"""
     with profile_path.open("a") as file:
         file.write(line_to_add)
 
-    logger.log_info(f"""⚙️  Configuration added to {profile_path}
+    logger.log_info(
+        f"""⚙️  Configuration added to {profile_path}
 
-⚠️  To use without restart the shell, launch 
+⚠️  To use without restart the shell, launch
 export PATH=$PATH:{config.uvpipx_local_bin}
-""")
+"""
+    )
 
     return "OK/RESTART_NEED"
 
@@ -88,30 +91,34 @@ def ensurepath_win(just_check: bool = False) -> str:
 
     path_reg_level = None
     path_reg_user = get_env_variable("PATH")
-    if str(config.uvpipx_local_bin) in path_reg_user.split(";"):
+    if path_reg_user and str(config.uvpipx_local_bin) in path_reg_user.split(";"):
         path_reg_level = "user"
 
     if path_reg_level is None:
         path_reg_system = get_env_variable("PATH", system=True)
-        if str(config.uvpipx_local_bin) in path_reg_system.split(";"):
+        if path_reg_system and str(config.uvpipx_local_bin) in path_reg_system.split(";"):
             path_reg_level = "system"
 
     if path_reg_level:
-        logger.log_info(f"""🟣  Configuration of PATH already in registry {path_reg_level} but not in shell.
-                        
-⚠️ you should restart the shell to use the new configuration.""")
+        logger.log_info(
+            f"""🟣  Configuration of PATH already in registry {path_reg_level} but not in shell.
+
+⚠️ you should restart the shell to use the new configuration."""
+        )
         return "OK/RESTART_NEED"
 
     set_env_variable("PATH", f"{config.uvpipx_local_bin};{path_reg_user}")
-    logger.log_info("""⚙️  Configuration added to PATH in user environnement vars.
+    logger.log_info(
+        """⚙️  Configuration added to PATH in user environnement vars.
 
-⚠️ you should restart the shell to use the new configuration.""")
+⚠️ you should restart the shell to use the new configuration."""
+    )
 
     return "OK/RESTART_NEED"
 
 
 def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
-    def get_version(pck_name: str, stdout_line: List[str]) -> str:
+    def get_version(pck_name: str, stdout_line: list[str]) -> str:
         vers = next(
             (line for line in stdout_line if pck_name in line),
             None,
@@ -121,7 +128,7 @@ def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
 
         return vers
 
-    rc, stdout, stderr = shell_run("uv pip freeze", cwd=venv.venv_path)
+    _, stdout, _ = shell_run_safe(["uv", "pip", "freeze"], cwd=venv.venv_path)  # rc, stderr unused
     stdout_line = stdout.split("\n")
     main_vers = get_version(uvpipx.main_package.package_name, stdout_line)
 
@@ -131,9 +138,7 @@ def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
     injected_vers = sorted(injected_vers)
 
     path_links = (
-        [path_link_from_model(uvpipx.exposed, m) for m in uvpipx.exposed.apps.values()]
-        if uvpipx.exposed and uvpipx.exposed.apps
-        else []
+        [path_link_from_model(uvpipx.exposed, m) for m in uvpipx.exposed.apps.values()] if uvpipx.exposed and uvpipx.exposed.apps else []
     )
     bins = "\n".join(f"   ✅ {app_bin.show_name_with_link()}" for app_bin in path_links)
 
@@ -159,7 +164,7 @@ def _info(uvpipx: UvPipxModel, venv: UvPipxVenv) -> str:
 def _info_pkg(
     package_name: str,
     *,
-    name_override: Union[None, str] = None,
+    name_override: None | str = None,
     get_venv: bool = False,
 ) -> str:
     uvpipx, venv = uvpipx_load_venv(package_name, name_override)
@@ -170,7 +175,7 @@ def _info_pkg(
 def info(
     package_name: str,
     *,
-    name_override: Union[None, str] = None,
+    name_override: None | str = None,
     get_venv: bool = False,
 ) -> None:
     logger = get_logger("info")
@@ -181,7 +186,7 @@ def info(
 
 def uvpipx_list() -> None:
     infos = f"""📍 uvpipx venvs are in {config.uvpipx_venvs}
-💻 apps are exposed at {config.uvpipx_local_bin} 
+💻 apps are exposed at {config.uvpipx_local_bin}
 
 """
     logger = get_logger("uvpipx_list")

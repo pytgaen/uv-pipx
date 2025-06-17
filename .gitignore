@@ -232,10 +232,12 @@ venv.bak/
 # mkdocs documentation
 /site
 
-# mypy
+# mypy / basedpyright
 .mypy_cache/
 .dmypy.json
 dmypy.json
+.pyright/
+pyrightcache/
 
 # Pyre type checker
 .pyre/
@@ -283,6 +285,12 @@ pyrightconfig.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/dotenv,python,visualstudiocode,intellij+all
+
+.claude
+.internal
+.serena
+CLAUDE.md
+
 
 tmp/
 prep_future_feat/

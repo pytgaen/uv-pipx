@@ -9,11 +9,10 @@ __email__ = "#"
 __status__ = "Development"
 
 import textwrap
-from typing import List
 
 
 class NewLinePreservingWrapper(textwrap.TextWrapper):
-    def wrap(self, text: str) -> List[str]:
+    def wrap(self, text: str) -> list[str]:
         # Split the original text by new lines, process each part, then combine
         wrapped_lines = []
         for part in text.split("\n"):
@@ -25,7 +24,7 @@ class NewLinePreservingWrapper(textwrap.TextWrapper):
         return "\n".join(self.wrap(text))
 
 
-def max_string_length_per_column(table: List[List[str]]) -> List[int]:
+def max_string_length_per_column(table: list[list[str]]) -> list[int]:
     """
     Calculates the maximum string length for each column in a 2D table.
 
@@ -53,9 +52,9 @@ def max_string_length_per_column(table: List[List[str]]) -> List[int]:
 
 
 def wrap_text_in_table(
-    table: List[List[str]],
-    column_widths: List[int],
-) -> List[List[List[str]]]:
+    table: list[list[str]],
+    column_widths: list[int],
+) -> list[list[list[str]]]:
     """
     Wraps text in each cell of a table to the specified widths for each column and ensures each line in a cell
     is padded with spaces to maintain the column width. Also ensures all cells in a row have the same number of lines.
@@ -77,7 +76,7 @@ def wrap_text_in_table(
         max_lines_per_row = 0
 
         # Wrap text in each cell and determine the max number of lines in this row
-        for content, wrapper in zip(row, wrappers):
+        for content, wrapper in zip(row, wrappers, strict=False):
             wrapped_text = wrapper.wrap(text=content)
             # Pad each line to ensure it has the exact column width
             wrapped_text = [line.ljust(wrapper.width) for line in wrapped_text]

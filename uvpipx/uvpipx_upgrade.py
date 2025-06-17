@@ -16,11 +16,7 @@ __email__ = "#"
 __status__ = "Development"
 
 
-from typing import Union
-
-from uvpipx.internal_libs.misc import (
-    Elapser,
-)
+from uvpipx.internal_libs.misc import Elapser
 
 # TODO review code at this point
 
@@ -28,7 +24,7 @@ from uvpipx.internal_libs.misc import (
 def upgrade(
     package_name: str,
     *,
-    name_override: Union[None, str] = None,
+    name_override: None | str = None,
 ) -> None:
     logger = get_logger("upgrade")
 
@@ -54,9 +50,7 @@ def upgrade(
 
     new_vers = sorted(venv.installed_package())
 
-    diff_vers = [
-        n for n in difflib.ndiff([str(s) for s in old_vers], [str(s) for s in new_vers]) if n[:2] in ["+ ", "- "]
-    ]
+    diff_vers = [n for n in difflib.ndiff([str(s) for s in old_vers], [str(s) for s in new_vers]) if n[:2] in ["+ ", "- "]]
 
     if diff_vers:
         logger.log_info("\n 🏗️  changes")

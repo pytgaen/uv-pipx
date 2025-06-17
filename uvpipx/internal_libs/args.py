@@ -15,7 +15,7 @@ __status__ = "Development"
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 from uvpipx.internal_libs.text_formatter import (
     max_string_length_per_column,
@@ -26,15 +26,15 @@ from uvpipx.internal_libs.text_formatter import (
 @dataclass
 class Arg:
     name: str
-    mode: Union[None, str] = None
+    mode: None | str = None
     type_: Any = str
     default: Any = None
     help: str = ""
-    alternates_name: Union[List[str], None] = None
+    alternates_name: list[str] | None = None
     arg_pos: int = field(init=False, default=-1)
     value: Any = field(init=False, default=None)
 
-    def defaulted_value(self) -> Union[str, None, bool, int]:
+    def defaulted_value(self) -> str | None | bool | int:
         default_ = self.default
         if self.mode and self.mode.startswith("bool/"):
             default_ = False if self.mode.startswith("bool/true") else False
@@ -53,13 +53,13 @@ class ArgParserMode(Enum):
 
 @dataclass
 class ArgParser:
-    args_def: List[Arg]
+    args_def: list[Arg]
     mode: ArgParserMode = ArgParserMode.STRICT
-    args_pos_def: Dict[str, Arg] = field(init=False, default_factory=dict)
-    args: Dict[str, Arg] = field(init=False, default_factory=dict)
-    args_pos: Dict[str, Arg] = field(init=False, default_factory=dict)
-    extra_args: List[str] = field(init=False, default_factory=list)
-    help: Union[str, None] = None
+    args_pos_def: dict[str, Arg] = field(init=False, default_factory=dict)
+    args: dict[str, Arg] = field(init=False, default_factory=dict)
+    args_pos: dict[str, Arg] = field(init=False, default_factory=dict)
+    extra_args: list[str] = field(init=False, default_factory=list)
+    help: str | None = None
     _nb_expected_args: int = field(init=False, default=0)
 
     def __post_init__(self) -> None:
@@ -80,7 +80,7 @@ class ArgParser:
             self.args_pos_def[arg_def.name] = arg_def
             self._nb_expected_args += 1
 
-    def parse(self, received_args: List[str]) -> None:
+    def parse(self, received_args: list[str]) -> None:
         i_token = 0
 
         # print("received_args",received_args)
@@ -122,8 +122,8 @@ class ArgParser:
     def _parse_arg(
         self,
         i_token: int,
-        received_args: List[str],
-    ) -> Union[Tuple[int, Arg], Tuple[int, None]]:
+        received_args: list[str],
+    ) -> tuple[int, Arg] | tuple[int, None]:
         val_arg = received_args[i_token]
         if val_arg == "--":
             return -1, None
@@ -136,8 +136,8 @@ class ArgParser:
     def _parse_flag(
         self,
         i_token: int,
-        received_args: List[str],
-    ) -> Tuple[int, Arg]:
+        received_args: list[str],
+    ) -> tuple[int, Arg]:
         val_arg = received_args[i_token]
 
         if self.args[val_arg].mode == "count":
@@ -156,7 +156,7 @@ class ArgParser:
         try:
             next_val_arg = received_args[i_token + 1]
         except IndexError as e:
-            msg = f"Need value for optional arg {val_arg.name}"
+            msg = f"Need value for optional arg {self.args[val_arg].name}"
             raise RuntimeError(msg) from e
 
         if self.args[val_arg].mode == "array":
@@ -178,7 +178,7 @@ class ArgParser:
         else:
             self.args[val_arg].value += 1
 
-    def _parse_positional_argument(self, val_arg: str) -> Tuple[int, Arg]:
+    def _parse_positional_argument(self, val_arg: str) -> tuple[int, Arg]:
         i_pos_name = list(self.args_pos_def.keys())[len(self.args_pos.keys())]
         self.args[i_pos_name].value = val_arg
         self.args_pos[i_pos_name] = self.args[i_pos_name]
@@ -200,7 +200,7 @@ class ArgParser:
         info_option = []
         for arg in self.args_def:
             if arg.name.startswith("-"):
-                opt = ", ".join([arg.name, *arg.alternates_name])
+                opt = ", ".join([arg.name, *(arg.alternates_name or [])])
                 next_value = "" if arg.mode == "count" or (arg.mode and arg.mode.startswith("bool/")) else ' "value"'
                 info_option.append([f"""{opt}{next_value}""", arg.help])
             else:
@@ -212,6 +212,6 @@ class ArgParser:
 
         wrapped = wrap_text_in_table(infos, [size_col[0], 100 - size_col[0]])
         for row in wrapped:
-            for ss in [list(sub_row) for sub_row in zip(*row)]:
+            for ss in [list(sub_row) for sub_row in zip(*row, strict=False)]:
                 print("  " + (" | ".join(ss)).rstrip())
             print()

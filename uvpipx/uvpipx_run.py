@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import List, Union
 
 from uvpipx.internal_libs.misc import cmd_prepare_env, cmd_run
 from uvpipx.uvpipx_venv_load import uvpipx_load_venv
@@ -10,9 +9,9 @@ from uvpipx.uvpipx_venv_load import uvpipx_load_venv
 
 def run_venv_bin(
     package_name: str,
-    cmdline: List[str],
+    cmdline: list[str],
     *,
-    name_override: Union[None, str] = None,
+    name_override: None | str = None,
 ) -> None:
     """venv is specific to uvpipx. it can replace inject, runpip (oups runuv), uninject
 
@@ -26,7 +25,7 @@ def run_venv_bin(
     if "PYTHONHOME" in env:
         del env["PYTHONHOME"]
 
-    rc, stdo, stde = cmd_run(
+    rc, _, _ = cmd_run(  # stdout, stderr unused (raw_pipe=True)
         Path.cwd(),
         cmdline,
         env=env,

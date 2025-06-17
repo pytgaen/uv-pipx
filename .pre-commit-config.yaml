@@ -1,26 +1,98 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
-    - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v4.0.1
-      hooks:
-          - id: check-added-large-files
-          - id: check-merge-conflict
-          - id: trailing-whitespace
-            args: [--markdown-linebreak-ext=md]
-          - id: end-of-file-fixer
-          - id: check-yaml
-            exclude: mkdocs.yml
-          - id: check-toml
-          - id: check-json
-            exclude: .vscode/launch.json
-          - id: debug-statements
-          - id: check-ast
-          - id: check-executables-have-shebangs
-          - id: mixed-line-ending
-            args: ['--fix=lf']
-          - id: no-commit-to-branch
-            args: ['--branch', 'master', '--branch', 'main', '--branch', 'develop']
+  # Pre-commit hooks meta
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
 
+  # Basic file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0 # Updated from v4.0.1
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: check-merge-conflict
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: mkdocs.yml
+      - id: check-toml
+      - id: check-json
+        exclude: ^(.vscode/.*\.json|.devcontainer/.*\.json)$ # Exclude JSONC files (JSON with comments)
+      - id: debug-statements
+      - id: check-ast
+      - id: check-executables-have-shebangs
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: no-commit-to-branch
+        args: ["--branch", "master", "--branch", "main"]
+      - id: check-docstring-first
+      - id: check-case-conflict
+      - id: detect-private-key
 
-# ruff check --select I,F401 --fix     
+  # Ruff - Fast Python linter and formatter
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.1
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        types_or: [python, pyi]
+      - id: ruff-format
+        types_or: [python, pyi]
+
+  # Basedpyright - Static type checking
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.390
+    hooks:
+      - id: pyright
+        name: basedpyright
+        additional_dependencies: [basedpyright]
+        exclude: ^tests/
+
+  # Bandit - Security linter for Python
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.10
+    hooks:
+      - id: bandit
+        args: ["-c", "bandit.yaml", "-r", "."] # -ll = Only HIGH severity
+        exclude: ^tests/
+        types: [python]
+
+  # Semgrep - Static analysis with security and quality rules
+  - repo: https://github.com/returntocorp/semgrep
+    rev: v1.95.0
+    hooks:
+      - id: semgrep
+        args:
+          - "--config=p/python" # Includes security, correctness, best practices
+          - "--error"
+          - "--skip-unknown-extensions"
+          - "--severity=ERROR" # Only errors, not warnings
+        files: \.(py)$
+        exclude: ^tests/
+        pass_filenames: true
+
+  # Prettier - Format YAML, JSON, JSONC, Markdown
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types_or: [yaml, json, markdown]
+        exclude: ^(poetry.lock|\.gitlab-ci\.yml)$
+        # Note: Prettier handles JSONC (JSON with comments) automatically
+
+# CI configuration - faster checks in CI
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ""
+  autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
+  autoupdate_schedule: monthly
+  skip: [basedpyright, semgrep] # Skip slow checks in CI
+  submodules: false

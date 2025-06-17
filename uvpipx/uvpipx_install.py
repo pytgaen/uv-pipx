@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uvpipx
 from uvpipx import config
+from uvpipx.exceptions import InstallationFailedError, VenvNotFoundError
 
 __author__ = "Gaëtan Montury"
 __copyright__ = "Copyright (c) 2024-2025 Gaëtan Montury"
@@ -15,7 +16,6 @@ __status__ = "Development"
 
 import shutil
 from dataclasses import dataclass
-from typing import List, Tuple, Union
 
 import uvpipx.platform
 from uvpipx.internal_libs.Logger import get_logger
@@ -36,12 +36,15 @@ from uvpipx.UvPipxModels import (
 @dataclass
 class Installer:
     package_name_spec: str
-    expose_rule_names: Union[None, List[str]] = None
-    inject_pkgs_name_spec: Union[None, List[str]] = None
-    name_override: Union[None, str] = None
+    expose_rule_names: None | list[str] = None
+    inject_pkgs_name_spec: None | list[str] = None
+    name_override: None | str = None
     force_reinstall: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        from uvpipx.uvpipx_core import UvPipxVenv
+        from uvpipx.uvpipx_venv_factory import UvPipxVenvModel
+
         self.logger = get_logger("install")
         self.package_spec = Requirement.from_str(self.package_name_spec)
         self._inject_pkgs_name_spec = self.inject_pkgs_name_spec or []
@@ -50,14 +53,14 @@ class Installer:
         self.all_pkgs_spec = [self.package_spec, *self._inject_pkgs_name_spec]
         self.package_name = self.package_spec.name
         self.prepare_expose_rule_names()
-        self.uvpipx_cfg = None
-        self.venv_model = None
-        self.venv = None
+        self.uvpipx_cfg: UvPipxModel | None = None
+        self.venv_model: UvPipxVenvModel | None = None
+        self.venv: UvPipxVenv | None = None
 
     def prepare_expose_rule_names(self) -> None:
         self.expose_rule_names_def = self.expose_rule_names or ["__main__"]
 
-    def check_existing_installation(self) -> Tuple:
+    def check_existing_installation(self) -> tuple:
         try:
             uvpipx_prev, venv_prev = uvpipx_load_venv(
                 self.package_name,
@@ -74,12 +77,14 @@ class Installer:
                     f"⚠️  {self.package_name} already installed. Use --force to reinstall from scratch",
                 )
                 return uvpipx_prev, venv_prev, False
-        except UvPipVenvNotReady:
+        except (UvPipVenvNotReady, VenvNotFoundError):
             return None, None, True
 
         return uvpipx_prev, venv_prev, True
 
     def create_virtual_env_if_needed(self) -> bool:
+        assert self.venv is not None, "venv must be initialized before use"  # noqa: S101
+        assert self.venv_model is not None, "venv_model must be initialized before use"  # noqa: S101
         created = False
         with Elapser() as ela:
             created = self.venv.create_venv_if_need()
@@ -90,6 +95,8 @@ class Installer:
         return created
 
     def install_all_packages(self) -> None:
+        assert self.venv is not None, "venv must be initialized before use"  # noqa: S101
+        assert self.venv_model is not None, "venv_model must be initialized before use"  # noqa: S101
         with Elapser() as ela:
             self.venv.install(self.all_pkgs_name_spec)
         self.logger.log_info(
@@ -99,6 +106,7 @@ class Installer:
         )
 
     def save_pip_infos(self) -> None:
+        assert self.venv is not None, "venv must be initialized before use"  # noqa: S101
         (self.venv.venv_path / "requirements.txt").write_text(self.venv.freeze())
         pip_metadata = self.venv.venv_path / "pip_metadata.json"
         uvpipx_console_scripts = config.uvpipx_self_dir / "uvpipx/uvpipx_console_scripts.py"
@@ -109,8 +117,10 @@ class Installer:
 
     def expose_binaries(
         self,
-        prev_exposed: Union[None, UvPipxExposedModel] = None,
+        prev_exposed: None | UvPipxExposedModel = None,
     ) -> None:
+        assert self.venv is not None, "venv must be initialized before use"  # noqa: S101
+        assert self.uvpipx_cfg is not None, "uvpipx_cfg must be initialized before use"  # noqa: S101
         expo_app = ExposeApps(self.venv, self.logger)
         expo_app.set_prev_exposed(prev_exposed)
         main_install_set = UvPipxExposeInstallSets(
@@ -169,17 +179,21 @@ class Installer:
         except Exception as e:
             if created:
                 shutil.rmtree(self.venv.venv_path)
-                raise RuntimeError("❌ Failed to install, clean virtual env") from e
+                raise InstallationFailedError(
+                    self.package_name,
+                    f"Installation failed and venv was cleaned up: {e}",
+                    self.venv.venv_path,
+                ) from e
 
-            raise e
+            raise
 
 
 def install(
     package_name_spec: str,
     *,
-    expose_rule_names: Union[None, List[str]] = None,
-    inject_pkgs: Union[None, List[str]] = None,
-    name_override: Union[None, str] = None,
+    expose_rule_names: None | list[str] = None,
+    inject_pkgs: None | list[str] = None,
+    name_override: None | str = None,
     force_reinstall: bool = False,
 ) -> None:
     config = Installer(
@@ -192,7 +206,7 @@ def install(
     config.install()
 
 
-def uninstall(package_name: str, *, name_override: Union[None, str] = None) -> None:
+def uninstall(package_name: str, *, name_override: None | str = None) -> None:
     logger = get_logger("uninstall")
     uvpipx, venv = uvpipx_load_venv(package_name, name_override)
     logger.log_info(f"🪓 Uninstalling {package_name}\n")

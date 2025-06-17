@@ -11,7 +11,6 @@ __status__ = "Development"
 
 import os
 from pathlib import Path
-from typing import Union
 
 # import uvpipx.platform
 
@@ -21,7 +20,7 @@ from typing import Union
 # USE_EMOJI=true
 
 
-def env_to_path(env_name: str, default: Union[str, Path, None] = None) -> Path:
+def env_to_path(env_name: str, default: str | Path | None = None) -> Path:
     pat_s = os.environ.get(env_name, default)
     if pat_s is None:
         # if fail_is_none:

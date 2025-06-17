@@ -3,14 +3,15 @@ from __future__ import annotations
 import os
 import subprocess  # nosec: B404  # noqa: S404
 import tempfile
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Dict, Generator, Tuple
+from typing import Any
 
 import pytest
 
 
 @pytest.fixture(scope="class")
-def env_setup() -> Generator[Tuple[str, Dict, str], Any, None]:
+def env_setup() -> Generator[tuple[str, dict, str], Any, None]:
     # Créer des répertoires temporaires
     with (
         tempfile.TemporaryDirectory(

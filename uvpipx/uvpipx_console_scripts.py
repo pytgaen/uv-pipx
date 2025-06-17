@@ -17,7 +17,6 @@ import pathlib
 import sys
 from dataclasses import dataclass
 from pprint import pprint
-from typing import Dict, Union
 
 
 @dataclass
@@ -62,7 +61,7 @@ class SitePackagesManager:
                         return line.split(":", 1)[1].strip()
         return ""
 
-    def find_console_scripts(self) -> Dict[str, Dict[str, str]]:
+    def find_console_scripts(self) -> dict[str, dict[str, str]]:
         """
         Returns a dictionary mapping package names to their console script names and corresponding commands.
 
@@ -70,7 +69,7 @@ class SitePackagesManager:
             Dict[str, Dict[str, str]]: A dictionary where keys are package names and values are dictionaries
             mapping console script names to their corresponding commands.
         """
-        scripts: Dict[str, Dict[str, str]] = {}
+        scripts: dict[str, dict[str, str]] = {}
 
         for dist_info_dir in self.site_packages_path.glob("*.dist-info"):
             package_name = self.get_package_name(dist_info_dir)
@@ -96,7 +95,7 @@ class SitePackagesManager:
             json.dump(metadata, outfile, indent=4, default=str)
 
 
-def main(venv: str, json_file: Union[str, None] = None) -> None:
+def main(venv: str, json_file: str | None = None) -> None:
     manager = SitePackagesManager.from_sys_path(venv)
     if json_file is None:
         pprint(manager.find_console_scripts())

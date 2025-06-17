@@ -3,23 +3,23 @@
 - upgrade from previous version
 
 - uxpipx install jc
-  - basic  (in pytest)
-  - expose  (in pytest)
-  - expoe rename  (in pytest)
+  - basic (in pytest)
+  - expose (in pytest)
+  - expoe rename (in pytest)
 
-- uvpipx info jc  (in pytest)
+- uvpipx info jc (in pytest)
 
-- run a app  (in pytest)
+- run a app (in pytest)
 
-- uvpipx list  (in pytest)
+- uvpipx list (in pytest)
 
 - uvpipx upgrade
-  - basic  (in pytest)
+  - basic (in pytest)
   - respect spec
 
-- uvpipx upgrade-all  (in pytest)
+- uvpipx upgrade-all (in pytest)
 
-- uvpipx inject jc art   (in pytest)
+- uvpipx inject jc art (in pytest)
 
 - uvpipx uninject jc art
 

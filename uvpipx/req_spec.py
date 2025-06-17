@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
-from typing import List, Union
-
 import urllib.parse
+from dataclasses import dataclass
 
 RE_PIP_REQ = re.compile(
     r"""(?P<name>[A-Za-z0-9._-]+)\s*                   # Nom du projet
@@ -20,16 +18,16 @@ RE_PIP_REQ = re.compile(
 class Requirement:
     # PEP 508 - Dependency specification for Python Software Packages
     name: str
-    extras: Union[None, List[str]] = None
-    version_specifiers: Union[None, List[str]] = None
-    environment_marker: Union[None, str] = None
+    extras: None | list[str] = None
+    version_specifiers: None | list[str] = None
+    environment_marker: None | str = None
 
     @staticmethod
-    def _split_str(data: str) -> List[str]:
+    def _split_str(data: str) -> list[str]:
         return [element.strip() for element in data.split(",")] if data else []
 
     @classmethod
-    def from_str(cls, line: str) -> "Requirement":  # noqa: ANN102
+    def from_str(cls, line: str) -> Requirement:  # noqa: ANN102
         if line.startswith("git+"):
             return cls.from_git_str(line)
 
@@ -46,9 +44,9 @@ class Requirement:
             ),
             environment_marker=match.group("environment_marker"),
         )
-    
+
     @classmethod
-    def from_git_str(cls, line: str) -> "Requirement":  # noqa: ANN102
+    def from_git_str(cls, line: str) -> Requirement:  # noqa: ANN102
         match = re.match(r"git\+(?P<url>.+)", line)
         if not match:
             msg = f"Line {line} not match git+"

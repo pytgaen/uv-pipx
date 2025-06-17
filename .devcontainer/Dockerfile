@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y bash-completion
     pkgx install task && \
     useradd -ms /bin/bash vscode && \
     mkdir -p /opt/uvpipx && \
-    chown -R vscode:vscode $UVPIPX_HOME 
+    chown -R vscode:vscode $UVPIPX_HOME
 
 USER vscode
 

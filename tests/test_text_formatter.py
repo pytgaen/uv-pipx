@@ -39,7 +39,7 @@ def test_wrap() -> None:
     print()
     res = ""
     for row in wrapped:
-        for ss in [list(sub_row) for sub_row in zip(*row)]:
+        for ss in [list(sub_row) for sub_row in zip(*row, strict=False)]:
             res += ((" | ".join(ss)).rstrip()) + "\n"
 
     print(res)

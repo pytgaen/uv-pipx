@@ -8,7 +8,6 @@ __status__ = "Development"
 
 import os
 import sys
-from typing import List
 
 import uvpipx.uvpipx_run
 from uvpipx import (
@@ -46,7 +45,7 @@ def install(argp: ArgParser) -> None:
     with Elapser() as ela:
         expose_rule_names = check_type_n_None(
             argp.args["--expose"].defaulted_value(),
-            List[str],
+            list[str],
         )
         force_reinstall = check_type(argp.args["--force"].defaulted_value(), bool)
         uvpipx_install.install(

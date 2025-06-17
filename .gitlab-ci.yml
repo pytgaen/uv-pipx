@@ -25,9 +25,9 @@ include:
     ref: "3.14.2"
     file: "templates/gitlab-ci-semrel.yml"
 
-default:
-  tags:
-    - mymg18-ze24-wl
+# default:
+#   tags:
+#     - mymg18-ze24-wl
 
 # your pipeline stages
 stages:
@@ -74,7 +74,7 @@ variables:
 
   BANDIT_ENABLED: "true"
   # BANDIT_ENABLED: "false"
-  BANDIT_ARGS: "--recursive -x ./.cache --config bandit.yaml ."
+  BANDIT_ARGS: "--recursive --config bandit.yaml ."
 
   # Change default release tag name (pattern) to add python "rc" release
   RELEASE_REF: '/^v?[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$/'

@@ -1,62 +1,71 @@
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-]
+# ruff.toml
 
-# Same as Black.
-line-length = 120
-indent-width = 4
-
-# Assume Python 3.10+
+# Target the minimum supported Python version.
 target-version = "py310"
 
+# Maximum line length (kept in sync with the formatter).
+line-length = 140
+
+# --- Linter configuration ---
 [lint]
-# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`) codes by default.
-# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
-# McCabe complexity (`C90`) by default.
-# Enable pycodestyle (`E`), Pyflakes (`F`), and isort (`I`) codes by default.
-select = ["E", "F", "B", "ANN", "SIM", "ERA", "A", "COM", "PTH",  "FA",  "S", "EM", "ARG", "INP", "RUF", "PLW"]
-ignore = ["E501", "ERA001", "RUF100", "ANN204", "EM102", "COM812"]
 
-# Allow fix for all enabled rules (when `--fix`) is provided.
-fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-unfixable = []
+# Selected rule sets (balanced but a bit strict).
+select = [
+    "E",    # Pycodestyle errors
+    "W",    # Pycodestyle warnings
+    "F",    # Pyflakes errors (undefined vars, unused imports)
+    "I",    # isort (import sorting)
+    "UP",   # Pyupgrade (modernize syntax)
+    "B",    # Bugbear (design issues, potential bugs)
+    "C90",  # McCabe complexity (C901 = "function too complex")
+    "SIM",  # Simplification suggestions
+    "PTH",  # Use pathlib instead of os.path
+    "S",    # Security rules (flake8-bandit)
+    "PT",   # pytest style and best practices
+]
 
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+# Globally ignored rules.
+ignore = [
+    "E501", # Line too long (delegated to the formatter)
+    "B008", # Allow function calls in default args
+    "E402", # Allow imports not strictly at the top
+]
 
+# Per-file ignores.
 [lint.per-file-ignores]
-"**/{tests,docs,tools}/*" = ["S101"]
+# In __init__.py files, allow unused imports (F401).
+"__init__.py" = ["F401"]
 
+# Relax some rules in test files.
+"tests/**/*.py" = [
+    "S101",   # Allow 'assert' statements
+    "C901",   # Allow complex functions
+    "SLF001", # Allow access to private members (e.g. obj._private)
+]
+"*_test.py" = [
+    "S101",
+    "C901",
+    "SLF001",
+]
+"test_*.py" = [
+    "S101",
+    "C901",
+    "SLF001",
+]
+
+# --- isort configuration (via Ruff) ---
+[lint.isort]
+# Replace "src" with the name of your main package / source directory.
+known-first-party = ["src"]
+
+# --- Formatter configuration (Black-style) ---
 [format]
-# Like Black, use double quotes for strings.
+
+# Preferred quote style ("double" or "single").
 quote-style = "double"
 
-# Like Black, indent with spaces, rather than tabs.
+# Indentation style (always "space" in Python).
 indent-style = "space"
 
-# Like Black, respect magic trailing commas.
-skip-magic-trailing-comma = false
-
-# Like Black, automatically detect the appropriate line ending.
+# Let Ruff handle line endings (LF vs CRLF) automatically.
 line-ending = "auto"

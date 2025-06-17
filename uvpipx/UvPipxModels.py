@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, TypeVar, Union
+from typing import Any, TypeVar
 
 T = TypeVar("T")
 
@@ -12,13 +12,13 @@ T = TypeVar("T")
 class UvPipxVenvExposeAppModel:
     bin_app_name: str
     exposed_app_path: str
-    packages_name_sets: List[str]
+    packages_name_sets: list[str]
 
     def exposed_app(self) -> Path:
         return Path(self.exposed_app_path)
 
     @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "UvPipxVenvExposeAppModel":
+    def from_dict(data: dict[str, Any]) -> UvPipxVenvExposeAppModel:
         return UvPipxVenvExposeAppModel(
             bin_app_name=data["bin_app_name"],
             exposed_app_path=data["exposed_app_path"],
@@ -28,11 +28,11 @@ class UvPipxVenvExposeAppModel:
 
 @dataclass
 class UvPipxExposeInstallSets:
-    package_name_sets: List[str]
-    exposed_apps_rules: List[str]
+    package_name_sets: list[str]
+    exposed_apps_rules: list[str]
 
     @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "UvPipxExposeInstallSets":
+    def from_dict(data: dict[str, Any]) -> UvPipxExposeInstallSets:
         return UvPipxExposeInstallSets(
             package_name_sets=data["package_name_sets"],
             exposed_apps_rules=data["exposed_apps_rules"],
@@ -42,11 +42,11 @@ class UvPipxExposeInstallSets:
 @dataclass
 class UvPipxExposedModel:
     venv_bin_dir: str
-    install_sets: List[UvPipxExposeInstallSets] = field(default_factory=list)
-    apps: Dict[str, UvPipxVenvExposeAppModel] = field(default_factory=dict)
+    install_sets: list[UvPipxExposeInstallSets] = field(default_factory=list)
+    apps: dict[str, UvPipxVenvExposeAppModel] = field(default_factory=dict)
 
     @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "UvPipxExposedModel":
+    def from_dict(data: dict[str, Any]) -> UvPipxExposedModel:
         return UvPipxExposedModel(
             venv_bin_dir=data["venv_bin_dir"],
             install_sets=[UvPipxExposeInstallSets.from_dict(item) for item in data["install_sets"]],
@@ -57,10 +57,10 @@ class UvPipxExposedModel:
 @dataclass
 class UvPipxVenvModel:
     uvpipx_dir: str
-    name_override: Union[None, str] = None
+    name_override: None | str = None
 
     @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "UvPipxVenvModel":
+    def from_dict(data: dict[str, Any]) -> UvPipxVenvModel:
         return UvPipxVenvModel(
             uvpipx_dir=data["uvpipx_dir"],
             name_override=data.get("name_override"),
@@ -79,7 +79,7 @@ class UvPipxPackageModel:
     package_name: str
 
     @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "UvPipxPackageModel":
+    def from_dict(data: dict[str, Any]) -> UvPipxPackageModel:
         return UvPipxPackageModel(
             package_name_spec=data["package_name_spec"],
             package_name=data["package_name"],
@@ -90,12 +90,12 @@ class UvPipxPackageModel:
 class UvPipxModel:
     venv: UvPipxVenvModel
     main_package: UvPipxPackageModel
-    injected_packages: Dict[str, UvPipxPackageModel]
-    exposed: Union[UvPipxExposedModel, None]
+    injected_packages: dict[str, UvPipxPackageModel]
+    exposed: UvPipxExposedModel | None
     config_version: str = "0.2.0"
 
     @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "UvPipxModel":
+    def from_dict(data: dict[str, Any]) -> UvPipxModel:
         return UvPipxModel(
             venv=UvPipxVenvModel.from_dict(data["venv"]),
             main_package=UvPipxPackageModel.from_dict(data["main_package"]),
@@ -104,12 +104,12 @@ class UvPipxModel:
             config_version=data.get("config_version", "0.2.0"),
         )
 
-    def save_json(self, file_name: Union[str, Path]) -> None:
+    def save_json(self, file_name: str | Path) -> None:
         with (self.venv.uvpipx_path() / file_name).open("w") as outfile:
             json.dump(to_dict(self), outfile, indent=4, default=str)
 
 
-def to_dict(obj: Any) -> Dict[str, Any]:  # noqa: ANN401
+def to_dict(obj: Any) -> dict[str, Any]:  # noqa: ANN401
     """
     A helper function to recursively convert a dataclass instance to a dictionary.
     """
@@ -120,7 +120,7 @@ def to_dict(obj: Any) -> Dict[str, Any]:  # noqa: ANN401
 
 
 class UvPipVenvNotReady(Exception):
-    def __init__(self, message: str, error_code: Union[None, int] = None) -> None:
+    def __init__(self, message: str, error_code: None | int = None) -> None:
         super().__init__(message)
         self.message = message
         self.error_code = error_code

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from uvpipx.exceptions import PackageAlreadyInjectedError, VenvNotReadyError
 from uvpipx.internal_libs.Logger import get_logger
 from uvpipx.req_spec import Requirement
 from uvpipx.uvpipx_venv_load import uvpipx_load_venv
@@ -16,11 +17,7 @@ __email__ = "#"
 __status__ = "Development"
 
 
-from typing import Union
-
-from uvpipx.internal_libs.misc import (
-    Elapser,
-)
+from uvpipx.internal_libs.misc import Elapser
 
 
 def inject(
@@ -28,7 +25,7 @@ def inject(
     lst_package_name_spec: list[str],
     *,
     # expose_bin_names: Optional[List[str]] = None,
-    name_override: Union[None, str] = None,
+    name_override: None | str = None,
 ) -> None:
     logger = get_logger("inject")
 
@@ -38,8 +35,7 @@ def inject(
 
     for pck_name in injecting_package:  # TODO allow upgrade
         if pck_name in uvpipx_cfg.injected_packages:
-            msg = f"🔴 {pck_name} already injected"
-            raise RuntimeError(msg)
+            raise PackageAlreadyInjectedError(pck_name, package_main_name)
 
     pip_packages_spec = " ".join(lst_package_name_spec)
 
@@ -69,8 +65,7 @@ def inject(
             UvPipxExposeInstallSets(list(injected_package.keys()), []),
         )
     else:
-        msg = "Cannot inject on empty venv"
-        raise RuntimeError(msg)
+        raise VenvNotReadyError(venv.venv_path, "exposed configuration missing")
 
     uvpipx_cfg.save_json("uvpipx.json")
 
@@ -81,7 +76,7 @@ def uninject(
     package_main_name: str,
     lst_package_name_spec: list[str],
     *,
-    name_override: Union[None, str] = None,
+    name_override: None | str = None,
 ) -> None:
     logger = get_logger("uninject")
 
@@ -91,8 +86,8 @@ def uninject(
 
     for pck_name in uninjected_package:
         if pck_name not in uvpipx_cfg.injected_packages:
-            msg = f"🔴 {pck_name} is not injected"
-            raise RuntimeError(msg)
+            # Using generic error since we don't have a specific NotInjectedError
+            raise ValueError(f"Package '{pck_name}' is not injected in venv '{package_main_name}'")
 
     pip_packages_spec = " ".join(uninjected_package.keys())
     with Elapser() as ela:
@@ -108,9 +103,7 @@ def uninject(
     logger.log_info("")
 
     stay_injected_package = {
-        pck_name: pck_ref
-        for pck_name, pck_ref in uvpipx_cfg.injected_packages.items()
-        if pck_name not in uninjected_package
+        pck_name: pck_ref for pck_name, pck_ref in uvpipx_cfg.injected_packages.items() if pck_name not in uninjected_package
     }
 
     uvpipx_cfg.injected_packages = {k: stay_injected_package[k] for k in sorted(stay_injected_package)}

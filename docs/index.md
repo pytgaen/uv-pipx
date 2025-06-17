@@ -140,7 +140,7 @@ uvpipx venv <package_name> -- <command>
 Example:
 
 ```bash
-wc README.md | uvpipx venv jc -- jc --wc 
+wc README.md | uvpipx venv jc -- jc --wc
 ```
 
 This allows you to use the installed tools without activating the virtual environment manually.
@@ -186,10 +186,10 @@ These exposure options give you fine-grained control over which tools are access
 
 uvpipx can significantly speed up container builds and CI processes. Here's a comparison of installation times for poetry:
 
-| Tool   | Time                    | Total Time  | Difference     |
-|--------|-------------------------|-------------|----------------|
-| Uvpipx | 2.8 (uvpipx) + 1.1 (poetry) | 3.9 seconds | reference      |
-| Pip    | 8.8                     | 8.8 seconds | +4.9 seconds   |
+| Tool   | Time                        | Total Time  | Difference   |
+| ------ | --------------------------- | ----------- | ------------ |
+| Uvpipx | 2.8 (uvpipx) + 1.1 (poetry) | 3.9 seconds | reference    |
+| Pip    | 8.8                         | 8.8 seconds | +4.9 seconds |
 
 ![uvpipx demo](https://gitlab.com/pytgaen-group/uvpipx/-/raw/main/docs/assets/perf_uvpipx_poetry.png)  
 ![pip demo](https://gitlab.com/pytgaen-group/uvpipx/-/raw/main/docs/assets/perf_pip_poetry.png)
