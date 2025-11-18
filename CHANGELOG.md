@@ -1,5 +1,17 @@
 ChangeLog for uvpipx
 
+# [0.9.0](https://gitlab.com/pytgaen-group/uvpipx/compare/0.8.1...0.9.0) (2025-11-18)
+
+
+### Bug Fixes
+
+* **docs:** fix change log ([df3b2d0](https://gitlab.com/pytgaen-group/uvpipx/commit/df3b2d0c716f47713fc6cc184538265e7e03272f))
+
+
+### Features
+
+* Internally switch to uv and Some security fixes and quality improvements ([052b1e4](https://gitlab.com/pytgaen-group/uvpipx/commit/052b1e47bd33fae0c5c45aaa7d4cf9cf911663e9))
+
 ## [0.8.1](https://gitlab.com/pytgaen-group/uvpipx/compare/0.8.0...0.8.1) (2025-05-16)
 
 ### Bug Fixes
